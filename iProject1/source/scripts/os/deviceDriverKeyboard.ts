@@ -50,6 +50,7 @@ module TSOS {
                 chr = String.fromCharCode(keyCode);
                 _KernelInputQueue.enqueue(chr);
 
+                // shifted punctuations with digits.
             } else if ((keyCode >= 48) && (keyCode <= 57) && isShifted) {
                 {
                     if (keyCode == 48)
@@ -76,7 +77,7 @@ module TSOS {
                 _KernelInputQueue.enqueue(chr);
             }
 
-            // other punctuations.
+            // other punctuations and shifted.
             else if (keyCode >= 186 && keyCode <= 222)  {
                   if (isShifted) {
                     if (keyCode == 186)
@@ -103,6 +104,7 @@ module TSOS {
                         chr = "\"";
                 }
                   // for some reason, the function String.fromCharCode() is not working, so had to hard-code it.
+                  // punctuations that are not shifted.
                   else {
                       if (keyCode == 186)
                           chr = ";";
