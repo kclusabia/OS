@@ -69,10 +69,10 @@ module TSOS {
                 "- Displays the current status.");
             this.commandList[this.commandList.length] = sc;
 
-            // load TODO
+            // load
             sc = new ShellCommand(this.shellLoad,
                 "load",
-                "- Checks if the input was valid.");
+                "- Checks if the input consisted of hex digits.");
             this.commandList[this.commandList.length] = sc;
 
             // shutdown
@@ -277,16 +277,19 @@ module TSOS {
         }
 
         public shellLoad(args) {
-            var input = document.getElementById("taProgramInput").value; //= "" + args.toString();
+            var input = document.getElementById("taProgramInput").value;
 
-            for (var i = 0; i < input.length; i++) { //input.charCodeAt(i)
+            for (var i = 0; i < input.length; i++) {
                 var ascii = input.charCodeAt(i);
-                if ( (ascii >=65 && ascii <= 70) || (ascii >= 97 && ascii <= 102) ||
-                     (ascii >= 48 && ascii <= 57) || (ascii == 32) )
-                    _StdOut.putText("The input consisted of hex digits. It was valid");
-
-                else
+                if ( (ascii >= 65 && ascii <= 70) || (ascii >= 97 && ascii <= 102) ||
+                     (ascii >= 48 && ascii <= 57) || (ascii == 32) ) {
+                    _StdOut.putText("The input consisted of hex digits. It was valid.");
+                    break;
+                }
+                else {
                     _StdOut.putText("The input did not consist of hex digits. It was not valid.");
+                    break;
+                }
 
             }
         }
