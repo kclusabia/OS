@@ -45,6 +45,14 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellError, "bsod", "- Displays a BSOD error message.");
             this.commandList[this.commandList.length] = sc;
 
+            // status
+            sc = new TSOS.ShellCommand(this.shellStatus, "status", "- Displays the current status.");
+            this.commandList[this.commandList.length] = sc;
+
+            // load TODO
+            sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Checks if the input was valid.");
+            this.commandList[this.commandList.length] = sc;
+
             // shutdown
             sc = new TSOS.ShellCommand(this.shellShutdown, "shutdown", "- Shuts down the virtual OS but leaves the underlying hardware simulation running.");
             this.commandList[this.commandList.length] = sc;
@@ -234,6 +242,28 @@ var TSOS;
         Shell.prototype.shellError = function (args) {
             var msg = "Error #007 occurred!";
             _Kernel.krnTrapError(msg);
+        };
+
+        Shell.prototype.shellStatus = function (args) {
+            document.getElementById("status").innerHTML = "Status: " + args.toString();
+        };
+
+        //TODO add space
+        Shell.prototype.shellLoad = function () {
+            var input = document.getElementById("taProgramInput").value;
+
+            for (var i = 0; i < input.length; i++) {
+                var ascii = input.fromCharCode(input.charAt(i));
+                _StdOut.putText(("" + ascii));
+                //                if ( (ascii >=65 && ascii <= 70) || (ascii >= 97 && ascii <= 102) || (ascii >= 48 && ascii <= 57) ) {
+                //                    _StdOut.putText("The input was valid.");
+                //                break; }
+                //                else{
+                //                    _StdOut.putText("The input was not valid.");
+                //                break;}
+                //            }
+                //_StdOut.putText("hi" + input.toString());
+            }
         };
 
         Shell.prototype.shellShutdown = function (args) {

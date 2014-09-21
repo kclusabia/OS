@@ -188,7 +188,6 @@ module TSOS {
             }
         }
 
-        //TODO: scrollbar
             public showScrollbar():void {
             var img = _DrawingContext.getImageData(0, this.currentFontSize + 10, _Canvas.width, _Canvas.height);
             //_Canvas.height = this.currentYPosition + 5;

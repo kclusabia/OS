@@ -179,7 +179,6 @@ var TSOS;
             }
         };
 
-        //TODO: scrollbar
         Console.prototype.showScrollbar = function () {
             var img = _DrawingContext.getImageData(0, this.currentFontSize + 10, _Canvas.width, _Canvas.height);
 
