@@ -181,8 +181,6 @@ var TSOS;
 
         Console.prototype.showScrollbar = function () {
             var img = _DrawingContext.getImageData(0, this.currentFontSize + 10, _Canvas.width, _Canvas.height);
-
-            //_Canvas.height = this.currentYPosition + 5;
             _DrawingContext.putImageData(img, 0, 0);
             this.currentYPosition = _Canvas.height - this.currentFontSize;
         };
