@@ -97,27 +97,38 @@ var TSOS;
         };
 
         Console.prototype.previousCommands = function (chr) {
-            if (chr == String.fromCharCode(38) && this.commandsIndex > 1) {
+            if (chr == String.fromCharCode(38) && this.commandsIndex >= 1) {
                 this.commandsIndex--;
                 this.toDeleteLine();
                 _OsShell.putPrompt();
                 this.buffer = (this.commandsList[this.commandsIndex]);
                 this.putText(this.buffer);
-                if (this.commandsIndex == 1) {
-                    this.buffer = this.commandsList[this.commandsList.length];
+
+                if (this.commandsIndex == 0) {
+                    this.commandsIndex = this.commandsList.length;
                     this.commandsIndex--;
+                    this.toDeleteLine();
+                    _OsShell.putPrompt();
+                    this.buffer = (this.commandsList[this.commandsIndex]);
+                    this.putText(this.buffer);
                 }
-            } else if (chr == String.fromCharCode(40) && this.commandsIndex < this.commandsList.length) {
+            } else if (chr == String.fromCharCode(40) && this.commandsIndex <= this.commandsList.length) {
                 this.commandsIndex++;
                 this.toDeleteLine();
                 _OsShell.putPrompt();
                 this.buffer = (this.commandsList[this.commandsIndex]);
                 this.putText(this.buffer);
-                //                if (this.commandsIndex == this.commandsList.length) {
-                //                    _OsShell.putPrompt();
-                //                    this.buffer = (this.commandsList[this.commandsList.length]);
-                //                    this.putText(this.buffer);
-                //                }
+
+                if (this.commandsIndex == this.commandsList.length - 1) {
+                    this.commandsIndex = -1;
+                    this.commandsIndex++;
+                    this.toDeleteLine();
+                    _OsShell.putPrompt();
+                    this.buffer = (this.commandsList[this.commandsIndex]);
+
+                    //this.buffer = (this.commandsList[this.commandsIndex]);
+                    this.putText(this.buffer);
+                }
             }
         };
 
