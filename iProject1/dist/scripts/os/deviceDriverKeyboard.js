@@ -48,6 +48,7 @@ var TSOS;
             } else if ((((keyCode >= 48) && (keyCode <= 57)) && !isShifted) || (keyCode == 32) || (keyCode == 13)) {
                 chr = String.fromCharCode(keyCode);
                 _KernelInputQueue.enqueue(chr);
+                // shifted punctuations with digits.
             } else if ((keyCode >= 48) && (keyCode <= 57) && isShifted) {
                  {
                     if (keyCode == 48)
