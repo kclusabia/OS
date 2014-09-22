@@ -125,8 +125,8 @@ module TSOS {
                 if (this.commandsIndex == this.commandsList.length-1) {
                     this.commandsIndex = -1;
                     this.commandsIndex++;
-                    this.toDeleteLine();
                     _OsShell.putPrompt();
+                    this.toDeleteLine();
                     this.buffer = (this.commandsList[this.commandsIndex]);
                     //this.buffer = (this.commandsList[this.commandsIndex]);
                     this.putText(this.buffer);
@@ -156,7 +156,8 @@ module TSOS {
                 var charSize = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text[c]);
                 var offset = this.currentXPosition + charSize;
 
-                if (offset > (_Canvas.width - 35)) {
+                // implemented line-wrap.
+                if (offset > (_Canvas.width - 20)) {
                     this.advanceLine();
                 } else {
                     this.currentXPosition = offset;
@@ -172,7 +173,6 @@ module TSOS {
 //                c++;
             }
 
-//
 //            if (text !== "") {
 //                // Draw the text at the current X and Y coordinates.
 //                _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, text);

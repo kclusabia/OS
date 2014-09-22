@@ -43,17 +43,7 @@
         <entry file="file://$PROJECT_DIR$/source/scripts/os/deviceDriverKeyboard.ts">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="1393" max-vertical-offset="2385">
-              <caret line="57" column="38" selection-start-line="57" selection-start-column="38" selection-end-line="57" selection-end-column="38" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="shell.ts" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/source/scripts/os/shell.ts">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-2.2063882" vertical-offset="5173" max-vertical-offset="5580">
-              <caret line="287" column="17" selection-start-line="287" selection-start-column="17" selection-end-line="287" selection-end-column="17" />
+              <caret line="102" column="39" selection-start-line="102" selection-start-column="39" selection-end-line="102" selection-end-column="39" />
               <folding />
             </state>
           </provider>
@@ -62,18 +52,18 @@
       <file leaf-file-name="console.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/source/scripts/os/console.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1331" max-vertical-offset="3075">
-              <caret line="49" column="36" selection-start-line="49" selection-start-column="36" selection-end-line="49" selection-end-column="36" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="2535" max-vertical-offset="3225">
+              <caret line="174" column="0" selection-start-line="174" selection-start-column="0" selection-end-line="174" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="kernel.ts" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/source/scripts/os/kernel.ts">
+      <file leaf-file-name="tsos.css" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/source/styles/tsos.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2231" max-vertical-offset="2625">
-              <caret line="166" column="14" selection-start-line="166" selection-start-column="14" selection-end-line="166" selection-end-column="14" />
+            <state vertical-scroll-proportion="0.8894349" vertical-offset="268" max-vertical-offset="900">
+              <caret line="42" column="25" selection-start-line="42" selection-start-column="25" selection-end-line="42" selection-end-column="25" />
               <folding />
             </state>
           </provider>
@@ -108,10 +98,11 @@
         <option value="$PROJECT_DIR$/source/scripts/os/kernel.ts" />
         <option value="$PROJECT_DIR$/source/scripts/os/userCommand.ts" />
         <option value="$PROJECT_DIR$/source/scripts/host/control.ts" />
-        <option value="$PROJECT_DIR$/source/scripts/os/console.ts" />
         <option value="$PROJECT_DIR$/source/scripts/os/deviceDriverKeyboard.ts" />
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/source/scripts/os/shell.ts" />
+        <option value="$PROJECT_DIR$/source/scripts/os/console.ts" />
+        <option value="$PROJECT_DIR$/source/styles/tsos.css" />
       </list>
     </option>
   </component>
@@ -343,7 +334,7 @@
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32973805" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32973805" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -718,26 +709,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/scripts/os/kernel.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2096" max-vertical-offset="2625">
-          <caret line="166" column="14" selection-start-line="166" selection-start-column="14" selection-end-line="166" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dist/scripts/os/shell.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-6.395939" vertical-offset="3450" max-vertical-offset="5130">
           <caret line="64" column="10" selection-start-line="64" selection-start-column="10" selection-end-line="64" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/styles/tsos.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.5479115" vertical-offset="0" max-vertical-offset="810">
-          <caret line="42" column="13" selection-start-line="42" selection-start-column="13" selection-end-line="42" selection-end-column="13" />
           <folding />
         </state>
       </provider>
@@ -764,26 +739,42 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/source/scripts/os/shell.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.37346438" vertical-offset="5173" max-vertical-offset="5580">
+          <caret line="357" column="0" selection-start-line="357" selection-start-column="0" selection-end-line="357" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/source/scripts/os/deviceDriverKeyboard.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1393" max-vertical-offset="2385">
-          <caret line="57" column="38" selection-start-line="57" selection-start-column="38" selection-end-line="57" selection-end-column="38" />
+          <caret line="102" column="39" selection-start-line="102" selection-start-column="39" selection-end-line="102" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/scripts/os/kernel.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.96192896" vertical-offset="1976" max-vertical-offset="2625">
+          <caret line="166" column="14" selection-start-line="166" selection-start-column="14" selection-end-line="166" selection-end-column="14" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/source/scripts/os/console.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1436" max-vertical-offset="3075">
-          <caret line="49" column="36" selection-start-line="49" selection-start-column="36" selection-end-line="49" selection-end-column="36" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="2535" max-vertical-offset="3225">
+          <caret line="174" column="0" selection-start-line="174" selection-start-column="0" selection-end-line="174" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/scripts/os/shell.ts">
+    <entry file="file://$PROJECT_DIR$/source/styles/tsos.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.2063882" vertical-offset="5173" max-vertical-offset="5580">
-          <caret line="287" column="17" selection-start-line="287" selection-start-column="17" selection-end-line="287" selection-end-column="17" />
+        <state vertical-scroll-proportion="0.8894349" vertical-offset="268" max-vertical-offset="900">
+          <caret line="42" column="25" selection-start-line="42" selection-start-column="25" selection-end-line="42" selection-end-column="25" />
           <folding />
         </state>
       </provider>
