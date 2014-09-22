@@ -31,13 +31,19 @@ h3 {
 }
 
 #display {
-  background-color:#DFDBC3;
-  border: 2px solid red;
+  background-color: #a4dfbe;
+  border: 4px groove dodgerblue;
   cursor: default;
 }
 
 .normal_button {
-  width: 100px;
+    background: rgb(71, 193, 223); /* this is a green */
+    width: 100px;
+    font-size: 16pt;
+    font-family: fantasy;
+    color: white;
+    border-radius: 10px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 }
 
 .footerText {
