@@ -70,7 +70,7 @@ var TSOS;
         };
 
         Console.prototype.toDeleteLine = function () {
-            var y = this.currentYPosition - _DefaultFontSize;
+            var y = this.currentYPosition - (_DefaultFontSize + 2);
             _DrawingContext.clearRect(0, y, this.currentXPosition, y);
             this.buffer = "";
             this.currentXPosition = 0;

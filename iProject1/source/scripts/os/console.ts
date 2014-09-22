@@ -71,7 +71,7 @@ module TSOS {
         }
 
         public toDeleteLine():void {
-            var y = this.currentYPosition - _DefaultFontSize;
+            var y = this.currentYPosition - (_DefaultFontSize + 2);
             _DrawingContext.clearRect(0, y, this.currentXPosition, y);
             this.buffer = "";
             this.currentXPosition = 0;
@@ -184,7 +184,7 @@ module TSOS {
 
         public advanceLine():void {
             this.currentXPosition = 0;
-            /*
+             /*
              * Font size measures from the baseline to the highest point in the font.
              * Font descent measures from the baseline to the lowest point in the font.
              * Font height margin is extra spacing between the lines.
