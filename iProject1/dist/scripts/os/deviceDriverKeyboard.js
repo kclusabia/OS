@@ -130,6 +130,8 @@ var TSOS;
                 if (char.length > 0)
                     _Console.toBackspace(char);
             }
+            //            else
+            //            _Shell.shellError();
         };
         return DeviceDriverKeyboard;
     })(TSOS.DeviceDriver);
