@@ -129,9 +129,8 @@ var TSOS;
                 var char = _Console.buffer.substring(_Console.buffer.length - 1, _Console.buffer.length);
                 if (char.length > 0)
                     _Console.toBackspace(char);
-            }
-            //            else
-            //            _Shell.shellError();
+            } else
+                _OsShell.shellError();
         };
         return DeviceDriverKeyboard;
     })(TSOS.DeviceDriver);

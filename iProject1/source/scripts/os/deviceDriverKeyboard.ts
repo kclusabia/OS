@@ -67,11 +67,11 @@ module TSOS {
                         chr = "%";
                     if (keyCode == 54)
                         chr = "^";
-                    if (keyCode == 55)      //TODO 7 and 9 acting as up and down arrow key
+                    if (keyCode == 55)      //TODO shift + 7 is acting as arrow up
                         chr = "&";
                     if (keyCode == 56)
                         chr = "*";
-                    if (keyCode == 57)
+                    if (keyCode == 57)     //TODO shift + 9 is acting as arrow down
                         chr = "(";
                 }
                 _KernelInputQueue.enqueue(chr);
@@ -144,8 +144,8 @@ module TSOS {
                 if (char.length > 0)
                     _Console.toBackspace(char);
             }
-//            else
-//            _Shell.shellError();
+            else
+            _OsShell.shellError();
 
         }
     }
