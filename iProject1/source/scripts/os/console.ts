@@ -46,15 +46,18 @@ module TSOS {
                     // The enter key marks the end of a console command, so ...
                     // ... tell the shell ...
                     _OsShell.handleInput(this.buffer);
-                    this.commandsList.push(this.buffer);    // adds the buffer into the array of commands
+                    this.commandsList.push(this.buffer);            // adds the buffer into the array of commands
                     this.commandsIndex = this.commandsList.length;  // sets the new index
                     // ... and reset our buffer.
                     this.buffer = "";
                 }
+
+                // up and down arrow
                 else if (chr == String.fromCharCode(38) || chr == String.fromCharCode(40)) {
                     this.previousCommands(chr);
                 }
 
+                // tab key
                 else if (chr == String.fromCharCode(9)) {
                     this.commandFound();
                 }
@@ -70,6 +73,7 @@ module TSOS {
             }
         }
 
+        // method for clearing the entire line.
         public toDeleteLine():void {
             var y = this.currentYPosition - (_DefaultFontSize + 2);
             _DrawingContext.clearRect(0, y, this.currentXPosition, y);
@@ -77,7 +81,7 @@ module TSOS {
             this.currentXPosition = 0;
         }
 
-        // method for backspace.
+        // method for deleting one character at a time.
         public toBackspace(char):void {
             var x = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, char);
             var y = this.currentYPosition - _DefaultFontSize - 0.9;
@@ -87,7 +91,7 @@ module TSOS {
             this.currentXPosition = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, char);
         }
 
-        // method for the BSOD message.
+        // method for displaying the BSOD message.
         public ifError():void {
             this.clearScreen();
             _DrawingContext.fillStyle = "blue";
@@ -97,8 +101,9 @@ module TSOS {
             _DrawingContext.drawText("sans", 45, 195, 250, "o.o");
         }
 
+        // navigating through the history of commands
         public previousCommands(chr):void {
-            if (chr == String.fromCharCode(38) && this.commandsIndex >= 1) {   // up arrow and more than 1 command in array
+            if (chr == String.fromCharCode(38) && this.commandsIndex >= 1) {    // up arrow key and >= 1 command in array
                 this.commandsIndex--;
                 this.toDeleteLine();
                 _OsShell.putPrompt();
@@ -156,7 +161,7 @@ module TSOS {
                 var charSize = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text[c]);
                 var offset = this.currentXPosition + charSize;
 
-                // implemented line-wrap.
+                // implementing line-wrap.
                 if (offset > (_Canvas.width - 20)) {
                     this.advanceLine();
                 } else {
@@ -193,12 +198,14 @@ module TSOS {
             this.currentYPosition += _DefaultFontSize +
                 _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) +
                 _FontHeightMargin;
+            // activates the scrollbar if text reaches the height of the canvas.
             if (this.currentYPosition >= _Canvas.height) {
                 this.showScrollbar();
             }
         }
 
-            public showScrollbar():void {
+        // scrollbar method
+        public showScrollbar():void {
             var img = _DrawingContext.getImageData(0, this.currentFontSize + 10, _Canvas.width, _Canvas.height);
             _DrawingContext.putImageData(img, 0, 0);
             this.currentYPosition = _Canvas.height - this.currentFontSize;
