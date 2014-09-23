@@ -144,8 +144,8 @@ module TSOS {
                 if (char.length > 0)
                     _Console.toBackspace(char);
             }
-            else
-            _OsShell.shellError();
+            else if (!isShifted)
+               _OsShell.shellError();
 
         }
     }

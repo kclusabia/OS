@@ -129,7 +129,7 @@ var TSOS;
                 var char = _Console.buffer.substring(_Console.buffer.length - 1, _Console.buffer.length);
                 if (char.length > 0)
                     _Console.toBackspace(char);
-            } else
+            } else if (!isShifted)
                 _OsShell.shellError();
         };
         return DeviceDriverKeyboard;
