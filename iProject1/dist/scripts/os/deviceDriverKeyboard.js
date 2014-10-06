@@ -122,8 +122,11 @@ var TSOS;
                         chr = "'";
                 }
                 _KernelInputQueue.enqueue(chr);
-            } else if (((keyCode == 38) || (keyCode == 40) || (keyCode == 9)) && !isShifted) {
-                chr = String.fromCharCode(keyCode);
+            } else if (keyCode == 38) {
+                chr = "Up";
+                _KernelInputQueue.enqueue(chr);
+            } else if (keyCode == 40) {
+                chr = "Down";
                 _KernelInputQueue.enqueue(chr);
             } else if (keyCode == 8) {
                 var char = _Console.buffer.substring(_Console.buffer.length - 1, _Console.buffer.length);

@@ -67,11 +67,11 @@ module TSOS {
                         chr = "%";
                     if (keyCode == 54)
                         chr = "^";
-                    if (keyCode == 55)      //TODO shift + 7 is acting as arrow up
+                    if (keyCode == 55)
                         chr = "&";
                     if (keyCode == 56)
                         chr = "*";
-                    if (keyCode == 57)     //TODO shift + 9 is acting as arrow down
+                    if (keyCode == 57)
                         chr = "(";
                 }
                 _KernelInputQueue.enqueue(chr);
@@ -133,8 +133,13 @@ module TSOS {
             }
 
             // arrow up key, arrow down key and tab key
-            else if ( ((keyCode == 38) || (keyCode == 40) || (keyCode == 9)) && !isShifted ) {
-                chr = String.fromCharCode(keyCode);
+            else if (keyCode == 38) {
+                chr = "Up";
+                _KernelInputQueue.enqueue(chr);
+            }
+
+            else if (keyCode == 40) {
+                chr = "Down";
                 _KernelInputQueue.enqueue(chr);
             }
 
