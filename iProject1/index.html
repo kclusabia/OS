@@ -15,6 +15,7 @@
    <script type="text/javascript" src="dist/scripts/host/control.js"></script>
    <script type="text/javascript" src="dist/scripts/host/devices.js"></script>
    <script type="text/javascript" src="dist/scripts/host/cpu.js"></script>
+   <script type="text/javascript" src="dist/scripts/host/memory.js"></script>
 
    <!-- Virtual OS Routines: Make sure Kernel code is last, since it needs those above it. -->
    <script type="text/javascript" src="dist/scripts/os/interrupt.js"></script>
@@ -106,6 +107,11 @@
       </label>
    </div>
 
+    <div id="divMemory" style="border: 1px solid; height: 200px; margin-top: 20px;">
+            <table id="memoryTable">
+            </table>
+    </div>
+</div>
 
 <p class="footerText" style="clear:both;">
    <br>
@@ -114,6 +120,6 @@
    Reproduction is prohibited without the express written consent of
    Ted Codd, Stevie Ray Vaughan, and Ian Fleming.
 </p>
-</div>
+
 </body>
 </html>

@@ -283,17 +283,15 @@ module TSOS {
                 var ascii = input.charCodeAt(i);
                 if ( (ascii >= 65 && ascii <= 70) || (ascii >= 97 && ascii <= 102) ||
                      (ascii >= 48 && ascii <= 57) || (ascii == 32) ) {
-                    _StdOut.putText("The input consisted of hex digits. It was valid.");
-                    break;
+                    continue;
                 }
                 else {
                     _StdOut.putText("The input did not consist of hex digits. It was not valid.");
-                    break;
+                    return;
                 }
-
             }
+            _StdOut.putText("The input consisted of hex digits. It was valid.");
         }
-
 
         public shellShutdown(args) {
              _StdOut.putText("Shutting down...");

@@ -53,7 +53,7 @@ var TSOS;
 
                     // ... and reset our buffer.
                     this.buffer = "";
-                } else if (chr == String.fromCharCode(38) || chr == String.fromCharCode(40)) {
+                } else if (chr == "Up" || chr == "Down") {
                     this.previousCommands(chr);
                 } else if (chr == String.fromCharCode(9)) {
                     this.commandFound();
@@ -99,7 +99,7 @@ var TSOS;
 
         // navigating through the history of commands
         Console.prototype.previousCommands = function (chr) {
-            if (chr == String.fromCharCode(38) && this.commandsIndex >= 1) {
+            if (chr == "Up" && this.commandsIndex >= 1) {
                 this.commandsIndex--;
                 this.toDeleteLine();
                 _OsShell.putPrompt();
@@ -114,14 +114,14 @@ var TSOS;
                     this.buffer = (this.commandsList[this.commandsIndex]);
                     this.putText(this.buffer);
                 }
-            } else if (chr == String.fromCharCode(40) && this.commandsIndex <= this.commandsList.length) {
+            } else if (chr == "Down" && this.commandsIndex < this.commandsList.length) {
                 this.commandsIndex++;
                 this.toDeleteLine();
                 _OsShell.putPrompt();
                 this.buffer = (this.commandsList[this.commandsIndex]);
                 this.putText(this.buffer);
 
-                if (this.commandsIndex == this.commandsList.length - 1) {
+                if (this.commandsIndex >= this.commandsList.length - 1) {
                     this.commandsIndex = -1;
                     this.commandsIndex++;
                     _OsShell.putPrompt();

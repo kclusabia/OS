@@ -73,6 +73,8 @@ module TSOS {
         // Host Events
         //
         public static hostBtnStartOS_click(btn): void {
+
+
             // Disable the (passed-in) start button...
             btn.disabled = true;
 
@@ -92,6 +94,9 @@ module TSOS {
             // .. and call the OS Kernel Bootstrap routine.
             _Kernel = new Kernel();
             _Kernel.krnBootstrap();
+
+           Memory.newTable();
+
         }
 
         public static hostBtnHaltOS_click(btn): void {
