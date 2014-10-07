@@ -1,7 +1,7 @@
 /* TSOS.css */
 
 body {
-  background: #909193 url(../images/linen.png) repeat;
+  background: #909193 url(http://www.tmwallpaper.com/mod/abstract-light/1920x1200/light-abstract-wide-wallpaper-1920x1200-010.jpg) repeat;
   font-family: Helvetica, Verdana, Arial, sans-serif;
   font-size: 12pt;
   font-weight: normal;
@@ -52,4 +52,23 @@ h3 {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 8pt;
   text-align: center;
+}
+
+#memoryTable {
+    background-color: #f1f1c1;
+    height:250px;
+    overflow-y:scroll;
+    margin-top:20px;
+}
+.form-element label {
+    float: right;
+    width: 50px;
+}
+
+table, td {
+    border: 1px solid black;
+    background-color: #a4dfbe;
+}
+td {
+    padding: 10px;
 }
