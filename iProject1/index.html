@@ -75,7 +75,7 @@
     <h3 id = "status" style= "margin-bottom:5px; color:dodgerblue; align:center;">Status: </h3>
 
 
-    <div id="divConsole" style="margin-top:4px; margin-left:50px; width:500px; height:500px; float:left;">
+    <div id="divConsole" style="margin-top:4px; margin-left:0.02%; width:500px; height:500px; float:left;">
       <canvas id="display"
               width="500px"
               height="500px"
@@ -83,7 +83,16 @@
       </canvas>
    </div>
 
-   <div id="divLog" style="margin-left:600px;">
+    <div class="form-element">
+    <label>Memory</label>
+        </div>
+
+    <div id="divMemory" style="height: 300px; border: 1px; margin-top: 2%; float:right; overflow-y: scroll">
+        <table id="memoryTable" style="border: 3px solid; height: 450px; width: 240px; margin-top: 20px;">
+        </table>
+    </div>
+
+   <div id="divLog" style="margin-left:41.7%;">
       <label>
          Host Log
          <br>
@@ -95,7 +104,7 @@
       </label>
    </div>
 
-   <div id="divUserProgramInput" style="margin-left:600px;">
+   <div id="divUserProgramInput" style="margin-left:41.7%;">
       <label>
          User Program Input
          <br>
@@ -107,10 +116,7 @@
       </label>
    </div>
 
-    <div id="divMemory" style="border: 1px solid; height: 200px; margin-top: 20px;">
-            <table id="memoryTable">
-            </table>
-    </div>
+
 </div>
 
 <p class="footerText" style="clear:both;">
