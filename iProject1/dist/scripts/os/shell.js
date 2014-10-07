@@ -261,6 +261,7 @@ var TSOS;
                 }
             }
             _StdOut.putText("The input consisted of hex digits. It was valid.");
+            memory.loadProgram(input.toString());
         };
 
         Shell.prototype.shellShutdown = function (args) {
