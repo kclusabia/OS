@@ -37,6 +37,108 @@ module TSOS {
             this.isExecuting = false;
         }
 
+        public runOpCode(opcode) {
+            if(opcode == "A9") {
+                this.loadAccConstant();
+            }
+            else if(opcode == "AD") {
+                this.loadAccMem();
+            }
+            else if(opcode == "8D") {
+                this.storeAccMem();
+            }
+            else if(opcode == "6D") {
+                this.addWithCarry();
+            }
+            else if(opcode == "A2") {
+                this.loadXRegCons();
+            }
+            else if(opcode == "AE") {
+                this.loadXMem();
+            }
+            else if(opcode == "A0") {
+                this.loadYRegCons();
+            }
+            else if(opcode == "AC") {
+                this.loadYRegMem();
+            }
+            else if(opcode == "EA") {
+                this.noOperation();
+            }
+            else if(opcode == "00") {
+                this.break();
+            }
+            else if(opcode == "EC") {
+                this.compareToX();
+            }
+            else if(opcode == "D0") {
+                this.branchX();
+            }
+            else if(opcode == "EE") {
+                this.incByteVal();
+            }
+            else if(opcode == "FF") {
+                this.sysCall();
+            }
+        }
+
+        public loadAccConstant() {
+            //TODO
+        }
+
+        public loadAccMem() {
+            //TODO
+        }
+
+        public storeAccMem() {
+            //TODO
+        }
+
+        public addWithCarry() {
+            //TODO
+        }
+
+        public loadXRegCons() {
+            //TODO
+        }
+
+        public loadXMem() {
+            //TODO
+        }
+
+        public loadYRegCons() {
+            //TODO
+        }
+
+        public loadYRegMem() {
+            //TODO
+        }
+
+        public noOperation() {
+            //TODO
+        }
+
+        public break() {
+            //TODO
+        }
+
+        public compareToX() {
+            //TODO
+        }
+
+        public branchX() {
+            //TODO
+        }
+
+        public incByteVal() {
+            //TODO
+        }
+
+        public sysCall() {
+            //TODO
+        }
+
+
         public cycle(): void {
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
