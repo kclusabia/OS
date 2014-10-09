@@ -19,8 +19,8 @@ var TSOS;
                 memTable += "<td>" + _MemoryArray[i] + "</td>";
                 var j = i + 1;
 
-                while (j != i + 7) {
-                    _MemoryArray[j] = 0;
+                while (j != i + 8) {
+                    _MemoryArray[j] = 00;
                     memTable += "<td>" + _MemoryArray[j] + "</td>";
                     j++;
                 }
@@ -49,7 +49,7 @@ var TSOS;
         Memory.prototype.storeInMemory = function () {
             var memTable = "<table>";
 
-            for (var i = 0; i < _MemorySize; i += 8) {
+            for (var i = 0; i <= _MemorySize; i += 8) {
                 table += "<tr>";
                 _MemoryArray[i] = "00x" + i.toString(16);
                 table += "<td>" + _MemoryArray[i] + "</td>";
