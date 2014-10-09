@@ -17,7 +17,7 @@ var TSOS;
 
                 // Printing the base address
                 memTable += "<td>" + _MemoryArray[i] + "</td>";
-                var j = (i + 1) + 1;
+                var j = i + 1;
 
                 while (j != i + 7) {
                     _MemoryArray[j] = 0;
@@ -31,7 +31,7 @@ var TSOS;
         };
 
         Memory.prototype.loadProgram = function (input) {
-            input = input.toString();
+            // input=input.toString();
             input = input.trim();
             var x = 0;
             var y = 2;
