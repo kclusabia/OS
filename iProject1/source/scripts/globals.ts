@@ -66,6 +66,7 @@ var _hardwareClockID: number = null;
 var _GLaDOS: any = null;
 var Glados: any = null;
 
+// Creating the memory table
 var _MemoryArray: any[] = null;
 var _MemorySize: number =  255;
 
