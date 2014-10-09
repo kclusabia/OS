@@ -68,7 +68,7 @@ var Glados: any = null;
 
 // Creating the memory table
 var _MemoryArray: any[] = null;
-var _MemorySize: number =  255;
+var _MemorySize: number =  758;
 
 var onDocumentLoad = function() {
 	TSOS.Control.hostInit();
