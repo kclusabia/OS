@@ -89,7 +89,8 @@ var TSOS;
             _Kernel = new TSOS.Kernel();
             _Kernel.krnBootstrap();
 
-            TSOS.Memory.newTable();
+            memory = new TSOS.Memory();
+            memory.newTable();
         };
 
         Control.hostBtnHaltOS_click = function (btn) {

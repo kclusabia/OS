@@ -59,6 +59,8 @@ h3 {
     height:250px;
     overflow-y:scroll;
     margin-top:20px;
+    table-layout: auto;
+    float:left;
 }
 .memory-label label {
     margin-left: 38%;
