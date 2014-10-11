@@ -292,6 +292,7 @@ module TSOS {
             }
             _StdOut.putText("The input consisted of hex digits. It was valid.");
             memory.loadProgram(input.toString());
+            return;
         }
 
         public shellShutdown(args) {
