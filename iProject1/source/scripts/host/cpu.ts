@@ -37,6 +37,21 @@ module TSOS {
             this.isExecuting = false;
         }
 
+        public cycle(): void {
+            _Kernel.krnTrace('CPU cycle');
+            // TODO: Accumulate CPU usage and profiling statistics here.
+            // Do the real work here. Be sure to set this.isExecuting appropriately.
+            this.runOpCode(_memoryManager.readMemory(this.PC));
+        }
+
+        public showCPU() {
+            document.getElementById("PC").innerHTML = String(this.PC);
+            document.getElementById("Acc").innerHTML = String(this.Acc);
+            document.getElementById("XReg").innerHTML = String(this.XReg);
+            document.getElementById("YReg").innerHTML = String(this.YReg);
+            document.getElementById("ZReg").innerHTML = String(this.ZReg);
+        }
+
         public runOpCode(opcode) {
             if(opcode == "A9") {
                 this.loadAccConstant();
@@ -136,13 +151,6 @@ module TSOS {
 
         public sysCall() {
             //TODO
-        }
-
-
-        public cycle(): void {
-            _Kernel.krnTrace('CPU cycle');
-            // TODO: Accumulate CPU usage and profiling statistics here.
-            // Do the real work here. Be sure to set this.isExecuting appropriately.
         }
     }
 }

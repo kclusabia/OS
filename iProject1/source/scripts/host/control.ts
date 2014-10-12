@@ -95,7 +95,7 @@ module TSOS {
             _Kernel = new Kernel();
             _Kernel.krnBootstrap();
 
-            memory = new Memory();
+           memory = new Memory();
            memory.newTable();
 
         }
