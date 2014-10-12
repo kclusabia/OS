@@ -28,12 +28,10 @@ module TSOS {
                 document.getElementById("memoryTable").innerHTML = memTable;
         }
 
-        public loadProgram(xth) {
-           // input=input.toString();
+        public loadProgram(data) {
             //TODO change function
-
-            var input = xth.replace(/^\s+|\s+$/g,'');   //Trim the white-spaces
-            input = xth.trim();//   
+            var input = data.replace(/^\s+|\s+$/g,''); 
+            input = input.trim();
 
             var x = 0;
             var y = x+2;
@@ -68,6 +66,10 @@ module TSOS {
             }
             memTable +="</table>";
             document.getElementById("memoryTable").innerHTML = memTable;
+        }
+
+        public storeData(index, data) {
+            _MemoryArray[index] = data;
         }
 
 

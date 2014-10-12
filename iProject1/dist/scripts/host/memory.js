@@ -29,11 +29,10 @@ var TSOS;
             document.getElementById("memoryTable").innerHTML = memTable;
         };
 
-        Memory.prototype.loadProgram = function (xth) {
-            // input=input.toString();
+        Memory.prototype.loadProgram = function (data) {
             //TODO change function
-            var input = xth.replace(/^\s+|\s+$/g, '');
-            input = xth.trim(); //
+            var input = data.replace(/^\s+|\s+$/g, '');
+            input = input.trim();
 
             var x = 0;
             var y = x + 2;
@@ -45,7 +44,6 @@ var TSOS;
 
                     if (_MemoryArray[col] == "") {
                         _MemoryArray[col] = col;
-                        x;
                         break;
                     }
                 }
@@ -68,6 +66,10 @@ var TSOS;
             }
             memTable += "</table>";
             document.getElementById("memoryTable").innerHTML = memTable;
+        };
+
+        Memory.prototype.storeData = function (index, data) {
+            _MemoryArray[index] = data;
         };
         return Memory;
     })();
