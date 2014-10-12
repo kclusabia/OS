@@ -3,14 +3,18 @@
  */
 module TSOS {
 
-    export class memoryManager {
+    export class MemoryManager {
 
         constructor() {
-            memory = new Memory();
+          //  memory = new Memory();
         }
 
-        public readMemory(pc) {
-            return _MemoryArray[pc];
+        public readMemory(index) {
+            return _MemoryArray[index];
+        }
+
+        public storeData(index, data) {
+            _Memory.storeData(index, data);
         }
     }
 }

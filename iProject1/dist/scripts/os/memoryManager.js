@@ -3,14 +3,18 @@
 */
 var TSOS;
 (function (TSOS) {
-    var memoryManager = (function () {
-        function memoryManager() {
-            memory = new TSOS.Memory();
+    var MemoryManager = (function () {
+        function MemoryManager() {
+            //  memory = new Memory();
         }
-        memoryManager.prototype.readMemory = function (pc) {
-            return _MemoryArray[pc];
+        MemoryManager.prototype.readMemory = function (index) {
+            return _MemoryArray[index];
         };
-        return memoryManager;
+
+        MemoryManager.prototype.storeData = function (index, data) {
+            _Memory.storeData(index, data);
+        };
+        return MemoryManager;
     })();
-    TSOS.memoryManager = memoryManager;
+    TSOS.MemoryManager = MemoryManager;
 })(TSOS || (TSOS = {}));
