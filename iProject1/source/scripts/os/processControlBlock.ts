@@ -8,12 +8,10 @@ module TSOS {
         constructor() {
     }
 
-        public newPCB(pid, status, pc, initMem, finalMem) {
+        public newPCB(pid, base, limit) {
             this.pid = pid;
-            this.status = status;
-            this.pc = pc;
-            this.initMem = initMem;
-            this.finalMem = finalMem;
+            this.base = base;
+            this.limit = limit;
 
             this.acc = 0;
             this.xReg = 0;

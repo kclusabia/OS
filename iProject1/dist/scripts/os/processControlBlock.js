@@ -7,12 +7,10 @@ var TSOS;
     var ProcessControlBlock = (function () {
         function ProcessControlBlock() {
         }
-        ProcessControlBlock.prototype.newPCB = function (pid, status, pc, initMem, finalMem) {
+        ProcessControlBlock.prototype.newPCB = function (pid, base, limit) {
             this.pid = pid;
-            this.status = status;
-            this.pc = pc;
-            this.initMem = initMem;
-            this.finalMem = finalMem;
+            this.base = base;
+            this.limit = limit;
 
             this.acc = 0;
             this.xReg = 0;
