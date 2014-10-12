@@ -90,7 +90,7 @@ var TSOS;
 
         Cpu.prototype.loadAccConstant = function () {
             _CPU.PC++;
-            _CPU.Acc = _MemoryArray.readMemory(_CPU.PC);
+            _CPU.Acc = _MemoryArray[_CPU.PC];
             _CPU.isExecuting = false;
         };
 

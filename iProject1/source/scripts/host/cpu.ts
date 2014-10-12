@@ -103,7 +103,7 @@ module TSOS {
 
         public loadAccConstant() {
             _CPU.PC++;
-            _CPU.Acc = _MemoryArray.readMemory(_CPU.PC);
+            _CPU.Acc = _MemoryArray[_CPU.PC];
             _CPU.isExecuting = false;
         }
 
