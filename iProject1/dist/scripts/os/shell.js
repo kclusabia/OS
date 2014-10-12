@@ -260,7 +260,14 @@ var TSOS;
                     return;
                 }
             }
-            _StdOut.putText("The input consisted of hex digits. It was valid.");
+            _StdOut.putText("Loaded S.");
+            memory = new TSOS.Memory();
+            memory.newTable();
+            pcb = new TSOS.ProcessControlBlock();
+            pcb.newPCB(0, 0, 255);
+            _StdOut.putText("Process ID: 0");
+            readyqueue = new TSOS.Queue();
+            readyqueue.enqueue(0);
             memory.loadProgram(input.toString());
             return;
         };

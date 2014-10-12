@@ -290,7 +290,14 @@ module TSOS {
                     return;
                 }
             }
-            _StdOut.putText("The input consisted of hex digits. It was valid.");
+            _StdOut.putText("Loaded Successfully.");
+            memory = new Memory();
+            memory.newTable();
+            pcb = new ProcessControlBlock();
+            pcb.newPCB(0, 0, 255);
+            _StdOut.putText("Process ID: 0");
+            readyqueue = new Queue();
+            readyqueue.enqueue(0);
             memory.loadProgram(input.toString());
             return;
         }
