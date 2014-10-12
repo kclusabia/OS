@@ -36,8 +36,25 @@ var TSOS;
             this.isExecuting = false;
         };
 
+        Cpu.prototype.cycle = function () {
+            _Kernel.krnTrace('CPU cycle');
+
+            // TODO: Accumulate CPU usage and profiling statistics here.
+            // Do the real work here. Be sure to set this.isExecuting appropriately.
+            this.runOpCode(_memoryManager.readMemory(this.PC));
+        };
+
+        Cpu.prototype.showCPU = function () {
+            document.getElementById("PC").innerHTML = String(this.PC);
+            document.getElementById("Acc").innerHTML = String(this.Acc);
+            document.getElementById("XReg").innerHTML = String(this.XReg);
+            document.getElementById("YReg").innerHTML = String(this.YReg);
+            document.getElementById("ZReg").innerHTML = String(this.ZReg);
+        };
+
         Cpu.prototype.runOpCode = function (opcode) {
             if (opcode == "A9") {
+                pC;
                 this.loadAccConstant();
             } else if (opcode == "AD") {
                 this.loadAccMem();
@@ -122,12 +139,6 @@ var TSOS;
 
         Cpu.prototype.sysCall = function () {
             //TODO
-        };
-
-        Cpu.prototype.cycle = function () {
-            _Kernel.krnTrace('CPU cycle');
-            // TODO: Accumulate CPU usage and profiling statistics here.
-            // Do the real work here. Be sure to set this.isExecuting appropriately.
         };
         return Cpu;
     })();
