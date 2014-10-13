@@ -13,26 +13,29 @@ Operating System Concepts 8th edition by Silberschatz, Galvin, and Gagne.  ISBN 
 var TSOS;
 (function (TSOS) {
     var Cpu = (function () {
-        function Cpu(PC, Acc, Xreg, Yreg, Zflag, isExecuting) {
+        function Cpu(PC, Acc, IR, XReg, YReg, ZFlag, isExecuting) {
             if (typeof PC === "undefined") { PC = 0; }
             if (typeof Acc === "undefined") { Acc = 0; }
-            if (typeof Xreg === "undefined") { Xreg = 0; }
-            if (typeof Yreg === "undefined") { Yreg = 0; }
-            if (typeof Zflag === "undefined") { Zflag = 0; }
+            if (typeof IR === "undefined") { IR = ""; }
+            if (typeof XReg === "undefined") { XReg = 0; }
+            if (typeof YReg === "undefined") { YReg = 0; }
+            if (typeof ZFlag === "undefined") { ZFlag = 0; }
             if (typeof isExecuting === "undefined") { isExecuting = false; }
             this.PC = PC;
             this.Acc = Acc;
-            this.Xreg = Xreg;
-            this.Yreg = Yreg;
-            this.Zflag = Zflag;
+            this.IR = IR;
+            this.XReg = XReg;
+            this.YReg = YReg;
+            this.ZFlag = ZFlag;
             this.isExecuting = isExecuting;
         }
         Cpu.prototype.init = function () {
             this.PC = 0;
             this.Acc = 0;
-            this.Xreg = 0;
-            this.Yreg = 0;
-            this.Zflag = 0;
+            this.IR = "";
+            this.XReg = 0;
+            this.YReg = 0;
+            this.ZFlag = 0;
             this.isExecuting = false;
         };
 
@@ -44,20 +47,21 @@ var TSOS;
             _CPU.runOpCode(mm.readMemory(_CPU.PC));
             _CPU.showCPU();
             pcb.showPCB();
-            // pcb.updatePCB();
+            pcb.updatePCB();
         };
 
         Cpu.prototype.showCPU = function () {
             document.getElementById("PC").innerHTML = String(this.PC);
             document.getElementById("Acc").innerHTML = this.Acc.toString();
+            document.getElementById("IR").innerHTML = String(this.IR);
             document.getElementById("XReg").innerHTML = String(this.XReg);
             document.getElementById("YReg").innerHTML = String(this.YReg);
-            document.getElementById("ZReg").innerHTML = String(this.ZReg);
+            document.getElementById("ZFlag").innerHTML = String(this.ZFlag);
         };
 
         Cpu.prototype.runOpCode = function (opcode) {
             opcode = opcode.toString().toUpperCase();
-            _CPU.IR = opcode;
+            this.IR = opcode;
 
             if (opcode == "A9") {
                 _CPU.loadAccConstant();
@@ -93,55 +97,86 @@ var TSOS;
         Cpu.prototype.loadAccConstant = function () {
             _CPU.PC++;
             _CPU.Acc = memory.readMem(_CPU.PC);
-            _CPU.isExecuting = false;
+
+            //_CPU.isExecuting = false;
             _CPU.PC++;
         };
 
         Cpu.prototype.loadAccMem = function () {
             _CPU.PC++;
+
+            var loc = parseInt(memory.readMem(_CPU.PC), 16);
+            _CPU.Acc = parseInt(memory.readMem(loc), 10);
             _CPU.PC++;
-            var acc = parseInt(memory.readMem(_CPU.PC), 16);
-            _CPU.Acc = parseInt(memory, readMem(_CPU.PC), 10);
         };
 
         Cpu.prototype.storeAccMem = function () {
-            //TODO
+            _CPU.PC++;
+            var loc = parseInt(memory.readMem(_CPU.PC), 16);
+            memory.storeData(loc, parseInt((_CPU.Acc), 16));
+            _CPU.PC++;
         };
 
         Cpu.prototype.addWithCarry = function () {
-            //TODO
+            var value = parseInt(memory.readMem(_CPU.PC + 1), 10);
+            _CPU.Acc += parseInt(memory.readMem(value), 10);
         };
 
         Cpu.prototype.loadXRegCons = function () {
-            //TODO
+            _CPU.PC++;
+            _CPU.XReg = parseInt(memory.readMem(_CPU.PC), 10);
+            _CPU.PC++;
         };
 
         Cpu.prototype.loadXMem = function () {
-            //TODO
+            _CPU.PC++;
+            var loc = parseInt(memory.readMem(_CPU.PC), 16);
+            _CPU.XReg = parseInt(memory.read(loc), 10);
+            _CPU.PC++;
         };
 
         Cpu.prototype.loadYRegCons = function () {
-            //TODO
+            _CPU.PC++;
+            _CPU.YReg = parseInt(memory.readMem(_CPU.PC), 10);
+            _CPU.PC++;
         };
 
         Cpu.prototype.loadYRegMem = function () {
-            //TODO
+            _CPU.PC++;
+            var loc = parseInt(memory.readMem(_CPU.PC), 16);
+            _CPU.YReg = parseInt(memory.read(loc), 10);
+            _CPU.PC++;
         };
 
         Cpu.prototype.noOperation = function () {
-            //TODO
+            return;
         };
 
         Cpu.prototype.break = function () {
             _CPU.PC++;
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(00));
         };
 
         Cpu.prototype.compareToX = function () {
-            //TODO
+            _CPU.PC++;
+            var loc = parseInt(memory.readMem(_CPU.PC), 16);
+            var value = parseInt(memory.readMem(loc), 16);
+            if (value == _CPU.XReg.toString(16))
+                _CPU.ZFlag = 1;
+            else
+                _CPU.ZFlag = 0;
+            _CPU.PC++;
         };
 
         Cpu.prototype.branchX = function () {
-            //TODO
+            if (_CPU.ZFlag == 0) {
+                var byteValue = parseInt(memory.readMem(_CPU.PC + 1), 16);
+                _CPU.PC += byteValue;
+
+                if (_CPU.PC > _MemorySize) {
+                    _CPU.PC = _CPU.PC - _MemorySize;
+                }
+            }
         };
 
         Cpu.prototype.incByteVal = function () {
@@ -149,7 +184,7 @@ var TSOS;
         };
 
         Cpu.prototype.sysCall = function () {
-            //TODO
+            _StdOut.putText("Y register contains: " + _CPU.YReg);
         };
         return Cpu;
     })();

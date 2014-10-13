@@ -13,7 +13,7 @@ var TSOS;
         };
 
         MemoryManager.prototype.storeData = function (index, data) {
-            TSOS.Memory.storeData(index, data);
+            memory.storeData(index, data);
         };
         return MemoryManager;
     })();

@@ -6,13 +6,13 @@ var TSOS;
 (function (TSOS) {
     var ProcessControlBlock = (function () {
         function ProcessControlBlock() {
-            //public static pc = 0;
             this.base = 0;
             this.limit = "";
-            //public acc = 0;
+            this.acc = 0;
+            this.IR = "";
             this.xReg = 0;
             this.yReg = 0;
-            this.zReg = 0;
+            this.zFlag = 0;
         }
         ProcessControlBlock.prototype.newPCB = function (base, limit) {
             this.base = base;
@@ -22,13 +22,23 @@ var TSOS;
 
         ProcessControlBlock.prototype.showPCB = function () {
             document.getElementById("PID").innerHTML = this.getPID();
-            document.getElementById("PC1").innerHTML = _CPU.PC;
-            document.getElementById("Acc1").innerHTML = _CPU.Acc;
+            document.getElementById("PC1").innerHTML = this.pc;
+            document.getElementById("Acc1").innerHTML = this.acc;
+            document.getElementById("IR1").innerHTML = this.IR;
             document.getElementById("Base").innerHTML = this.base;
             document.getElementById("Limit").innerHTML = this.limit;
             document.getElementById("XReg1").innerHTML = this.xReg;
             document.getElementById("YReg1").innerHTML = this.yReg;
-            document.getElementById("ZReg1").innerHTML = this.zReg;
+            document.getElementById("ZFlag1").innerHTML = this.zFlag;
+        };
+
+        ProcessControlBlock.prototype.updatePCB = function () {
+            this.pc = _CPU.PC;
+            this.acc = _CPU.Acc;
+            this.IR = _CPU.IR;
+            this.xReg = _CPU.XReg;
+            this.yReg = _CPU.YReg;
+            this.zFlag = _CPU.ZFlag;
         };
 
         ProcessControlBlock.prototype.incrementPID = function () {
@@ -39,6 +49,7 @@ var TSOS;
             return ProcessControlBlock.pid;
         };
         ProcessControlBlock.pid = -1;
+        ProcessControlBlock.pc = 0;
         return ProcessControlBlock;
     })();
     TSOS.ProcessControlBlock = ProcessControlBlock;

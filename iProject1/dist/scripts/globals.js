@@ -64,7 +64,7 @@ var Glados = null;
 
 // Creating the memory table
 var _MemoryArray = null;
-var _MemorySize = 758;
+var _MemorySize = 255;
 var memory;
 
 var mm;

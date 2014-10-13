@@ -46,7 +46,7 @@ module TSOS {
             _CPU.runOpCode(mm.readMemory(_CPU.PC));
             _CPU.showCPU();
             pcb.showPCB();
-           //pcb.updatePCB();
+           pcb.updatePCB();
         }
 
         public showCPU() {
@@ -130,7 +130,9 @@ module TSOS {
         }
 
         public addWithCarry() {
-            //TODO
+            var value = parseInt(memory.readMem(_CPU.PC + 1), 10);
+            _CPU.Acc += parseInt(memory.readMem(value), 10);
+            _CPU.PC++;
         }
 
         public loadXRegCons() {
@@ -140,31 +142,54 @@ module TSOS {
         }
 
         public loadXMem() {
-            //TODO
-        }
-
-        public loadYRegCons() {
-            //TODO
-        }
-
-        public loadYRegMem() {
-            //TODO
-        }
-
-        public noOperation() {
-            //TODO
-        }
-
-        public break() {
+            _CPU.PC++;
+            var loc = parseInt(memory.readMem(_CPU.PC), 16);  //TODO base 10?
+            _CPU.XReg = parseInt(memory.read(loc), 10)
             _CPU.PC++;
         }
 
+        public loadYRegCons() {
+            _CPU.PC++;
+            _CPU.YReg = parseInt(memory.readMem(_CPU.PC), 10);
+            _CPU.PC++;
+        }
+
+        public loadYRegMem() {
+            _CPU.PC++;
+            var loc = parseInt(memory.readMem(_CPU.PC), 16);  //TODO base 10?
+            _CPU.YReg = parseInt(memory.read(loc), 10)
+            _CPU.PC++;
+        }
+
+        public noOperation() {
+            return;
+        }
+
+        public break() {        //TODO
+            _CPU.PC++;
+            _KernelInterruptQueue.enqueue(new Interrupt(00));
+        }
+
         public compareToX() {
-            //TODO
+            _CPU.PC++;
+            var loc = parseInt(memory.readMem(_CPU.PC), 16);
+            var value = parseInt(memory.readMem(loc), 16);
+            if(value == _CPU.XReg.toString(16))
+                _CPU.ZFlag = 1;
+            else
+                _CPU.ZFlag = 0;
+            _CPU.PC++;
         }
 
         public branchX() {
-            //TODO
+            if(_CPU.ZFlag == 0) {
+                var byteValue = parseInt(memory.readMem(_CPU.PC+1), 16);
+                _CPU.PC += byteValue;
+
+                if(_CPU.PC > _MemorySize) {
+                    _CPU.PC = _CPU.PC - _MemorySize;
+                }
+            }
         }
 
         public incByteVal() {
@@ -172,7 +197,7 @@ module TSOS {
         }
 
         public sysCall() {
-            //TODO
+            _StdOut.putText("Y register contains: " + _CPU.YReg);
         }
     }
 }
