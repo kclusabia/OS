@@ -270,18 +270,18 @@ var TSOS;
             pcb = new TSOS.ProcessControlBlock();
             pcb.newPCB(0, 255);
 
-            //alert("pcb: " + pcb.getPID());
             residentQueue = new Array();
-            residentQueue.push(pcb.getPID());
+            residentQueue[pcb.getPID()] = pcb;
 
+            // residentQueue.push(pcb.getPID());
             _Console.advanceLine();
-            _StdOut.putText("Process ID:" + pcb.getPID());
-            alert("pcb: " + pcb.getPID());
+            _StdOut.putText("Process ID: " + pcb.getPID());
+            readyQueue = new TSOS.Queue();
             memory.loadProgram(input.toString());
         };
 
-        Shell.prototype.shellRun = function () {
-            readyQueue.enqueue(pcb.getPID());
+        Shell.prototype.shellRun = function (args) {
+            readyQueue.enqueue(residentQueue[args[0]]);
         };
 
         Shell.prototype.shellShutdown = function (args) {

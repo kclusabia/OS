@@ -43,19 +43,20 @@ var TSOS;
             // Do the real work here. Be sure to set this.isExecuting appropriately.
             _CPU.runOpCode(mm.readMemory(_CPU.PC));
             _CPU.showCPU();
-            memory.storeInMemory();
+            pcb.showPCB();
+            // pcb.updatePCB();
         };
 
         Cpu.prototype.showCPU = function () {
-            document.getElementById("PC").innerHTML = String(_CPU.PC);
-            document.getElementById("Acc").innerHTML = String(_CPU.Acc);
+            document.getElementById("PC").innerHTML = String(this.PC);
+            document.getElementById("Acc").innerHTML = this.Acc.toString();
             document.getElementById("XReg").innerHTML = String(this.XReg);
             document.getElementById("YReg").innerHTML = String(this.YReg);
             document.getElementById("ZReg").innerHTML = String(this.ZReg);
         };
 
         Cpu.prototype.runOpCode = function (opcode) {
-            opcode = opcode.toString();
+            opcode = opcode.toString().toUpperCase();
             _CPU.IR = opcode;
 
             if (opcode == "A9") {
@@ -91,11 +92,16 @@ var TSOS;
 
         Cpu.prototype.loadAccConstant = function () {
             _CPU.PC++;
-            _CPU.Acc = _MemoryArray[_CPU.PC];
+            _CPU.Acc = memory.readMem(_CPU.PC);
+            _CPU.isExecuting = false;
+            _CPU.PC++;
         };
 
         Cpu.prototype.loadAccMem = function () {
-            //TODO
+            _CPU.PC++;
+            _CPU.PC++;
+            var acc = parseInt(memory.readMem(_CPU.PC), 16);
+            _CPU.Acc = parseInt(memory, readMem(_CPU.PC), 10);
         };
 
         Cpu.prototype.storeAccMem = function () {
@@ -127,7 +133,7 @@ var TSOS;
         };
 
         Cpu.prototype.break = function () {
-            //TODO
+            _CPU.PC++;
         };
 
         Cpu.prototype.compareToX = function () {

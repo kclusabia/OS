@@ -6,23 +6,24 @@ var TSOS;
 (function (TSOS) {
     var ProcessControlBlock = (function () {
         function ProcessControlBlock() {
+            //public static pc = 0;
             this.base = 0;
             this.limit = "";
-            this.acc = 0;
+            //public acc = 0;
             this.xReg = 0;
             this.yReg = 0;
             this.zReg = 0;
         }
         ProcessControlBlock.prototype.newPCB = function (base, limit) {
             this.base = base;
-            this.limit = limit;
+            this.limit = limit.toString(16).toUpperCase();
             this.incrementPID();
         };
 
         ProcessControlBlock.prototype.showPCB = function () {
-            document.getElementById("PID").innerHTML = this.pid;
-            document.getElementById("PC1").innerHTML = this.pc;
-            document.getElementById("Acc1").innerHTML = this.acc;
+            document.getElementById("PID").innerHTML = this.getPID();
+            document.getElementById("PC1").innerHTML = _CPU.PC;
+            document.getElementById("Acc1").innerHTML = _CPU.Acc;
             document.getElementById("Base").innerHTML = this.base;
             document.getElementById("Limit").innerHTML = this.limit;
             document.getElementById("XReg1").innerHTML = this.xReg;
@@ -38,7 +39,6 @@ var TSOS;
             return ProcessControlBlock.pid;
         };
         ProcessControlBlock.pid = -1;
-        ProcessControlBlock.pc = 0;
         return ProcessControlBlock;
     })();
     TSOS.ProcessControlBlock = ProcessControlBlock;

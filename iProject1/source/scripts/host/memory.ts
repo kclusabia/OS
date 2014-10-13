@@ -19,7 +19,7 @@ module TSOS {
                 // Setting the memory to 0.
                 while (j <= i+7) {
                     _MemoryArray[j] = j;
-                    memTable += "<td>" + _MemoryArray[j] + "</td>";
+                    memTable += "<td>" + 00 + "</td>";
                     j++;
                 }
                 memTable += "</tr>";
@@ -42,7 +42,7 @@ module TSOS {
                     y = y+3;
 
                     if(_MemoryArray[col] == ""){
-                        _MemoryArray[col] = col;
+                        _MemoryArray[col] = "00";
                         break;
                     }
                 }

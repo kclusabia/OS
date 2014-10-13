@@ -20,7 +20,7 @@ var TSOS;
 
                 while (j <= i + 7) {
                     _MemoryArray[j] = j;
-                    memTable += "<td>" + _MemoryArray[j] + "</td>";
+                    memTable += "<td>" + 00 + "</td>";
                     j++;
                 }
                 memTable += "</tr>";
@@ -43,7 +43,7 @@ var TSOS;
                     y = y + 3;
 
                     if (_MemoryArray[col] == "") {
-                        _MemoryArray[col] = col;
+                        _MemoryArray[col] = "00";
                         break;
                     }
                 }
@@ -74,6 +74,7 @@ var TSOS;
 
         Memory.prototype.storeData = function (index, data) {
             _MemoryArray[index] = data;
+            this.storeInMemory();
         };
         return Memory;
     })();

@@ -81,6 +81,11 @@ var TSOS;
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) {
                 _CPU.cycle();
+            } else if (readyQueue.getSize() > 0) {
+                readyQueue.dequeue();
+                _CPU.isExecuting = true;
+                _CPU.PC = 0; // TODO change to base for iProject 3
+                _CPU.showCPU();
             } else {
                 this.krnTrace("Idle");
             }

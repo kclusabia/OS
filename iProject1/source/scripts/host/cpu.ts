@@ -44,6 +44,7 @@ module TSOS {
             _CPU.runOpCode(mm.readMemory(_CPU.PC));
             _CPU.showCPU();
             pcb.showPCB();
+           // pcb.updatePCB();
         }
 
         public showCPU() {
@@ -106,10 +107,14 @@ module TSOS {
             _CPU.PC++;
             _CPU.Acc = memory.readMem(_CPU.PC);
             _CPU.isExecuting = false;
+            _CPU.PC++;
         }
 
         public loadAccMem() {
-            //TODO
+            _CPU.PC++;
+            _CPU.PC++;
+            var acc = parseInt(memory.readMem(_CPU.PC), 16);
+            _CPU.Acc = parseInt(memory,readMem(_CPU.PC), 10);
         }
 
         public storeAccMem() {
@@ -141,7 +146,7 @@ module TSOS {
         }
 
         public break() {
-            //TODO
+            _CPU.PC++;
         }
 
         public compareToX() {

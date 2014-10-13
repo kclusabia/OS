@@ -9,11 +9,11 @@ var TSOS;
             memory.newTable();
         }
         MemoryManager.prototype.readMemory = function (index) {
-            return memory.read(index);
+            return memory.readMem(index);
         };
 
         MemoryManager.prototype.storeData = function (index, data) {
-            _Memory.storeData(index, data);
+            TSOS.Memory.storeData(index, data);
         };
         return MemoryManager;
     })();
