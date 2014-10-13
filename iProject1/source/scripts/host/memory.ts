@@ -74,6 +74,7 @@ module TSOS {
 
         public storeData(index, data) {
             _MemoryArray[index] = data;
+            this.storeInMemory();
         }
 
 

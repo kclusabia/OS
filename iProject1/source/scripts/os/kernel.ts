@@ -85,15 +85,16 @@ module TSOS {
             } else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed. {
                 _CPU.cycle();
             }
-//            else if (readyqueue.getSize() != 0) {
-//                _CPU.isExecuting = true;
-//                _CPU.PC = 0;
-//            }
+            else if (readyQueue.getSize() > 0) {
+                readyQueue.dequeue();
+                _CPU.isExecuting = true;
+                _CPU.PC = 0;            // TODO change to base for iProject 3
+                _CPU.showCPU();
+            }
             else {                      // If there are no interrupts and there is nothing being executed then just be idle. {
                 this.krnTrace("Idle");
             }
         }
-
 
         //
         // Interrupt Handling

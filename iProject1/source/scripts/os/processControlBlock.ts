@@ -35,11 +35,13 @@ module TSOS {
             document.getElementById("ZReg1").innerHTML = this.zReg;
         }
 
+        //pcb update()
+
         public incrementPID():void {
             ProcessControlBlock.pid++;
         }
 
-        public getPID() :number{
+        public getPID():number{
             return ProcessControlBlock.pid;
         }
     }
