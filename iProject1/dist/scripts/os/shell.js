@@ -53,6 +53,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Checks if the input consisted of hex digits.");
             this.commandList[this.commandList.length] = sc;
 
+            // run
+            sc = new TSOS.ShellCommand(this.shellRun, "run", "- Runs the given program.");
+            this.commandList[this.commandList.length] = sc;
+
             // shutdown
             sc = new TSOS.ShellCommand(this.shellShutdown, "shutdown", "- Shuts down the virtual OS but leaves the underlying hardware simulation running.");
             this.commandList[this.commandList.length] = sc;
@@ -260,16 +264,24 @@ var TSOS;
                     return;
                 }
             }
-            _StdOut.putText("Loaded S.");
-            memory = new TSOS.Memory();
-            memory.newTable();
+            _StdOut.putText("You have loaded the program successfully.");
+
+            // Creating a PCB block.
             pcb = new TSOS.ProcessControlBlock();
-            pcb.newPCB(0, 0, 255);
-            _StdOut.putText("Process ID: 0");
-            readyqueue = new TSOS.Queue();
-            readyqueue.enqueue(0);
+            pcb.newPCB(0, 255);
+
+            //alert("pcb: " + pcb.getPID());
+            residentQueue = new Array();
+            residentQueue.push(pcb.getPID());
+
+            _Console.advanceLine();
+            _StdOut.putText("Process ID:" + pcb.getPID());
+            alert("pcb: " + pcb.getPID());
             memory.loadProgram(input.toString());
-            return;
+        };
+
+        Shell.prototype.shellRun = function () {
+            readyQueue.enqueue(pcb.getPID());
         };
 
         Shell.prototype.shellShutdown = function (args) {

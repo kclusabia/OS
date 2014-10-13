@@ -75,6 +75,12 @@ module TSOS {
                 "- Checks if the input consisted of hex digits.");
             this.commandList[this.commandList.length] = sc;
 
+            // run
+            sc = new ShellCommand(this.shellRun,
+                "run",
+                "- Runs the given program.");
+            this.commandList[this.commandList.length] = sc;
+
             // shutdown
             sc = new ShellCommand(this.shellShutdown,
                                   "shutdown",
@@ -290,16 +296,23 @@ module TSOS {
                     return;
                 }
             }
-            _StdOut.putText("Loaded Successfully.");
-            memory = new Memory();
-            memory.newTable();
+            _StdOut.putText("You have loaded the program successfully.");
+            // Creating a PCB block.
             pcb = new ProcessControlBlock();
-            pcb.newPCB(0, 0, 255);
-            _StdOut.putText("Process ID: 0");
-            readyqueue = new Queue();
-            readyqueue.enqueue(0);
+            pcb.newPCB(0, 255);
+            //alert("pcb: " + pcb.getPID());
+
+            residentQueue = new Array<ProcessControlBlock>();
+            residentQueue.push(pcb.getPID());
+
+            _Console.advanceLine();
+            _StdOut.putText("Process ID:" + pcb.getPID());
+            alert("pcb: " + pcb.getPID());
             memory.loadProgram(input.toString());
-            return;
+        }
+
+        public shellRun() {
+            readyQueue.enqueue(pcb.getPID());
         }
 
         public shellShutdown(args) {
