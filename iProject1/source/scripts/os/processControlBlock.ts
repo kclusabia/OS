@@ -11,6 +11,7 @@ module TSOS {
         public base:number = 0;
         public limit = "";
         //public acc = 0;
+        public IR = "";
         public xReg = 0;
         public yReg = 0;
         public zReg = 0;
@@ -28,6 +29,7 @@ module TSOS {
             document.getElementById("PID").innerHTML = this.getPID();
             document.getElementById("PC1").innerHTML = _CPU.PC;
             document.getElementById("Acc1").innerHTML = _CPU.Acc;
+            document.getElementById("IR1").innerHTML = _CPU.IR;
             document.getElementById("Base").innerHTML = this.base;
             document.getElementById("Limit").innerHTML = this.limit;
             document.getElementById("XReg1").innerHTML = this.xReg;

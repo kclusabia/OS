@@ -15,7 +15,7 @@ module TSOS {
         }
 
         public storeData(index, data) {
-            Memory.storeData(index, data);
+            memory.storeData(index, data);
         }
     }
 }

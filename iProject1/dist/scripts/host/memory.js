@@ -20,7 +20,7 @@ var TSOS;
 
                 while (j <= i + 7) {
                     _MemoryArray[j] = j;
-                    memTable += "<td>" + 00 + "</td>";
+                    memTable += "<td>" + "00" + "</td>";
                     j++;
                 }
                 memTable += "</tr>";
@@ -43,7 +43,7 @@ var TSOS;
                     y = y + 3;
 
                     if (_MemoryArray[col] == "") {
-                        _MemoryArray[col] = "00";
+                        _MemoryArray[col] = col;
                         break;
                     }
                 }

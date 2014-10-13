@@ -302,8 +302,7 @@ module TSOS {
             pcb.newPCB(0, 255);
 
             residentQueue = new Array<ProcessControlBlock>();
-            residentQueue[pcb.getPID()] = pcb;
-           // residentQueue.push(pcb.getPID());
+            residentQueue.push(pcb.getPID());
 
             _Console.advanceLine();
             _StdOut.putText("Process ID: " + pcb.getPID());

@@ -21,9 +21,10 @@ module TSOS {
 
         constructor(public PC: number = 0,
                     public Acc: number = 0,
-                    public Xreg: number = 0,
-                    public Yreg: number = 0,
-                    public Zflag: number = 0,
+                    public IR: string = "",
+                    public XReg: number = 0,
+                    public YReg: number = 0,
+                    public ZFlag: number = 0,
                     public isExecuting: boolean = false) {
 
         }
@@ -31,9 +32,10 @@ module TSOS {
         public init(): void {
             this.PC = 0;
             this.Acc = 0;
-            this.Xreg = 0;
-            this.Yreg = 0;
-            this.Zflag = 0;
+            this.IR = "";
+            this.XReg = 0;
+            this.YReg = 0;
+            this.ZFlag = 0;
             this.isExecuting = false;
         }
 
@@ -44,20 +46,21 @@ module TSOS {
             _CPU.runOpCode(mm.readMemory(_CPU.PC));
             _CPU.showCPU();
             pcb.showPCB();
-           // pcb.updatePCB();
+           //pcb.updatePCB();
         }
 
         public showCPU() {
             document.getElementById("PC").innerHTML = String(this.PC);
             document.getElementById("Acc").innerHTML = this.Acc.toString();
+            document.getElementById("IR").innerHTML = String(this.IR);
             document.getElementById("XReg").innerHTML = String(this.XReg);
             document.getElementById("YReg").innerHTML = String(this.YReg);
-            document.getElementById("ZReg").innerHTML = String(this.ZReg);
+            document.getElementById("ZFlag").innerHTML = String(this.ZFlag);
         }
 
         public runOpCode(opcode) {
             opcode = opcode.toString().toUpperCase();
-            _CPU.IR = opcode;
+            this.IR = opcode;
             
             if(opcode == "A9") {
                 _CPU.loadAccConstant();
@@ -106,19 +109,24 @@ module TSOS {
         public loadAccConstant() {
             _CPU.PC++;
             _CPU.Acc = memory.readMem(_CPU.PC);
-            _CPU.isExecuting = false;
+            //_CPU.isExecuting = false;
             _CPU.PC++;
         }
 
         public loadAccMem() {
             _CPU.PC++;
+
+            var loc = parseInt(memory.readMem(_CPU.PC), 16);
+            _CPU.Acc = parseInt(memory.readMem(loc), 10);
             _CPU.PC++;
-            var acc = parseInt(memory.readMem(_CPU.PC), 16);
-            _CPU.Acc = parseInt(memory,readMem(_CPU.PC), 10);
         }
 
         public storeAccMem() {
-            //TODO
+            _CPU.PC++;
+            var loc = parseInt(memory.readMem(_CPU.PC), 16);
+            memory.storeData(loc,parseInt((_CPU.Acc), 16));
+            _CPU.PC++;
+
         }
 
         public addWithCarry() {
@@ -126,7 +134,9 @@ module TSOS {
         }
 
         public loadXRegCons() {
-            //TODO
+            _CPU.PC++;
+            _CPU.XReg = parseInt(memory.readMem(_CPU.PC), 10);
+            _CPU.PC++;
         }
 
         public loadXMem() {
