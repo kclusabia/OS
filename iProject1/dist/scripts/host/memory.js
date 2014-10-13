@@ -68,6 +68,10 @@ var TSOS;
             document.getElementById("memoryTable").innerHTML = memTable;
         };
 
+        Memory.prototype.readMem = function (index) {
+            return _MemoryArray[index];
+        };
+
         Memory.prototype.storeData = function (index, data) {
             _MemoryArray[index] = data;
         };

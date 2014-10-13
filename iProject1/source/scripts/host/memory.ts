@@ -68,6 +68,10 @@ module TSOS {
             document.getElementById("memoryTable").innerHTML = memTable;
         }
 
+        public readMem(index:number) {
+            return _MemoryArray[index];
+        }
+
         public storeData(index, data) {
             _MemoryArray[index] = data;
         }
