@@ -71,8 +71,11 @@ var _MemoryArray: any[] = null;
 var _MemorySize: number =  758;
 var memory: TSOS.Memory;
 
+var mm : TSOS.MemoryManager;
+
 var pcb: TSOS.ProcessControlBlock;
-var readyqueue: TSOS.Queue;
+var readyQueue: TSOS.Queue;
+var residentQueue: any[] = null;
 
 var onDocumentLoad = function() {
 	TSOS.Control.hostInit();
