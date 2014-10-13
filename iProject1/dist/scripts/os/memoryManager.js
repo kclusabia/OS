@@ -5,10 +5,11 @@ var TSOS;
 (function (TSOS) {
     var MemoryManager = (function () {
         function MemoryManager() {
-            //  memory = new Memory();
+            memory = new TSOS.Memory();
+            memory.newTable();
         }
         MemoryManager.prototype.readMemory = function (index) {
-            return _MemoryArray[index];
+            return memory.read(index);
         };
 
         MemoryManager.prototype.storeData = function (index, data) {

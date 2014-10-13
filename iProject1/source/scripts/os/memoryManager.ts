@@ -6,11 +6,12 @@ module TSOS {
     export class MemoryManager {
 
         constructor() {
-          //  memory = new Memory();
+            memory = new Memory();
+            memory.newTable();
         }
 
         public readMemory(index) {
-            return _MemoryArray[index];
+            return memory.read(index);
         }
 
         public storeData(index, data) {
