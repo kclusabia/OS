@@ -11,11 +11,11 @@ module TSOS {
         }
 
         public readMemory(index) {
-            return memory.read(index);
+            return memory.readMem(index);
         }
 
         public storeData(index, data) {
-            _Memory.storeData(index, data);
+            Memory.storeData(index, data);
         }
     }
 }
