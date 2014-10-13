@@ -300,19 +300,19 @@ module TSOS {
             // Creating a PCB block.
             pcb = new ProcessControlBlock();
             pcb.newPCB(0, 255);
-            //alert("pcb: " + pcb.getPID());
 
             residentQueue = new Array<ProcessControlBlock>();
-            residentQueue.push(pcb.getPID());
+            residentQueue[pcb.getPID()] = pcb;
+           // residentQueue.push(pcb.getPID());
 
             _Console.advanceLine();
-            _StdOut.putText("Process ID:" + pcb.getPID());
-            alert("pcb: " + pcb.getPID());
+            _StdOut.putText("Process ID: " + pcb.getPID());
+            readyQueue = new Queue();
             memory.loadProgram(input.toString());
         }
 
-        public shellRun() {
-            readyQueue.enqueue(pcb.getPID());
+        public shellRun(args) {
+            readyQueue.enqueue(residentQueue[args[0]]);
         }
 
         public shellShutdown(args) {
