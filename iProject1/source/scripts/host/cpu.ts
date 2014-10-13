@@ -41,20 +41,21 @@ module TSOS {
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
-            _CPU.runOpCode(_MemoryArray[this.PC]);
+            _CPU.runOpCode(mm.readMemory(_CPU.PC));
             _CPU.showCPU();
+            pcb.showPCB();
         }
 
         public showCPU() {
-            document.getElementById("PC").innerHTML = String(_CPU.PC);
-            document.getElementById("Acc").innerHTML = String(_CPU.Acc);
+            document.getElementById("PC").innerHTML = String(this.PC);
+            document.getElementById("Acc").innerHTML = this.Acc.toString();
             document.getElementById("XReg").innerHTML = String(this.XReg);
             document.getElementById("YReg").innerHTML = String(this.YReg);
             document.getElementById("ZReg").innerHTML = String(this.ZReg);
         }
 
         public runOpCode(opcode) {
-            opcode = opcode.toString();
+            opcode = opcode.toString().toUpperCase();
             _CPU.IR = opcode;
             
             if(opcode == "A9") {
@@ -103,7 +104,7 @@ module TSOS {
 
         public loadAccConstant() {
             _CPU.PC++;
-            _CPU.Acc = _MemoryArray[_CPU.PC];
+            _CPU.Acc = memory.readMem(_CPU.PC);
             _CPU.isExecuting = false;
         }
 

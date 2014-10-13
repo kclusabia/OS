@@ -41,8 +41,9 @@ var TSOS;
 
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
-            _CPU.runOpCode(_MemoryArray[this.PC]);
+            _CPU.runOpCode(mm.readMemory(_CPU.PC));
             _CPU.showCPU();
+            memory.storeInMemory();
         };
 
         Cpu.prototype.showCPU = function () {
@@ -91,7 +92,6 @@ var TSOS;
         Cpu.prototype.loadAccConstant = function () {
             _CPU.PC++;
             _CPU.Acc = _MemoryArray[_CPU.PC];
-            _CPU.isExecuting = false;
         };
 
         Cpu.prototype.loadAccMem = function () {
