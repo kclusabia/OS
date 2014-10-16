@@ -56,11 +56,10 @@ h3 {
 
 #memoryTable {
     background-color: #f1f1c1;
-    height:250px;
+    height:auto;
     overflow-y:scroll;
-    margin-top:20px;
+    margin-top:5px;
     table-layout: auto;
-    float:left;
 }
 .memory-label label {
     margin-left: 38%;
@@ -73,5 +72,6 @@ table, td {
     background-color: #a4dfbe;
 }
 td {
-    padding: 11px;
+    padding: 8px;
+    align: center;
 }
