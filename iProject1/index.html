@@ -77,70 +77,74 @@
     <h3 id = "status" style= "margin-bottom:5px; color:dodgerblue; align:center;">Status: </h3>
 
 
-    <div id="divConsole" style="margin-top:4px; margin-left:0.02%; width:500px; height:500px; float:left;">
+    <div id="divConsole" style="margin-top:4px; margin-left:0.01%; width:500px; height:500px; float:left;">
       <canvas id="display"
-              width="500px"
+              width="475px"
               height="500px"
               tabindex="3">
       </canvas>
    </div>
 
-    <div class="memory-label">
-    <label>Memory</label>
-        </div>
+    <div id="divLog" style="margin-left:-0.9%; margin-top:1px; float:left;">
+        <label>
+            Host Log
+            <br>
+            <textarea name="taHostLog"
+                      id  ="taHostLog"
+                      rows="26"
+                      cols="47"
+                    ></textarea>
+        </label>
+    </div>
 
-    <div id="divMemory" style="height: 420px; border: 1px; margin-top: 10px; float:right; overflow-y: scroll">
-        <table id="memoryTable" style="border: 3px solid; height: 520px; width: 240px; margin-top: 10px;float:right;">
+    <div class="memory-label" style="float:left;">
+        <label>Memory</label>
+    </div>
+
+    <div id="divMemory" style="height:400px; width:440; border:1px; overflow-y: scroll; margin-top: 30px;">
+        <table id="memoryTable" style="border:2px solid; height:395px; width:375px; margin-right:30px;">
         </table>
     </div>
 
-   <div id="divLog" style="margin-left:41.7%;">
-      <label>
-         Host Log
-         <br>
-         <textarea name="taHostLog"
-                   id  ="taHostLog"
-                   rows="26"
-                   cols="48"
-         ></textarea>
-      </label>
-   </div>
-
-   <div id="divUserProgramInput" style="margin-left:41.7%;">
+   <div id="divUserProgramInput" style="margin-right:15%; margin-top:-45px;">
       <label>
          User Program Input
          <br>
          <textarea name="taProgramInput"
                    id  ="taProgramInput"
                    rows="8"
-                   cols="48"
+                   cols="45"
          ></textarea>
       </label>
    </div>
 
-
     <table id="CPU" border="1" style="width:20%; float: right; margin-bottom: 10%;">
-        <tr>
+        <label>
+            PCB
             <th>PC</th>
             <th>ACC</th>
             <th>IR</th>
             <th>XReg</th>
             <th>YReg</th>
-            <th>ZReg</th>
+            <th>ZFlag</th>
         </tr>
-        <tr>
 
+        <tr>
             <td id="PC">0</td>
             <td id="Acc">0</td>
             <td id="IR">0</td>
             <td id="XReg">0</td>
             <td id="YReg">0</td>
-            <td id="ZReg">0</td>
+            <td id="ZFlag">0</td>
         </tr>
+       </label>
     </table>
 
 
-    <table id="PCB" border="1" style="width:20%; float: right; margin-bottom: 10%; margin-right: 10%;">
+    <table id="PCB" border="1" style="width:20%; float:right; margin-bottom: 10%; margin-right: 10%;">
+        <label>
+            CPU
+        </label>
         <tr>
             <th>PID</th>
             <th>PC</th>
