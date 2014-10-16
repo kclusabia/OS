@@ -43,12 +43,21 @@ module TSOS {
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
-            _CPU.runOpCode(mm.readMemory(_CPU.PC));
+
+            // Goes through all the opcodes.
+            _CPU.runOpCode(memory.readMem(_CPU.PC));
+
+            // Updates the CPU block.
             _CPU.showCPU();
+
+            // Redraws the PCB.
             pcb.showPCB();
-           pcb.updatePCB();
+
+            // Updates the PCB.
+            pcb.updatePCB();
         }
 
+        // The CPU block
         public showCPU() {
             document.getElementById("PC").innerHTML = String(this.PC);
             document.getElementById("Acc").innerHTML = this.Acc.toString();
@@ -58,12 +67,13 @@ module TSOS {
             document.getElementById("ZFlag").innerHTML = String(this.ZFlag);
         }
 
+        // Lists all the opcodes.
         public runOpCode(opcode) {
             opcode = opcode.toString().toUpperCase();
             this.IR = opcode;
             
             if(opcode == "A9") {
-                _CPU.loadAccConstant();
+                this.loadAccConstant();
             }
             else if(opcode == "AD") {
                 this.loadAccMem();
@@ -106,74 +116,98 @@ module TSOS {
             }
         }
 
+        // A9
         public loadAccConstant() {
+            this.PC++;
+            _CPU.Acc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);   //a9 11 gives 17(dec)
+           // _CPU.isExecuting = false;
             _CPU.PC++;
-            _CPU.Acc = memory.readMem(_CPU.PC);
+            memoryMngr.updateMemory();
+        }
+
+        // AD
+        public loadAccMem() {
+            _CPU.PC++;
+            // Getting the address as hex.
+            var loc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
+            _CPU.Acc = parseInt(memoryMngr.readMemory(loc));
+            _CPU.PC++;
+            memoryMngr.updateMemory();
+        }
+
+        // 8D
+        public storeAccMem() {
+            _CPU.PC++;
+            // Storage is now read as a hex
+            var storage = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
+            memoryMngr.storeData(storage,parseInt((_CPU.Acc), 16));
+            _CPU.PC++;
+            memoryMngr.updateMemory();
+
+        }
+
+        // 6D
+        public addWithCarry() {
+            this.PC++;
+            var loc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
+            var value = parseInt(memoryMngr.readMemory(loc));
+            // Changed to string to change its base to hex.
+            var acc = parseInt(this.Acc.toString(), 16);
+            _CPU.Acc = value + acc;
+            _CPU.PC++;
+        }
+
+        // A2
+        public loadXRegCons() {
+            _CPU.PC++;
+            _CPU.XReg = parseInt(memory.readMem(_CPU.PC.toString()), 16);
             //_CPU.isExecuting = false;
             _CPU.PC++;
         }
 
-        public loadAccMem() {
-            _CPU.PC++;
-
-            var loc = parseInt(memory.readMem(_CPU.PC), 16);
-            _CPU.Acc = parseInt(memory.readMem(loc), 10);
-            _CPU.PC++;
-        }
-
-        public storeAccMem() {
-            _CPU.PC++;
-            var loc = parseInt(memory.readMem(_CPU.PC), 16);
-            memory.storeData(loc,parseInt((_CPU.Acc), 16));
-            _CPU.PC++;
-
-        }
-
-        public addWithCarry() {
-            var value = parseInt(memory.readMem(_CPU.PC + 1), 10);
-            _CPU.Acc += parseInt(memory.readMem(value), 10);
-            _CPU.PC++;
-        }
-
-        public loadXRegCons() {
-            _CPU.PC++;
-            _CPU.XReg = parseInt(memory.readMem(_CPU.PC), 10);
-            _CPU.PC++;
-        }
-
+        // AE
         public loadXMem() {
             _CPU.PC++;
-            var loc = parseInt(memory.readMem(_CPU.PC), 16);  //TODO base 10?
-            _CPU.XReg = parseInt(memory.read(loc), 10)
+            var loc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
+            _CPU.XReg = parseInt(memoryMngr.readMemory(loc.toString()), 16);
             _CPU.PC++;
         }
 
+        // A0
         public loadYRegCons() {
             _CPU.PC++;
-            _CPU.YReg = parseInt(memory.readMem(_CPU.PC), 10);
+            _CPU.XReg = parseInt(memory.readMem(_CPU.PC.toString()), 16);
+            //_CPU.isExecuting = false;
             _CPU.PC++;
         }
 
+        // AC
         public loadYRegMem() {
             _CPU.PC++;
-            var loc = parseInt(memory.readMem(_CPU.PC), 16);  //TODO base 10?
-            _CPU.YReg = parseInt(memory.read(loc), 10)
+            var loc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
+            _CPU.YReg = parseInt(memoryMngr.readMemory(loc.toString()), 16);
             _CPU.PC++;
         }
 
+        // EA
         public noOperation() {
             return;
         }
 
-        public break() {        //TODO
-            _CPU.PC++;
-            _KernelInterruptQueue.enqueue(new Interrupt(00));
+        // 00
+        public break() {
+            //_CPU.PC++;
+            _KernelInterruptQueue.enqueue(new Interrupt(end, 0));
         }
 
+        // EC
         public compareToX() {
             _CPU.PC++;
-            var loc = parseInt(memory.readMem(_CPU.PC), 16);
-            var value = parseInt(memory.readMem(loc), 16);
+            // Gets the address
+            var loc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
+            // Gets the value in the specified address
+            var value = parseInt(memoryMngr.readMem(loc));
+            // Compares the content of the address with the X register.
             if(value == _CPU.XReg.toString(16))
                 _CPU.ZFlag = 1;
             else
@@ -181,6 +215,7 @@ module TSOS {
             _CPU.PC++;
         }
 
+        // D0
         public branchX() {
             if(_CPU.ZFlag == 0) {
                 var byteValue = parseInt(memory.readMem(_CPU.PC+1), 16);
@@ -192,10 +227,12 @@ module TSOS {
             }
         }
 
+        // EE
         public incByteVal() {
             //TODO
         }
 
+        // FF
         public sysCall() {
             _StdOut.putText("Y register contains: " + _CPU.YReg);
         }
