@@ -71,7 +71,7 @@ var _MemoryArray: any[] = null;
 var _MemorySize: number = 255;
 var memory: TSOS.Memory;
 
-var mm : TSOS.MemoryManager;
+var memoryMngr : TSOS.MemoryManager;
 
 var pcb: TSOS.ProcessControlBlock;
 var readyQueue: TSOS.Queue;

@@ -67,7 +67,7 @@ var _MemoryArray = null;
 var _MemorySize = 255;
 var memory;
 
-var mm;
+var memoryMngr;
 
 var pcb;
 var readyQueue;
