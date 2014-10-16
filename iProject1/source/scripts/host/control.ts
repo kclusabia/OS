@@ -95,7 +95,7 @@ module TSOS {
             _Kernel = new Kernel();
             _Kernel.krnBootstrap();
 
-            mm = new MemoryManager();
+            memoryMngr = new MemoryManager();
 
         }
 
