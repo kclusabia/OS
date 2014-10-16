@@ -14,12 +14,14 @@ var TSOS;
             this.yReg = 0;
             this.zFlag = 0;
         }
+        // Creating a PCB block.
         ProcessControlBlock.prototype.newPCB = function (base, limit) {
             this.base = base;
             this.limit = limit.toString(16).toUpperCase();
             this.incrementPID();
         };
 
+        // Displays the PCB block on the screen.
         ProcessControlBlock.prototype.showPCB = function () {
             document.getElementById("PID").innerHTML = this.getPID();
             document.getElementById("PC1").innerHTML = this.pc;
@@ -32,8 +34,11 @@ var TSOS;
             document.getElementById("ZFlag1").innerHTML = this.zFlag;
         };
 
+        // Updates the PCB block.
         ProcessControlBlock.prototype.updatePCB = function () {
-            this.pc = _CPU.PC;
+            ProcessControlBlock.pc = _CPU.PC;
+
+            //ProcessControlBlock.pid = ProcessControlBlock.getPID();
             this.acc = _CPU.Acc;
             this.IR = _CPU.IR;
             this.xReg = _CPU.XReg;
@@ -41,10 +46,12 @@ var TSOS;
             this.zFlag = _CPU.ZFlag;
         };
 
+        // Increments the PID.
         ProcessControlBlock.prototype.incrementPID = function () {
             ProcessControlBlock.pid++;
         };
 
+        // Gets the current PID.
         ProcessControlBlock.prototype.getPID = function () {
             return ProcessControlBlock.pid;
         };

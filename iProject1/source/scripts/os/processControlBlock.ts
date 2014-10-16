@@ -19,12 +19,14 @@ module TSOS {
         constructor() {
          }
 
+        // Creating a PCB block.
         public newPCB(base:number, limit:string):void {
             this.base = base;
             this.limit = limit.toString(16).toUpperCase();
             this.incrementPID();
         }
 
+        // Displays the PCB block on the screen.
         public showPCB() {
             document.getElementById("PID").innerHTML = this.getPID();
             document.getElementById("PC1").innerHTML = this.pc;
@@ -37,8 +39,10 @@ module TSOS {
             document.getElementById("ZFlag1").innerHTML = this.zFlag;
         }
 
+        // Updates the PCB block.
         public updatePCB() {
-            this.pc = _CPU.PC;
+            ProcessControlBlock.pc = _CPU.PC;
+            //ProcessControlBlock.pid = ProcessControlBlock.getPID();
             this.acc = _CPU.Acc;
             this.IR = _CPU.IR;
             this.xReg = _CPU.XReg;
@@ -46,10 +50,12 @@ module TSOS {
             this.zFlag = _CPU.ZFlag;
         }
 
+        // Increments the PID.
         public incrementPID():void {
             ProcessControlBlock.pid++;
         }
 
+        // Gets the current PID.
         public getPID():number{
             return ProcessControlBlock.pid;
         }
