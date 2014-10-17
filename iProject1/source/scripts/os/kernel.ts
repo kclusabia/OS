@@ -136,13 +136,20 @@ module TSOS {
                     _CPU.init();
                     break;
                 case sysCall:
-//call a function and to be placed in console
-                    if(_CPU.XReg == 1)
-                        _StdOut.putText("Y register contains: " + _CPU.YReg);
-                    else if (_CPU.XReg == 2) {
-                        var loc = parseInt(memoryMngr.readMemory(_CPU.YReg), 16);
-                        //TODO
-                    }
+                    // Print the contents in Y register.
+                    _StdIn.sysCall();
+//                    if(_CPU.XReg == 1)
+//                        _StdOut.putText("Y register contains: " + _CPU.YReg);
+
+//                    else if (_CPU.XReg == 2) {
+//                        var x = 0;
+//                        while ( (parseInt(memoryMngr.readMemory(_CPU.YReg), 16)) != 0 && (x < 256) ) {
+//                            var ascii = parseInt(memoryMngr.readMemory(_CPU.YReg), 16);
+//                            var char = String.fromCharCode(ascii);
+//                            _StdOut.putText(char);
+//                            x++;
+//                        }
+//                    }
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }

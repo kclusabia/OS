@@ -106,7 +106,7 @@
         </table>
     </div>
 
-   <div id="divUserProgramInput" style="margin-right:15%; margin-top:-45px;">
+   <div id="divUserProgramInput" style="margin-right:15%; margin-top:-45px; float:left;">
       <label>
          User Program Input
          <br>
@@ -118,9 +118,12 @@
       </label>
    </div>
 
-    <table id="CPU" border="1" style="width:20%; float: right; margin-bottom: 10%;">
-        <label>
-            PCB
+    <label style="margin-bottom: 15%;">
+        CPU
+    </label>
+                                                         <!--margin left acts differently in safari and chrome.-->
+    <table id="CPU" border="1" style="width:20%; float: left; margin-top: -5%; margin-left: 430%;
+           margin-bottom:4% ">
             <th>PC</th>
             <th>ACC</th>
             <th>IR</th>
@@ -137,14 +140,15 @@
             <td id="YReg">0</td>
             <td id="ZFlag">0</td>
         </tr>
-       </label>
     </table>
 
 
-    <table id="PCB" border="1" style="width:20%; float:right; margin-bottom: 10%; margin-right: 10%;">
-        <label>
-            CPU
-        </label>
+    <label style="float: left; margin-top:10%; margin-right: 10%; ">
+        PCB
+    </label>
+
+    <table id="PCB" border="1" style="width:20%; float:right; margin-bottom: 10%; margin-right: 1%;">
+
         <tr>
             <th>PID</th>
             <th>PC</th>
