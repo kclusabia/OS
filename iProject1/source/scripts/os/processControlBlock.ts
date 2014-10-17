@@ -7,7 +7,7 @@ module TSOS {
     export class ProcessControlBlock {
 
         public static pid = -1;
-        public static pc = 0;
+        public pc = 0;
         public base:number = 0;
         public limit = "";
         public acc = 0;
@@ -41,13 +41,14 @@ module TSOS {
 
         // Updates the PCB block.
         public updatePCB() {
-            ProcessControlBlock.pc = _CPU.PC;
+//            ProcessControlBlock.pid = pcb.getPID();//
+            pcb.pc = _CPU.PC;
             //ProcessControlBlock.pid = ProcessControlBlock.getPID();
-            this.acc = _CPU.Acc;
-            this.IR = _CPU.IR;
-            this.xReg = _CPU.XReg;
-            this.yReg = _CPU.YReg;
-            this.zFlag = _CPU.ZFlag;
+            pcb.acc = _CPU.Acc;
+            pcb.IR = _CPU.IR;
+            pcb.xReg = _CPU.XReg;
+            pcb.yReg = _CPU.YReg;
+            pcb.zFlag = _CPU.ZFlag;
         }
 
         // Increments the PID.

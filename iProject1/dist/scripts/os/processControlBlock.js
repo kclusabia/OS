@@ -6,6 +6,7 @@ var TSOS;
 (function (TSOS) {
     var ProcessControlBlock = (function () {
         function ProcessControlBlock() {
+            this.pc = 0;
             this.base = 0;
             this.limit = "";
             this.acc = 0;
@@ -36,14 +37,15 @@ var TSOS;
 
         // Updates the PCB block.
         ProcessControlBlock.prototype.updatePCB = function () {
-            ProcessControlBlock.pc = _CPU.PC;
+            //            ProcessControlBlock.pid = pcb.getPID();//
+            pcb.pc = _CPU.PC;
 
             //ProcessControlBlock.pid = ProcessControlBlock.getPID();
-            this.acc = _CPU.Acc;
-            this.IR = _CPU.IR;
-            this.xReg = _CPU.XReg;
-            this.yReg = _CPU.YReg;
-            this.zFlag = _CPU.ZFlag;
+            pcb.acc = _CPU.Acc;
+            pcb.IR = _CPU.IR;
+            pcb.xReg = _CPU.XReg;
+            pcb.yReg = _CPU.YReg;
+            pcb.zFlag = _CPU.ZFlag;
         };
 
         // Increments the PID.
@@ -56,7 +58,6 @@ var TSOS;
             return ProcessControlBlock.pid;
         };
         ProcessControlBlock.pid = -1;
-        ProcessControlBlock.pc = 0;
         return ProcessControlBlock;
     })();
     TSOS.ProcessControlBlock = ProcessControlBlock;
