@@ -50,27 +50,26 @@ var TSOS;
             // Updates the CPU block.
             _CPU.showCPU();
 
-            // Redraws the PCB.
-            pcb.showPCB();
-
             // Updates the PCB.
             pcb.updatePCB();
+
+            // Redraws the PCB.
+            pcb.showPCB();
         };
 
         // The CPU block
         Cpu.prototype.showCPU = function () {
-            document.getElementById("PC").innerHTML = String(this.PC);
-            document.getElementById("Acc").innerHTML = this.Acc.toString();
-            document.getElementById("IR").innerHTML = String(this.IR);
-            document.getElementById("XReg").innerHTML = String(this.XReg);
-            document.getElementById("YReg").innerHTML = String(this.YReg);
-            document.getElementById("ZFlag").innerHTML = String(this.ZFlag);
+            document.getElementById("PC").innerHTML = String(_CPU.PC);
+            document.getElementById("Acc").innerHTML = String(_CPU.Acc);
+            document.getElementById("IR").innerHTML = String(_CPU.IR);
+            document.getElementById("XReg").innerHTML = String(_CPU.XReg);
+            document.getElementById("YReg").innerHTML = String(_CPU.YReg);
+            document.getElementById("ZFlag").innerHTML = String(_CPU.ZFlag);
         };
 
         // Lists all the opcodes.
         Cpu.prototype.runOpCode = function (opcode) {
             opcode = opcode.toString().toUpperCase();
-            this.IR = opcode;
 
             if (opcode == "A9") {
                 this.loadAccConstant();
@@ -105,6 +104,7 @@ var TSOS;
 
         // A9
         Cpu.prototype.loadAccConstant = function () {
+            _CPU.IR = "A9";
             this.PC++;
             _CPU.Acc = parseInt(memoryMngr.readMemory(_CPU.PC), 16); //a9 11 gives 17(dec)
 
@@ -115,121 +115,163 @@ var TSOS;
 
         // AD
         Cpu.prototype.loadAccMem = function () {
-            _CPU.PC++;
+            _CPU.IR = "AD";
 
-            // Getting the address as hex.
-            var loc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
-            _CPU.Acc = parseInt(memoryMngr.readMemory(loc));
+            // Adding the two memory address together
+            //            var firstByte = parseInt(memoryMngr.readMemory(_CPU.PC+1), 16);
+            //            var secondByte = parseInt(memoryMngr.readMemory(_CPU.PC+2), 16);
+            //            var temp = firstByte + secondByte;
             _CPU.PC++;
+            var value = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
+            _CPU.Acc = parseInt(memoryMngr.readMemory(value));
+            _CPU.PC += 2;
             memoryMngr.updateMemory();
         };
 
         // 8D
         Cpu.prototype.storeAccMem = function () {
+            _CPU.IR = "8D";
+
+            // Getting the address to store the accumulator.
+            //            var firstByte = parseInt(memoryMngr.readMemory(_CPU.PC+1));
+            //            var secondByte = parseInt(memoryMngr.readMemory(_CPU.PC+2));
+            //            var temp = firstByte + secondByte;
             _CPU.PC++;
 
-            // Storage is now read as a hex
-            var storage = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
-            memoryMngr.storeData(storage, parseInt((_CPU.Acc), 16));
-            _CPU.PC++;
+            // Storage is now in hex.
+            var storage = parseInt(memoryMngr.readMemory(_CPU.PC));
+            memoryMngr.storeData(parseInt(storage, 16), parseInt((_CPU.Acc), 16));
+            _CPU.PC += 2;
             memoryMngr.updateMemory();
         };
 
         // 6D
         Cpu.prototype.addWithCarry = function () {
-            this.PC++;
-            var loc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
-            var value = parseInt(memoryMngr.readMemory(loc));
+            _CPU.IR = "6D";
+            _CPU.PC++;
+            var loc = parseInt(memoryMngr.readMemory(_CPU.PC.toString()), 16);
+            var value = parseInt(memoryMngr.readMemory(loc), 16);
+            alert(value);
 
             // Changed to string to change its base to hex.
-            var acc = parseInt(this.Acc.toString(), 16);
+            var acc = parseInt(_CPU.Acc.toString(), 16);
             _CPU.Acc = value + acc;
-            _CPU.PC++;
+            _CPU.PC += 2;
+            memoryMngr.updateMemory();
         };
 
         // A2
         Cpu.prototype.loadXRegCons = function () {
+            _CPU.IR = "A2";
             _CPU.PC++;
             _CPU.XReg = parseInt(memory.readMem(_CPU.PC.toString()), 16);
 
             //_CPU.isExecuting = false;
             _CPU.PC++;
+            memoryMngr.updateMemory();
         };
 
         // AE
         Cpu.prototype.loadXMem = function () {
+            _CPU.IR = "AE";
             _CPU.PC++;
             var loc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
             _CPU.XReg = parseInt(memoryMngr.readMemory(loc.toString()), 16);
-            _CPU.PC++;
+            _CPU.PC += 2;
+            memoryMngr.updateMemory();
         };
 
         // A0
         Cpu.prototype.loadYRegCons = function () {
+            _CPU.IR = "A0";
             _CPU.PC++;
-            _CPU.XReg = parseInt(memory.readMem(_CPU.PC.toString()), 16);
+            _CPU.YReg = parseInt(memory.readMem(_CPU.PC.toString()), 16);
 
             //_CPU.isExecuting = false;
             _CPU.PC++;
+            memoryMngr.updateMemory();
         };
 
         // AC
         Cpu.prototype.loadYRegMem = function () {
+            _CPU.IR = "AC";
             _CPU.PC++;
             var loc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
             _CPU.YReg = parseInt(memoryMngr.readMemory(loc.toString()), 16);
-            _CPU.PC++;
+            _CPU.PC += 2;
+            memoryMngr.updateMemory();
         };
 
         // EA
         Cpu.prototype.noOperation = function () {
+            _CPU.IR = "EA";
             return;
         };
 
         // 00
         Cpu.prototype.break = function () {
-            //_CPU.PC++;
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(end, 0));
+            // _KernelInterruptQueue.enqueue(new Interrupt(end, 0));
+            _CPU.isExecuting = false;
         };
 
         // EC
         Cpu.prototype.compareToX = function () {
+            _CPU.IR = "EC";
             _CPU.PC++;
 
             // Gets the address
             var loc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
 
             // Gets the value in the specified address
-            var value = parseInt(memoryMngr.readMem(loc));
+            var value = parseInt(memoryMngr.readMemory(loc));
+            alert(value);
 
-            // Compares the content of the address with the
-            if (value == _CPU.XReg.toString(16))
+            // Compares the content of the address with the X register.
+            if (value == _CPU.XReg.toString(10))
                 _CPU.ZFlag = 1;
             else
                 _CPU.ZFlag = 0;
-            _CPU.PC++;
+            _CPU.PC += 2;
+            memoryMngr.updateMemory();
         };
 
         // D0
         Cpu.prototype.branchX = function () {
+            _CPU.IR = "D0";
+            _CPU.PC++;
             if (_CPU.ZFlag == 0) {
-                var byteValue = parseInt(memory.readMem(_CPU.PC + 1), 16);
+                var byteValue = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
                 _CPU.PC += byteValue;
 
                 if (_CPU.PC > _MemorySize) {
-                    _CPU.PC = _CPU.PC - _MemorySize;
+                    _CPU.PC -= _MemorySize;
                 }
+                this.PC++;
+                memoryMngr.updateMemory();
+            } else {
+                this.PC++;
+                memoryMngr.updateMemory();
             }
         };
 
         // EE
         Cpu.prototype.incByteVal = function () {
-            //TODO
+            _CPU.IR = "EE";
+            var loc = parseInt(memoryMngr.readMemory(_CPU.PC));
+            alert(loc);
+            var value = parseInt(memoryMngr.readMemory(loc));
+            value++;
+            alert(value);
+            memoryMngr.storeData(loc, parseInt(value.toString(), 16));
+            _CPU.PC += 2;
+            memoryMngr.updateMemory();
         };
 
         // FF
         Cpu.prototype.sysCall = function () {
-            _StdOut.putText("Y register contains: " + _CPU.YReg);
+            _CPU.IR = "FF";
+            this.PC++; // Why plus 2?
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(sysCall, -1));
         };
         return Cpu;
     })();
