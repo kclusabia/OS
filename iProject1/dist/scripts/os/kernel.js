@@ -121,10 +121,19 @@ var TSOS;
                     break;
 
                 case end:
-                    // _CPU.isExecuting = false;
+                    _CPU.isExecuting = false;
                     pcb.showPCB();
+                    memoryMngr.updateMemory();
                     _CPU.init();
                     break;
+                case sysCall:
+                    //call a function and to be placed in console
+                    if (_CPU.XReg == 1)
+                        _StdOut.putText("Y register contains: " + _CPU.YReg);
+                    else if (_CPU.XReg == 2) {
+                        var loc = parseInt(memoryMngr.readMemory(_CPU.YReg), 16);
+                        //TODO
+                    }
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }
