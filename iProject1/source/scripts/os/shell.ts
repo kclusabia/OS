@@ -297,15 +297,20 @@ module TSOS {
                 }
             }
             _StdOut.putText("You have loaded the program successfully.");
+
             // Creating a PCB block.
             pcb = new ProcessControlBlock();
             pcb.newPCB(0, 255);
 
+            // Creates the resident queue.
             residentQueue = new Array<ProcessControlBlock>();
             residentQueue.push(pcb.getPID());
-
             _Console.advanceLine();
+
+            // Displays the current PID.
             _StdOut.putText("Process ID: " + pcb.getPID());
+
+            // Creates the ready queue, where the processes are ready to execute.
             readyQueue = new Queue();
             memory.loadProgram(input.toString());
         }

@@ -270,11 +270,15 @@ var TSOS;
             pcb = new TSOS.ProcessControlBlock();
             pcb.newPCB(0, 255);
 
+            // Creates the resident queue.
             residentQueue = new Array();
             residentQueue.push(pcb.getPID());
-
             _Console.advanceLine();
+
+            // Displays the current PID.
             _StdOut.putText("Process ID: " + pcb.getPID());
+
+            // Creates the ready queue, where the processes are ready to execute.
             readyQueue = new TSOS.Queue();
             memory.loadProgram(input.toString());
         };
