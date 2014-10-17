@@ -6,6 +6,7 @@ module TSOS {
         constructor() {
         }
 
+        // Creates the memory table consisting of an array.
         public newTable() {
             var memTable = "<table>";
             _MemoryArray = new Array();
@@ -14,12 +15,12 @@ module TSOS {
                 // Creating a row of 256 bytes.
                 memTable += "<tr>";
                 //Base
-                memTable += "<td>" + "00x" + i.toString(16);
+                memTable += "<td>" + "0x" + i.toString(16);
                 var j = i;
                 // Setting the memory to 0.
                 while (j <= i+7) {
-                    _MemoryArray[j] = j;
-                    memTable += "<td>" + "00" + "</td>";
+                    _MemoryArray[j] = "00";
+                    memTable += "<td>" + _MemoryArray[j] + "</td>";
                     j++;
                 }
                 memTable += "</tr>";
@@ -28,6 +29,7 @@ module TSOS {
                 document.getElementById("memoryTable").innerHTML = memTable;
         }
 
+        // Loads the program into the memory.
         public loadProgram(data) {
             //TODO change function
             var input = data.replace(/^\s+|\s+$/g,''); 
@@ -40,17 +42,13 @@ module TSOS {
                     _MemoryArray[col] = input.substring(x,y);
                     x = y+1;
                     y = y+3;
-
-                    if(_MemoryArray[col] == ""){
-                        _MemoryArray[col] = col;
-                        break;
-                    }
                 }
             }
-            this.storeInMemory();
+            this.updateMem();
         }
 
-        public storeInMemory(){
+        // Stores the loaded program into the memory array.
+        public updateMem(){
             var memTable = "<table>";
 
             for(var i=0; i<=_MemorySize;i+=8) {
@@ -60,6 +58,9 @@ module TSOS {
                 var j = i;
                 while (j <= i + 7) {
                     memTable += "<td>" + _MemoryArray[j] + "</td>";
+                    if (_MemoryArray[j] == "") {
+                        _MemoryArray[j] = "00";
+                    }
                     j++;
                 }
                 memTable += "</tr>";
@@ -68,13 +69,14 @@ module TSOS {
             document.getElementById("memoryTable").innerHTML = memTable;
         }
 
+        // Displays the data in the specified index.
         public readMem(index:number) {
             return _MemoryArray[index];
         }
 
         public storeData(index, data) {
             _MemoryArray[index] = data;
-            this.storeInMemory();
+            //this.updateMem();
         }
 
 

@@ -6,6 +6,7 @@ var TSOS;
     var Memory = (function () {
         function Memory() {
         }
+        // Creates the memory table consisting of an array.
         Memory.prototype.newTable = function () {
             var memTable = "<table>";
             _MemoryArray = new Array();
@@ -15,12 +16,12 @@ var TSOS;
                 memTable += "<tr>";
 
                 //Base
-                memTable += "<td>" + "00x" + i.toString(16);
+                memTable += "<td>" + "0x" + i.toString(16);
                 var j = i;
 
                 while (j <= i + 7) {
-                    _MemoryArray[j] = j;
-                    memTable += "<td>" + "00" + "</td>";
+                    _MemoryArray[j] = "00";
+                    memTable += "<td>" + _MemoryArray[j] + "</td>";
                     j++;
                 }
                 memTable += "</tr>";
@@ -29,6 +30,7 @@ var TSOS;
             document.getElementById("memoryTable").innerHTML = memTable;
         };
 
+        // Loads the program into the memory.
         Memory.prototype.loadProgram = function (data) {
             //TODO change function
             var input = data.replace(/^\s+|\s+$/g, '');
@@ -41,17 +43,13 @@ var TSOS;
                     _MemoryArray[col] = input.substring(x, y);
                     x = y + 1;
                     y = y + 3;
-
-                    if (_MemoryArray[col] == "") {
-                        _MemoryArray[col] = col;
-                        break;
-                    }
                 }
             }
-            this.storeInMemory();
+            this.updateMem();
         };
 
-        Memory.prototype.storeInMemory = function () {
+        // Stores the loaded program into the memory array.
+        Memory.prototype.updateMem = function () {
             var memTable = "<table>";
 
             for (var i = 0; i <= _MemorySize; i += 8) {
@@ -60,6 +58,9 @@ var TSOS;
                 var j = i;
                 while (j <= i + 7) {
                     memTable += "<td>" + _MemoryArray[j] + "</td>";
+                    if (_MemoryArray[j] == "") {
+                        _MemoryArray[j] = "00";
+                    }
                     j++;
                 }
                 memTable += "</tr>";
@@ -68,13 +69,14 @@ var TSOS;
             document.getElementById("memoryTable").innerHTML = memTable;
         };
 
+        // Displays the data in the specified index.
         Memory.prototype.readMem = function (index) {
             return _MemoryArray[index];
         };
 
         Memory.prototype.storeData = function (index, data) {
             _MemoryArray[index] = data;
-            this.storeInMemory();
+            //this.updateMem();
         };
         return Memory;
     })();
