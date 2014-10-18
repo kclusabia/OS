@@ -69,10 +69,12 @@ var sysCall = "FF";
 var _MemoryArray = null;
 var _MemorySize = 255;
 var memory;
-
 var memoryMngr;
 
+// Creating the pcb block.
 var pcb;
+
+// Creating the queues.
 var readyQueue;
 var residentQueue = null;
 

@@ -73,10 +73,12 @@ var sysCall = "FF";
 var _MemoryArray: any[] = null;
 var _MemorySize: number = 255;
 var memory: TSOS.Memory;
-
 var memoryMngr : TSOS.MemoryManager;
 
+// Creating the pcb block.
 var pcb: TSOS.ProcessControlBlock;
+
+// Creating the queues.
 var readyQueue: TSOS.Queue;
 var residentQueue: any[] = null;
 
