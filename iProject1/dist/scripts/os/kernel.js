@@ -128,8 +128,23 @@ var TSOS;
                     break;
                 case sysCall:
                     // Print the contents in Y register.
-                    _StdIn.sysCall();
-
+                    if (_CPU.XReg == 1) {
+                        _StdOut.putText("Y register contains: " + _CPU.YReg);
+                        _Console.advanceLine();
+                        _OsShell.putPrompt();
+                        brea;
+                    } else if (_CPU.XReg == 2) {
+                        var x = 0;
+                        while ((parseInt(memoryMngr.readMemory(_CPU.YReg + x), 16)) != 0 && (x < 256)) {
+                            var ascii = parseInt(memoryMngr.readMemory((_CPU.YReg + x).toString()), 16);
+                            var char = String.fromCharCode(ascii);
+                            _StdOut.putText(char);
+                            x++;
+                        }
+                        _Console.advanceLine();
+                        _OsShell.putPrompt();
+                        break;
+                    }
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }
