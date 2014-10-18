@@ -66,7 +66,6 @@ var _hardwareClockID: number = null;
 var _GLaDOS: any = null;
 var Glados: any = null;
 
-var end = 0;
 var sysCall = "FF";
 
 // Creating the memory table
