@@ -200,11 +200,6 @@ var TSOS;
             _DrawingContext.putImageData(img, 0, 0);
             this.currentYPosition = _Canvas.height - this.currentFontSize;
         };
-
-        Console.prototype.sysCall = function () {
-            if (_CPU.XReg == 1)
-                _StdOut.putText("Y register contains: " + _CPU.YReg);
-        };
         return Console;
     })();
     TSOS.Console = Console;

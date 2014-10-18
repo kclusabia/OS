@@ -211,11 +211,5 @@ module TSOS {
             this.currentYPosition = _Canvas.height - this.currentFontSize;
         }
 
-        public sysCall():void {
-            if(_CPU.XReg == 1)
-                _StdOut.putText("Y register contains: " + _CPU.YReg);
-        }
-
-
     }
 }
