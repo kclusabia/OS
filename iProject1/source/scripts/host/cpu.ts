@@ -50,16 +50,10 @@ module TSOS {
             // Updates the CPU block.
             _CPU.showCPU();
 
-
             // Updates the PCB.
             pcb.updatePCB();
             // Redraws the PCB.
             pcb.showPCB();
-
-
-
-
-
         }
 
         // The CPU block
@@ -151,13 +145,12 @@ module TSOS {
 //            var secondByte = parseInt(memoryMngr.readMemory(_CPU.PC+2));
 //            var temp = firstByte + secondByte;
             _CPU.PC++;
-            // Storage is now in hex.
+
             var storage = parseInt(memoryMngr.readMemory(_CPU.PC));
             var acc = _CPU.Acc;
-            memoryMngr.storeData(parseInt(storage,16), acc);
+            memoryMngr.storeData(parseInt(storage.toString(),16), acc);
             _CPU.PC += 2;
             memoryMngr.updateMemory();
-
         }
 
         // 6D
@@ -166,8 +159,10 @@ module TSOS {
             _CPU.PC++;
             var loc = parseInt(memoryMngr.readMemory(_CPU.PC.toString()), 16);
             var value = parseInt(memoryMngr.readMemory(loc), 16);
+
             // Changed to string to change its base to hex.
             var acc = parseInt(_CPU.Acc.toString(), 16);
+
             _CPU.Acc = value + acc;
             _CPU.PC += 2;
             memoryMngr.updateMemory();
@@ -178,7 +173,6 @@ module TSOS {
             _CPU.IR = "A2";
             _CPU.PC++;
             _CPU.XReg = parseInt(memory.readMem(_CPU.PC.toString()), 16);
-            //_CPU.isExecuting = false;
             _CPU.PC++;
             memoryMngr.updateMemory();
         }
@@ -198,7 +192,6 @@ module TSOS {
             _CPU.IR = "A0";
             _CPU.PC++;
             _CPU.YReg = parseInt(memory.readMem(_CPU.PC.toString()), 16);
-            //_CPU.isExecuting = false;
             _CPU.PC++;
             memoryMngr.updateMemory();
         }
@@ -221,7 +214,6 @@ module TSOS {
 
         // 00
         public break() {
-           // _KernelInterruptQueue.enqueue(new Interrupt(end, 0));
             _CPU.isExecuting = false;
         }
 
@@ -231,8 +223,10 @@ module TSOS {
             _CPU.PC++;
             // Gets the address
             var loc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
+
             // Gets the value in the specified address
             var value = parseInt(memoryMngr.readMemory(loc));
+
             // Compares the content of the address with the X register.
             if(value == _CPU.XReg.toString(10))
                 _CPU.ZFlag = 1;

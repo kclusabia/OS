@@ -132,7 +132,7 @@ var TSOS;
                         _StdOut.putText("Y register contains: " + _CPU.YReg);
                         _Console.advanceLine();
                         _OsShell.putPrompt();
-                        brea;
+                        break;
                     } else if (_CPU.XReg == 2) {
                         var x = 0;
                         while ((parseInt(memoryMngr.readMemory(_CPU.YReg + x), 16)) != 0 && (x < 256)) {

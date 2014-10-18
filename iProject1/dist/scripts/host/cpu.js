@@ -136,10 +136,9 @@ var TSOS;
             //            var temp = firstByte + secondByte;
             _CPU.PC++;
 
-            // Storage is now in hex.
             var storage = parseInt(memoryMngr.readMemory(_CPU.PC));
             var acc = _CPU.Acc;
-            memoryMngr.storeData(parseInt(storage, 16), acc);
+            memoryMngr.storeData(parseInt(storage.toString(), 16), acc);
             _CPU.PC += 2;
             memoryMngr.updateMemory();
         };
@@ -153,6 +152,7 @@ var TSOS;
 
             // Changed to string to change its base to hex.
             var acc = parseInt(_CPU.Acc.toString(), 16);
+
             _CPU.Acc = value + acc;
             _CPU.PC += 2;
             memoryMngr.updateMemory();
@@ -163,8 +163,6 @@ var TSOS;
             _CPU.IR = "A2";
             _CPU.PC++;
             _CPU.XReg = parseInt(memory.readMem(_CPU.PC.toString()), 16);
-
-            //_CPU.isExecuting = false;
             _CPU.PC++;
             memoryMngr.updateMemory();
         };
@@ -184,8 +182,6 @@ var TSOS;
             _CPU.IR = "A0";
             _CPU.PC++;
             _CPU.YReg = parseInt(memory.readMem(_CPU.PC.toString()), 16);
-
-            //_CPU.isExecuting = false;
             _CPU.PC++;
             memoryMngr.updateMemory();
         };
@@ -208,7 +204,6 @@ var TSOS;
 
         // 00
         Cpu.prototype.break = function () {
-            // _KernelInterruptQueue.enqueue(new Interrupt(end, 0));
             _CPU.isExecuting = false;
         };
 
