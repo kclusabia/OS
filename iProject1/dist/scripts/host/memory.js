@@ -74,9 +74,9 @@ var TSOS;
             return _MemoryArray[index];
         };
 
+        // Stores data in the specified index in memory.
         Memory.prototype.storeData = function (index, data) {
             _MemoryArray[index] = data;
-            //this.updateMem();
         };
         return Memory;
     })();

@@ -128,13 +128,8 @@ module TSOS {
                     _krnKeyboardDriver.isr(params);   // Kernel mode device driver
                     _StdIn.handleInput();
                     break;
-                // Indicates that there was an interrupt.
-                case end:
-                    _CPU.isExecuting = false;
-                    pcb.showPCB();
-                    memoryMngr.updateMemory();
-                    _CPU.init();
-                    break;
+
+                // Indicates that there was a software interrupt.
                 case sysCall:
                     // Print the contents in Y register.
                     if(_CPU.XReg == 1) {
@@ -148,6 +143,7 @@ module TSOS {
                         while ( (parseInt(memoryMngr.readMemory(_CPU.YReg + x), 16)) != 0 && (x < 256) ) {
                             var ascii = parseInt(memoryMngr.readMemory((_CPU.YReg + x).toString()), 16);
                             var char = String.fromCharCode(ascii);
+
                             _StdOut.putText(char);
                             x++;
                         }

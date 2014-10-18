@@ -74,9 +74,9 @@ module TSOS {
             return _MemoryArray[index];
         }
 
+        // Stores data in the specified index in memory.
         public storeData(index, data) {
             _MemoryArray[index] = data;
-            //this.updateMem();
         }
 
 

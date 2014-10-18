@@ -120,12 +120,6 @@ var TSOS;
                     _StdIn.handleInput();
                     break;
 
-                case end:
-                    _CPU.isExecuting = false;
-                    pcb.showPCB();
-                    memoryMngr.updateMemory();
-                    _CPU.init();
-                    break;
                 case sysCall:
                     // Print the contents in Y register.
                     if (_CPU.XReg == 1) {
@@ -138,6 +132,7 @@ var TSOS;
                         while ((parseInt(memoryMngr.readMemory(_CPU.YReg + x), 16)) != 0 && (x < 256)) {
                             var ascii = parseInt(memoryMngr.readMemory((_CPU.YReg + x).toString()), 16);
                             var char = String.fromCharCode(ascii);
+
                             _StdOut.putText(char);
                             x++;
                         }
