@@ -66,11 +66,12 @@ var _hardwareClockID: number = null;
 var _GLaDOS: any = null;
 var Glados: any = null;
 
-var sysCall = "FF";
+var sysCall:number = 11;
+var breakCall:number = 12;
 
 // Creating the memory table
 var _MemoryArray: any[] = null;
-var _MemorySize: number = 255;
+var _MemorySize: number = 256;
 var memory: TSOS.Memory;
 var memoryMngr : TSOS.MemoryManager;
 

@@ -129,11 +129,15 @@ module TSOS {
                     _StdIn.handleInput();
                     break;
 
+                case breakCall:
+                    _CPU.init();
+                    break;
+
                 // Indicates that there was a software interrupt.
                 case sysCall:
                     // Print the contents in Y register.
                     if(_CPU.XReg == 1) {
-                        _StdOut.putText("Y register contains: " + _CPU.YReg);
+                        _StdOut.putText("" + _CPU.YReg);
                         _Console.advanceLine();
                         _OsShell.putPrompt();
                         break;

@@ -112,6 +112,9 @@ module TSOS {
             else if(opcode == "FF") {
                 this.sysCall();
             }
+            else {
+                _StdOut.putText("Invalid Opcode");
+            }
         }
 
         // A9
@@ -146,9 +149,9 @@ module TSOS {
 //            var temp = firstByte + secondByte;
             _CPU.PC++;
 
-            var storage = parseInt(memoryMngr.readMemory(_CPU.PC));
+            var storage = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
             var acc = _CPU.Acc;
-            memoryMngr.storeData(parseInt(storage.toString(),16), acc);
+            memoryMngr.storeData(parseInt(storage.toString(),10), acc);
             _CPU.PC += 2;
             memoryMngr.updateMemory();
         }
@@ -161,7 +164,7 @@ module TSOS {
             var value = parseInt(memoryMngr.readMemory(loc), 16);
 
             // Changed to string to change its base to hex.
-            var acc = parseInt(_CPU.Acc.toString(), 16);
+            var acc = parseInt(_CPU.Acc.toString());
 
             _CPU.Acc = value + acc;
             _CPU.PC += 2;
@@ -214,7 +217,7 @@ module TSOS {
 
         // 00
         public break() {
-            _CPU.isExecuting = false;
+            _KernelInterruptQueue.enqueue(new Interrupt(breakCall, 2));
         }
 
         // EC
@@ -223,10 +226,8 @@ module TSOS {
             _CPU.PC++;
             // Gets the address
             var loc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
-
             // Gets the value in the specified address
             var value = parseInt(memoryMngr.readMemory(loc));
-
             // Compares the content of the address with the X register.
             if(value == _CPU.XReg.toString(10))
                 _CPU.ZFlag = 1;
@@ -241,12 +242,13 @@ module TSOS {
             _CPU.IR = "D0";
             if(_CPU.ZFlag == 0) {
                 _CPU.PC++;
-                var byteValue = parseInt(memoryMngr.readMemory(_CPU.PC.toString(), 16), 16);
+                var byteValue:number = parseInt(memoryMngr.readMemory(_CPU.PC.toString(), 16), 16);
                 _CPU.PC += byteValue;
 
                 if(_CPU.PC > _MemorySize) {
                     _CPU.PC -= _MemorySize;
                 }
+                _CPU.PC++;
               memoryMngr.updateMemory();
                 }
             else {

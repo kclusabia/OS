@@ -99,6 +99,8 @@ var TSOS;
                 this.incByteVal();
             } else if (opcode == "FF") {
                 this.sysCall();
+            } else {
+                _StdOut.putText("Invalid Opcode");
             }
         };
 
@@ -136,9 +138,9 @@ var TSOS;
             //            var temp = firstByte + secondByte;
             _CPU.PC++;
 
-            var storage = parseInt(memoryMngr.readMemory(_CPU.PC));
+            var storage = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
             var acc = _CPU.Acc;
-            memoryMngr.storeData(parseInt(storage.toString(), 16), acc);
+            memoryMngr.storeData(parseInt(storage.toString(), 10), acc);
             _CPU.PC += 2;
             memoryMngr.updateMemory();
         };
@@ -151,7 +153,7 @@ var TSOS;
             var value = parseInt(memoryMngr.readMemory(loc), 16);
 
             // Changed to string to change its base to hex.
-            var acc = parseInt(_CPU.Acc.toString(), 16);
+            var acc = parseInt(_CPU.Acc.toString());
 
             _CPU.Acc = value + acc;
             _CPU.PC += 2;
@@ -204,7 +206,7 @@ var TSOS;
 
         // 00
         Cpu.prototype.break = function () {
-            _CPU.isExecuting = false;
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(breakCall, 2));
         };
 
         // EC
@@ -238,6 +240,7 @@ var TSOS;
                 if (_CPU.PC > _MemorySize) {
                     _CPU.PC -= _MemorySize;
                 }
+                _CPU.PC++;
                 memoryMngr.updateMemory();
             } else {
                 _CPU.PC += 2;
