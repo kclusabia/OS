@@ -29,10 +29,11 @@ module TSOS {
             this.base = base;                                   //this.base = (limit.toString(16).toUpperCase()) + 1
             this.limit = limit.toString(16).toUpperCase();      // this.limit = this.base + this.size;
             this.state = this.states[state];
-            this.showPCB();
+            //this.showResident();
+           // this.showPCB();
         }
 
-        // Displays the PCB block on the screen.
+        // Displays the ready the queue.
         public showPCB() {
             document.getElementById("PID").innerHTML = this.getPID();
             document.getElementById("PC1").innerHTML = this.pc;
@@ -45,6 +46,13 @@ module TSOS {
             document.getElementById("YReg1").innerHTML = this.yReg;
             document.getElementById("ZFlag1").innerHTML = this.zFlag;
         }
+
+//        public showResident() {
+//            document.getElementById("PIDR").innerHTML = this.getPID();
+//            document.getElementById("StateR").innerHTML = this.state;
+//            document.getElementById("BaseR").innerHTML = this.base;
+//            document.getElementById("LimitR").innerHTML = this.limit;
+//        }
 
         // Updates the PCB block.
         public updatePCB() {
@@ -83,8 +91,5 @@ module TSOS {
             return this.limit;
         }
 
-//        public incrementSegment():void {
-//            ProcessControlBlock.segment++;
-//        }
     }
 }
