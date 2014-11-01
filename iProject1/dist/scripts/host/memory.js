@@ -31,14 +31,13 @@ var TSOS;
         };
 
         // Loads the program into the memory.
-        Memory.prototype.loadProgram = function (data) {
-            //TODO change function
+        Memory.prototype.loadProgram = function (data, base) {
             var input = data.replace(/^\s+|\s+$/g, '');
             input = input.trim();
 
             var x = 0;
             var y = x + 2;
-            for (var row = 0; row < input.length / 2; row += 8) {
+            for (var row = base; row < base + (input.length / 2); row += 8) {
                 for (var col = row; col <= row + 7; col++) {
                     _MemoryArray[col] = input.substring(x, y);
                     x = y + 1;
@@ -82,7 +81,7 @@ var TSOS;
         Memory.prototype.getBase = function () {
             if (residentQueue.length == 0) {
                 return 0;
-            } else if (residentQueue.length == 1 && (residentQueue[0].getState() != "running" || residentQueue[0].getState() != "waiting")) {
+            } else if (residentQueue.length == 1) {
                 return 256;
             } else {
                 return 512;
@@ -90,9 +89,9 @@ var TSOS;
         };
 
         Memory.prototype.getLimit = function () {
-            if (memory.getBase() == 0) {
+            if (this.getBase() == 0) {
                 return 255;
-            } else if (memory.getBase() == 256) {
+            } else if (this.getBase() == 256) {
                 return 511;
             } else {
                 return 767;

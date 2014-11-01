@@ -14,6 +14,10 @@ var TSOS;
             return memory.readMem(index);
         };
 
+        MemoryManager.prototype.loadMemory = function (data1, base) {
+            memory.loadProgram(data1, base);
+        };
+
         // Stores the data into the specified address, denoted by the index.
         MemoryManager.prototype.storeData = function (index, data) {
             memory.storeData(index, data);

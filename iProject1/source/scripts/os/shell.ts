@@ -293,8 +293,8 @@ module TSOS {
 
             for (var i = 0; i < input.length; i++) {
                 var ascii = input.charCodeAt(i);
-                if ( (ascii >= 65 && ascii <= 70) || (ascii >= 97 && ascii <= 102) ||
-                     (ascii >= 48 && ascii <= 57) || (ascii == 32) ) {
+                if ((ascii >= 65 && ascii <= 70) || (ascii >= 97 && ascii <= 102) ||
+                    (ascii >= 48 && ascii <= 57) || (ascii == 32)) {
                     continue;
                 }
                 else {
@@ -302,22 +302,26 @@ module TSOS {
                     return;
                 }
             }
-            _StdOut.putText("You have loaded the program successfully.");
-            // Creating a PCB block.
-            var base = memory.getBase();
-            var limit = memory.getLimit();
-            pcb = new ProcessControlBlock();
-            pcb.newPCB(base, limit, 0);     // (base, limit, state)
+            if (residentQueue.length == 3) {
+                _StdOut.putText("Memory is full");
+            }
+            else {
+                _StdOut.putText("You have loaded the program successfully.");
+                // Creating a PCB block.
+                var base = memory.getBase();
+                var limit = memory.getLimit();
+                pcb = new ProcessControlBlock();
+                pcb.newPCB(base, limit, 0);         // (base, limit, state)
 
-            //residentQueue = new Array<ProcessControlBlock>();
-            residentQueue.push(pcb.getPID());
-            _Console.advanceLine();
+                //residentQueue = new Array<ProcessControlBlock>();
+                residentQueue.push(pcb.getPID());
+                _Console.advanceLine();
 
-            // Displays the current PID.
-            _StdOut.putText("Process ID: " + pcb.getPID());
-
-            memory.loadProgram(input.toString());
-            _Console.advanceLine();
+                // Displays the current PID.
+                _StdOut.putText("Process ID: " + pcb.getPID());
+                memoryMngr.loadMemory(input.toString(), base);
+                _Console.advanceLine();
+            }
         }
 
         public shellRun(args) {

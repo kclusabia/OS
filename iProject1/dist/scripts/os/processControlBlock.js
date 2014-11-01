@@ -6,6 +6,7 @@ var TSOS;
 (function (TSOS) {
     var ProcessControlBlock = (function () {
         function ProcessControlBlock() {
+            this.pid1 = ProcessControlBlock.pid;
             this.pc = 0;
             this.state = "";
             this.base = 0;
@@ -15,15 +16,15 @@ var TSOS;
             this.xReg = 0;
             this.yReg = 0;
             this.zFlag = 0;
-            this.size = 255;
             this.states = new Array("new", "running", "waiting", "ready", "terminated");
         }
         // Creating a PCB block.
         ProcessControlBlock.prototype.newPCB = function (base, limit, state) {
+            this.incrementPID();
+            this.pid1 = ProcessControlBlock.pid;
             this.base = base; //this.base = (limit.toString(16).toUpperCase()) + 1
             this.limit = limit.toString(16).toUpperCase(); // this.limit = this.base + this.size;
             this.state = this.states[state];
-            this.incrementPID();
             this.showPCB();
         };
 
@@ -59,7 +60,7 @@ var TSOS;
 
         // Gets the current PID.
         ProcessControlBlock.prototype.getPID = function () {
-            return ProcessControlBlock.pid;
+            return this.pid1;
         };
 
         ProcessControlBlock.prototype.setState = function (index) {

@@ -7,6 +7,7 @@ module TSOS {
     export class ProcessControlBlock {
 
         public static pid = -1;
+        public pid1 = ProcessControlBlock.pid;
         public pc = 0;
         public state = "";
         public base:number = 0;
@@ -16,7 +17,6 @@ module TSOS {
         public xReg = 0;
         public yReg = 0;
         public zFlag = 0;
-        public size = 255;
         public states:string[] = new Array("new", "running", "waiting", "ready", "terminated");
 
         constructor() {
@@ -24,10 +24,11 @@ module TSOS {
 
         // Creating a PCB block.
         public newPCB(base:number, limit:string, state:number):void {
+            this.incrementPID();
+            this.pid1 = ProcessControlBlock.pid;
             this.base = base;                                   //this.base = (limit.toString(16).toUpperCase()) + 1
             this.limit = limit.toString(16).toUpperCase();      // this.limit = this.base + this.size;
             this.state = this.states[state];
-            this.incrementPID();
             this.showPCB();
         }
 
@@ -63,7 +64,7 @@ module TSOS {
 
         // Gets the current PID.
         public getPID():number{
-            return ProcessControlBlock.pid;
+            return this.pid1;
         }
 
         public setState(index:number):void {

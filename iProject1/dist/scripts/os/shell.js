@@ -268,23 +268,26 @@ var TSOS;
                     return;
                 }
             }
-            _StdOut.putText("You have loaded the program successfully.");
+            if (residentQueue.length == 3) {
+                _StdOut.putText("Memory is full");
+            } else {
+                _StdOut.putText("You have loaded the program successfully.");
 
-            // Creating a PCB block.
-            var base = memory.getBase();
-            var limit = memory.getLimit();
-            pcb = new TSOS.ProcessControlBlock();
-            pcb.newPCB(base, limit, 0); // (base, limit, state)
+                // Creating a PCB block.
+                var base = memory.getBase();
+                var limit = memory.getLimit();
+                pcb = new TSOS.ProcessControlBlock();
+                pcb.newPCB(base, limit, 0); // (base, limit, state)
 
-            //residentQueue = new Array<ProcessControlBlock>();
-            residentQueue.push(pcb.getPID());
-            _Console.advanceLine();
+                //residentQueue = new Array<ProcessControlBlock>();
+                residentQueue.push(pcb.getPID());
+                _Console.advanceLine();
 
-            // Displays the current PID.
-            _StdOut.putText("Process ID: " + pcb.getPID());
-
-            memory.loadProgram(input.toString());
-            _Console.advanceLine();
+                // Displays the current PID.
+                _StdOut.putText("Process ID: " + pcb.getPID());
+                memoryMngr.loadMemory(input.toString(), base);
+                _Console.advanceLine();
+            }
         };
 
         Shell.prototype.shellRun = function (args) {
