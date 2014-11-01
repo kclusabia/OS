@@ -271,8 +271,10 @@ var TSOS;
             _StdOut.putText("You have loaded the program successfully.");
 
             // Creating a PCB block.
+            var base = memory.getBase();
+            var limit = memory.getLimit();
             pcb = new TSOS.ProcessControlBlock();
-            pcb.newPCB(0, 255, 0); // (base, limit, state)
+            pcb.newPCB(base, limit, 0); // (base, limit, state)
 
             //residentQueue = new Array<ProcessControlBlock>();
             residentQueue.push(pcb.getPID());

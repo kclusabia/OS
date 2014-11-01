@@ -24,6 +24,7 @@ var TSOS;
             this.limit = limit.toString(16).toUpperCase(); // this.limit = this.base + this.size;
             this.state = this.states[state];
             this.incrementPID();
+            this.showPCB();
         };
 
         // Displays the PCB block on the screen.

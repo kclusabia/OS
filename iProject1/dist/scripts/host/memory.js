@@ -80,12 +80,28 @@ var TSOS;
         };
 
         Memory.prototype.getBase = function () {
-            if (residentQueue == 1 && (pcb.getState() != "running" || pcb.getState() != "waiting")) {
+            if (residentQueue.length == 0) {
                 return 0;
+            } else if (residentQueue.length == 1 && (residentQueue[0].getState() != "running" || residentQueue[0].getState() != "waiting")) {
+                return 256;
+            } else {
+                return 512;
             }
         };
 
+        Memory.prototype.getLimit = function () {
+            if (memory.getBase() == 0) {
+                return 255;
+            } else if (memory.getBase() == 256) {
+                return 511;
+            } else {
+                return 767;
+            }
+        };
+
+        // Clear the memory and resetting the resident queue.
         Memory.prototype.clearMem = function () {
+            residentQueue = null;
             return this.newTable();
         };
         return Memory;

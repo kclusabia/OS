@@ -11,8 +11,6 @@ module TSOS {
             var memTable = "<table>";
             _MemoryArray = new Array();
 
-
-
             for (var i = 0; i <= _MemorySize; i += 8) {
                 // Creating a row of 256 bytes.
                 memTable += "<tr>";
@@ -82,13 +80,32 @@ module TSOS {
         }
 
         public getBase() {
-            if(residentQueue == 0 && (pcb.getState() != "running" || pcb.getState() != "waiting")) {
+            if(residentQueue.length == 0) {
                 return 0;
             }
-            else if(residentQueue == 1 && (pcb.getState() != "running" || pcb.getState() != "waiting"))
+            else if(residentQueue.length == 1 && (residentQueue[0].getState() != "running" || residentQueue[0].getState() != "waiting")) {
+                return 256;
+            }
+            else {
+                return 512;
+            }
         }
 
+        public getLimit() {
+            if(memory.getBase() == 0) {
+                return 255;
+            }
+            else if(memory.getBase() == 256) {
+                return 511;
+            }
+            else {
+                return 767;
+            }
+        }
+
+        // Clear the memory and resetting the resident queue.
         public clearMem() {
+            residentQueue = null;
             return this.newTable();
         }
 
