@@ -79,6 +79,12 @@ var TSOS;
             _MemoryArray[index] = data;
         };
 
+        Memory.prototype.getBase = function () {
+            if (residentQueue == 1 && (pcb.getState() != "running" || pcb.getState() != "waiting")) {
+                return 0;
+            }
+        };
+
         Memory.prototype.clearMem = function () {
             return this.newTable();
         };

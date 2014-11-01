@@ -11,6 +11,8 @@ module TSOS {
             var memTable = "<table>";
             _MemoryArray = new Array();
 
+
+
             for (var i = 0; i <= _MemorySize; i += 8) {
                 // Creating a row of 256 bytes.
                 memTable += "<tr>";
@@ -77,6 +79,13 @@ module TSOS {
         // Stores data in the specified index in memory.
         public storeData(index, data) {
             _MemoryArray[index] = data;
+        }
+
+        public getBase() {
+            if(residentQueue == 0 && (pcb.getState() != "running" || pcb.getState() != "waiting")) {
+                return 0;
+            }
+            else if(residentQueue == 1 && (pcb.getState() != "running" || pcb.getState() != "waiting"))
         }
 
         public clearMem() {
