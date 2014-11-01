@@ -314,18 +314,38 @@ module TSOS {
                 pcb.newPCB(base, limit, 0);         // (base, limit, state)
 
                 //residentQueue = new Array<ProcessControlBlock>();
-                residentQueue.push(pcb.getPID());
+                residentQueue[pcb.getPID()] = pcb;
                 _Console.advanceLine();
 
                 // Displays the current PID.
                 _StdOut.putText("Process ID: " + pcb.getPID());
                 memoryMngr.loadMemory(input.toString(), base);
                 _Console.advanceLine();
+                Shell.updateRes();
             }
         }
 
+        public static updateRes(){
+            var tableView = "<table>";
+            tableView +="<th>PID</th>";
+            tableView +="<th>Base</th>";
+            tableView +="<th>Limit</th>";
+            tableView +="<th>State</th>";
+            for(var i =0; i<residentQueue.length;i++) {
+
+                var s:TSOS.ProcessControlBlock = residentQueue[i];
+                tableView += "<tr>";
+                tableView += "<td>" + s.getPID().toString() + "</td>";
+                tableView += "<td>" + s.getBase().toString() + "</td>";
+                tableView += "<td>" + s.getLimit().toString() + "</td>";
+                tableView += "<td>" + s.getState().toString()+ "</td>";
+                tableView += "</tr>";
+            }
+            tableView += "</table>";
+            document.getElementById("ResidentQueue").innerHTML = tableView;
+        }
+
         public shellRun(args) {
-            pcb.setState(1);
             readyQueue.enqueue(residentQueue[args[0]]);
             process = residentQueue[args[0]];
         }
