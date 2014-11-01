@@ -67,12 +67,13 @@ var breakCall = 12;
 
 // Creating the memory table
 var _MemoryArray = null;
-var _MemorySize = 256;
+var _MemorySize = 768;
 var memory;
 var memoryMngr;
 
 // Creating the pcb block.
 var pcb;
+var process;
 
 // Creating the queues.
 var readyQueue;

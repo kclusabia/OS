@@ -71,12 +71,13 @@ var breakCall:number = 12;
 
 // Creating the memory table
 var _MemoryArray: any[] = null;
-var _MemorySize: number = 256;
+var _MemorySize: number = 768;
 var memory: TSOS.Memory;
 var memoryMngr : TSOS.MemoryManager;
 
 // Creating the pcb block.
 var pcb: TSOS.ProcessControlBlock;
+var process:TSOS.ProcessControlBlock;
 
 // Creating the queues.
 var readyQueue: TSOS.Queue;
