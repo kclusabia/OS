@@ -23,6 +23,8 @@ module TSOS {
             _KernelBuffers = new Array();         // Buffers... for the kernel.
             _KernelInputQueue = new Queue();      // Where device input lands before being processed out somewhere.
             _Console = new Console();          // The command line interface / console I/O device.
+            readyQueue = new Queue();
+            residentQueue = new Array<ProcessControlBlock>();
 
             // Initialize the console.
             _Console.init();
@@ -131,6 +133,10 @@ module TSOS {
 
                 case breakCall:
                     _CPU.init();
+                    _CPU.showCPU();
+                    pcb.setState(4);
+                    pcb.showPCB();
+
                     break;
 
                 // Indicates that there was a software interrupt.

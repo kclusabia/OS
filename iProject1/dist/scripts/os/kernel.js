@@ -21,6 +21,8 @@ var TSOS;
             _KernelBuffers = new Array(); // Buffers... for the kernel.
             _KernelInputQueue = new TSOS.Queue(); // Where device input lands before being processed out somewhere.
             _Console = new TSOS.Console(); // The command line interface / console I/O device.
+            readyQueue = new TSOS.Queue();
+            residentQueue = new Array();
 
             // Initialize the console.
             _Console.init();
@@ -122,6 +124,10 @@ var TSOS;
 
                 case breakCall:
                     _CPU.init();
+                    _CPU.showCPU();
+                    pcb.setState(4);
+                    pcb.showPCB();
+
                     break;
 
                 case sysCall:
