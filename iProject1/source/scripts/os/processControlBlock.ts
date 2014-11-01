@@ -8,6 +8,7 @@ module TSOS {
 
         public static pid = -1;
         public pc = 0;
+        public state = "";
         public base:number = 0;
         public limit = "";
         public acc = 0;
@@ -15,14 +16,17 @@ module TSOS {
         public xReg = 0;
         public yReg = 0;
         public zFlag = 0;
+        public size = 255;
+        public states:string[] = new Array("new", "running", "waiting", "ready", "terminated");
 
         constructor() {
          }
 
         // Creating a PCB block.
-        public newPCB(base:number, limit:string):void {
-            this.base = base;
-            this.limit = limit.toString(16).toUpperCase();
+        public newPCB(base:number, limit:string, state:number):void {
+            this.base = base;                                   //this.base = (limit.toString(16).toUpperCase()) + 1
+            this.limit = limit.toString(16).toUpperCase();      // this.limit = this.base + this.size;
+            this.state = this.states[state];
             this.incrementPID();
         }
 
@@ -30,6 +34,7 @@ module TSOS {
         public showPCB() {
             document.getElementById("PID").innerHTML = this.getPID();
             document.getElementById("PC1").innerHTML = this.pc;
+            document.getElementById("State").innerHTML = this.state;
             document.getElementById("Acc1").innerHTML = this.acc;
             document.getElementById("IR1").innerHTML = this.IR;
             document.getElementById("Base").innerHTML = this.base;
@@ -43,7 +48,6 @@ module TSOS {
         public updatePCB() {
 //            ProcessControlBlock.pid = pcb.getPID();//
             pcb.pc = _CPU.PC;
-            //ProcessControlBlock.pid = ProcessControlBlock.getPID();
             pcb.acc = _CPU.Acc;
             pcb.IR = _CPU.IR;
             pcb.xReg = _CPU.XReg;
@@ -60,5 +64,25 @@ module TSOS {
         public getPID():number{
             return ProcessControlBlock.pid;
         }
+
+        public setState(index:number):void {
+            this.state = this.states[index];
+        }
+
+        public getState():string {
+            return this.state;
+        }
+
+        public getBase():number {
+            return this.base;
+        }
+
+        public getLimit():number {
+            return this.limit;
+        }
+
+//        public incrementSegment():void {
+//            ProcessControlBlock.segment++;
+//        }
     }
 }

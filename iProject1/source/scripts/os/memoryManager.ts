@@ -9,6 +9,7 @@ module TSOS {
         constructor() {
             memory = new Memory();
             memory.newTable();
+
         }
 
         // Reads the data from the specified address, denoted as the index.
@@ -24,5 +25,6 @@ module TSOS {
         public updateMemory() {
             return memory.updateMem();
         }
+
     }
 }
