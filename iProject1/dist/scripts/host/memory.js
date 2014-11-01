@@ -78,6 +78,10 @@ var TSOS;
         Memory.prototype.storeData = function (index, data) {
             _MemoryArray[index] = data;
         };
+
+        Memory.prototype.clearMem = function () {
+            return this.newTable();
+        };
         return Memory;
     })();
     TSOS.Memory = Memory;

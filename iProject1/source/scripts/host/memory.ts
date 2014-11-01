@@ -79,6 +79,9 @@ module TSOS {
             _MemoryArray[index] = data;
         }
 
+        public clearMem() {
+            return this.newTable();
+        }
 
 
 
