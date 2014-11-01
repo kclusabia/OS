@@ -31,7 +31,6 @@ module TSOS {
 
         // Loads the program into the memory.
         public loadProgram(data) {
-            //TODO change function
             var input = data.replace(/^\s+|\s+$/g,''); 
             input = input.trim();
 
@@ -83,7 +82,7 @@ module TSOS {
             if(residentQueue.length == 0) {
                 return 0;
             }
-            else if(residentQueue.length == 1 && (residentQueue[0].getState() != "running" || residentQueue[0].getState() != "waiting")) {
+            else if(residentQueue.length == 1) {  //TODO && (residentQueue[0].getState() != "running" || residentQueue[0].getState() != "waiting")) {
                 return 256;
             }
             else {

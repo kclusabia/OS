@@ -67,8 +67,7 @@ var breakCall = 12;
 
 // Creating the memory table
 var _MemoryArray = null;
-var _MemorySize = 768;
-var _BlockSize = 255;
+var _MemorySize = 767;
 var memory;
 var memoryMngr;
 

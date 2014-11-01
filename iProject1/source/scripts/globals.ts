@@ -71,8 +71,7 @@ var breakCall:number = 12;
 
 // Creating the memory table
 var _MemoryArray: any[] = null;
-var _MemorySize: number = 768;
-var _BlockSize: number = 255;
+var _MemorySize: number = 767;
 var memory: TSOS.Memory;
 var memoryMngr : TSOS.MemoryManager;
 
