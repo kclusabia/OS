@@ -84,9 +84,11 @@ var TSOS;
             } else if (_CPU.isExecuting) {
                 _CPU.cycle();
             } else if (readyQueue.getSize() > 0) {
-                readyQueue.dequeue();
+                var d = readyQueue.dequeue();
                 _CPU.isExecuting = true;
-                _CPU.PC = 0; // TODO change to base for iProject 3
+                _CPU.PC = d.getBase(); // TODO change to base for iProject 3
+                d.setState(1);
+                TSOS.Shell.updateRes();
                 _CPU.showCPU();
             } else {
                 this.krnTrace("Idle");

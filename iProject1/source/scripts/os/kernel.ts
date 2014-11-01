@@ -88,9 +88,11 @@ module TSOS {
                 _CPU.cycle();
             }
             else if (readyQueue.getSize() > 0) {
-                readyQueue.dequeue();
+                var d:ProcessControlBlock = readyQueue.dequeue();
                 _CPU.isExecuting = true;
-                _CPU.PC = 0;            // TODO change to base for iProject 3
+                _CPU.PC = d.getBase();            // TODO change to base for iProject 3
+                d.setState(1);
+                Shell.updateRes();
                 _CPU.showCPU();
             }
             else {                      // If there are no interrupts and there is nothing being executed then just be idle. {
