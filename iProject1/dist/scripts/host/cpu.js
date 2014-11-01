@@ -237,8 +237,8 @@ var TSOS;
                 var byteValue = parseInt(memoryMngr.readMemory(_CPU.PC.toString(), 16), 16);
                 _CPU.PC += byteValue;
 
-                if (_CPU.PC > _MemorySize) {
-                    _CPU.PC -= _MemorySize;
+                if (_CPU.PC > memory.getLimit() + 1) {
+                    _CPU.PC -= memory.getLimit();
                 }
                 _CPU.PC++;
                 memoryMngr.updateMemory();
