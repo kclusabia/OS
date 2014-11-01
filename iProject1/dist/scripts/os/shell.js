@@ -57,6 +57,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellRun, "run", "- Runs the given program.");
             this.commandList[this.commandList.length] = sc;
 
+            // clear memory
+            sc = new TSOS.ShellCommand(this.shellClearMem, "clearmem", "- Clears the memory.");
+            this.commandList[this.commandList.length] = sc;
+
             // shutdown
             sc = new TSOS.ShellCommand(this.shellShutdown, "shutdown", "- Shuts down the virtual OS but leaves the underlying hardware simulation running.");
             this.commandList[this.commandList.length] = sc;
@@ -268,23 +272,27 @@ var TSOS;
 
             // Creating a PCB block.
             pcb = new TSOS.ProcessControlBlock();
-            pcb.newPCB(0, 255);
+            pcb.newPCB(0, 255, 0); // (base, limit, state)
 
-            // Creates the resident queue.
-            residentQueue = new Array();
+            //residentQueue = new Array<ProcessControlBlock>();
             residentQueue.push(pcb.getPID());
             _Console.advanceLine();
 
             // Displays the current PID.
             _StdOut.putText("Process ID: " + pcb.getPID());
 
-            // Creates the ready queue, where the processes are ready to execute.
-            readyQueue = new TSOS.Queue();
             memory.loadProgram(input.toString());
+            _Console.advanceLine();
         };
 
         Shell.prototype.shellRun = function (args) {
+            pcb.setState(1);
             readyQueue.enqueue(residentQueue[args[0]]);
+            process = residentQueue[args[0]];
+        };
+
+        Shell.prototype.shellClearMem = function (args) {
+            memory.clearMem();
         };
 
         Shell.prototype.shellShutdown = function (args) {

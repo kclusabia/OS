@@ -81,6 +81,12 @@ module TSOS {
                 "- Runs the given program.");
             this.commandList[this.commandList.length] = sc;
 
+            // clear memory
+            sc = new ShellCommand(this.shellClearMem,
+                "clearmem",
+                "- Clears the memory.");
+            this.commandList[this.commandList.length] = sc;
+
             // shutdown
             sc = new ShellCommand(this.shellShutdown,
                                   "shutdown",
@@ -297,26 +303,30 @@ module TSOS {
                 }
             }
             _StdOut.putText("You have loaded the program successfully.");
-
             // Creating a PCB block.
             pcb = new ProcessControlBlock();
-            pcb.newPCB(0, 255);
+            pcb.newPCB(0, 255, 0);     // (base, limit, state)
 
-            // Creates the resident queue.
-            residentQueue = new Array<ProcessControlBlock>();
+
+            //residentQueue = new Array<ProcessControlBlock>();
             residentQueue.push(pcb.getPID());
             _Console.advanceLine();
 
             // Displays the current PID.
             _StdOut.putText("Process ID: " + pcb.getPID());
 
-            // Creates the ready queue, where the processes are ready to execute.
-            readyQueue = new Queue();
             memory.loadProgram(input.toString());
+            _Console.advanceLine();
         }
 
         public shellRun(args) {
+            pcb.setState(1);
             readyQueue.enqueue(residentQueue[args[0]]);
+            process = residentQueue[args[0]];
+        }
+
+        public shellClearMem(args) {
+            memory.clearMem();
         }
 
         public shellShutdown(args) {
