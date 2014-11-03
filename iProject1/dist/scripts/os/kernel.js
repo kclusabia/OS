@@ -84,10 +84,10 @@ var TSOS;
             } else if (_CPU.isExecuting) {
                 _CPU.cycle();
             } else if (readyQueue.getSize() > 0) {
-                var d = readyQueue.dequeue();
+                process = readyQueue.dequeue();
                 _CPU.isExecuting = true;
-                _CPU.PC = d.getBase(); // TODO change to base for iProject 3
-                d.setState(1);
+                _CPU.PC = process.getBase();
+                process.setState(1);
                 TSOS.Shell.updateRes();
                 _CPU.showCPU();
             } else {
