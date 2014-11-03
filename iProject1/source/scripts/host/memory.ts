@@ -90,7 +90,7 @@ module TSOS {
             }
         }
 
-        public getLimit() {
+        public getLimit():number {
             if(this.getBase() == 0) {
                 return 255;
             }
