@@ -236,10 +236,15 @@ var TSOS;
                 _CPU.PC++;
                 var byteValue = parseInt(memoryMngr.readMemory(_CPU.PC.toString(), 16), 16);
                 _CPU.PC += byteValue;
-
-                if (_CPU.PC > memory.getLimit() + 1) {
-                    _CPU.PC -= memory.getLimit();
+                alert(_CPU.PC); // 265
+                alert(memory.getLimit());
+                if (_CPU.PC >= memory.getLimit()) {
+                    //alert(memory.getLimit());
+                    _CPU.PC = _CPU.PC - memory.getLimit();
+                    alert(_CPU.PC);
                 }
+
+                //alert(_CPU.PC +2);
                 _CPU.PC++;
                 memoryMngr.updateMemory();
             } else {
