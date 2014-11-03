@@ -81,6 +81,12 @@ module TSOS {
                 "- Runs the given program.");
             this.commandList[this.commandList.length] = sc;
 
+            // run all loaded programs at once.
+            sc = new ShellCommand(this.shellRun,
+                "runall",
+                "- Runs the given program.");
+            this.commandList[this.commandList.length] = sc;
+
             // clear memory
             sc = new ShellCommand(this.shellClearMem,
                 "clearmem",
@@ -346,8 +352,10 @@ module TSOS {
         }
 
         public shellRun(args) {
-            readyQueue.enqueue(residentQueue[args[0]]);
-            process = residentQueue[args[0]];
+            for (i=0; i < residentQueue.length; i++) {
+                readyQueue.enqueue(residentQueue[i]);
+                //  process = residentQueue[args[0]];
+            }
         }
 
         public shellClearMem(args) {

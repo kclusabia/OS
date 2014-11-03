@@ -57,6 +57,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellRun, "run", "- Runs the given program.");
             this.commandList[this.commandList.length] = sc;
 
+            // run all loaded programs at once.
+            sc = new TSOS.ShellCommand(this.shellRun, "runall", "- Runs the given program.");
+            this.commandList[this.commandList.length] = sc;
+
             // clear memory
             sc = new TSOS.ShellCommand(this.shellClearMem, "clearmem", "- Clears the memory.");
             this.commandList[this.commandList.length] = sc;
@@ -311,8 +315,10 @@ var TSOS;
         };
 
         Shell.prototype.shellRun = function (args) {
-            readyQueue.enqueue(residentQueue[args[0]]);
-            process = residentQueue[args[0]];
+            for (i = 0; i < residentQueue.length; i++) {
+                readyQueue.enqueue(residentQueue[i]);
+                //  process = residentQueue[args[0]];
+            }
         };
 
         Shell.prototype.shellClearMem = function (args) {
