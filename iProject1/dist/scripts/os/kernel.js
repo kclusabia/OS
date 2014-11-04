@@ -129,7 +129,13 @@ var TSOS;
                     _CPU.showCPU();
                     pcb.setState(4);
                     pcb.showPCB();
+                    break;
 
+                case invalidOpCode:
+                    _CPU.init();
+                    _Console.advanceLine();
+                    _OsShell.putPrompt();
+                    return;
                     break;
 
                 case sysCall:
