@@ -5,6 +5,7 @@ var TSOS;
 (function (TSOS) {
     var Memory = (function () {
         function Memory() {
+            this.base = 0;
         }
         // Creates the memory table consisting of an array.
         Memory.prototype.newTable = function () {
@@ -80,27 +81,34 @@ var TSOS;
 
         Memory.prototype.getBase = function () {
             if (residentQueue.length == 0) {
-                return 0;
+                this.base = 0;
+                return this.base;
             } else if (residentQueue.length == 1) {
-                return 256;
-            } else {
-                return 512;
-            }
+                this.base = 256;
+                return this.base;
+            } else if (residentQueue.length == 2) {
+                this.base = 512;
+                return this.base;
+            } else
+                return -1;
         };
 
         Memory.prototype.getLimit = function () {
-            if (this.getBase() == 0) {
+            if (this.base == 0) {
                 return 255;
-            } else if (this.getBase() == 256) {
+            } else if (this.base == 256) {
                 return 511;
-            } else {
+            } else if (this.base == 512) {
                 return 767;
-            }
+            } else
+                return -1;
         };
 
         // Clear the memory and resetting the resident queue.
         Memory.prototype.clearMem = function () {
-            residentQueue = null;
+            for (var i = residentQueue.length - 1; i >= 0; i--) {
+                residentQueue.splice(i, 1);
+            }
             return this.newTable();
         };
         return Memory;

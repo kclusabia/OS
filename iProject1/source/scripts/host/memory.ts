@@ -3,6 +3,8 @@
  ------------ */
 module TSOS {
     export class Memory {
+
+        public base:number = 0;
         constructor() {
         }
 
@@ -80,31 +82,40 @@ module TSOS {
 
         public getBase() {
             if(residentQueue.length == 0) {
-                return 0;
+                this.base = 0;
+                return this.base;
             }
             else if(residentQueue.length == 1) {  //TODO && (residentQueue[0].getState() != "running" || residentQueue[0].getState() != "waiting")) {
-                return 256;
+                this.base = 256;
+                return this.base;
             }
-            else {
-                return 512;
+            else if (residentQueue.length == 2) {
+                this.base = 512;
+                return this.base;
             }
+            else
+                return -1;
         }
 
         public getLimit():number {
-            if(this.getBase() == 0) {
+            if(this.base == 0) {
                 return 255;
             }
-            else if(this.getBase() == 256) {
+            else if(this.base  == 256) {
                 return 511;
             }
-            else {
+            else if (this.base == 512) {
                 return 767;
             }
+            else
+                return -1;
         }
 
         // Clear the memory and resetting the resident queue.
         public clearMem() {
-            residentQueue = null;
+            for(var i = residentQueue.length-1; i >= 0; i--) {
+                residentQueue.splice(i, 1);
+            }
             return this.newTable();
         }
 

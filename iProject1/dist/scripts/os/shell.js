@@ -58,7 +58,17 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
 
             // run all loaded programs at once.
-            sc = new TSOS.ShellCommand(this.shellRun, "runall", "- Runs the given program.");
+            sc = new TSOS.ShellCommand(this.shellRunAll, "runall", "- Executes all the programs at once.");
+            this.commandList[this.commandList.length] = sc;
+
+            //TODO
+            // kills an active process.
+            sc = new TSOS.ShellCommand(this.shellKill, "kill", "- <pid> Runs the given program.");
+            this.commandList[this.commandList.length] = sc;
+
+            //TODO
+            // displays the PID of all active processes.
+            sc = new TSOS.ShellCommand(this.shellRun, "ps", "- Displays the PID of all active processes.");
             this.commandList[this.commandList.length] = sc;
 
             // clear memory
@@ -284,13 +294,14 @@ var TSOS;
                 pcb.newPCB(base, limit, 0); // (base, limit, state)
 
                 //residentQueue = new Array<ProcessControlBlock>();
-                residentQueue[pcb.getPID()] = pcb;
+                residentQueue.push(pcb);
                 _Console.advanceLine();
 
                 // Displays the current PID.
                 _StdOut.putText("Process ID: " + pcb.getPID());
                 memoryMngr.loadMemory(input.toString(), base);
-                _Console.advanceLine();
+
+                // _Console.advanceLine();
                 Shell.updateRes();
             }
         };
@@ -315,9 +326,12 @@ var TSOS;
         };
 
         Shell.prototype.shellRun = function (args) {
+            readyQueue.enqueue(residentQueue[args]);
+        };
+
+        Shell.prototype.shellRunAll = function (args) {
             for (i = 0; i < residentQueue.length; i++) {
                 readyQueue.enqueue(residentQueue[i]);
-                //  process = residentQueue[args[0]];
             }
         };
 

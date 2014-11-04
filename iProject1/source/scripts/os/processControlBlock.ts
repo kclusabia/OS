@@ -11,7 +11,7 @@ module TSOS {
         public pc = 0;
         public state = "";
         public base:number = 0;
-        public limit = "";
+        public limit:number = 0;
         public acc = 0;
         public IR = "";
         public xReg = 0;
@@ -23,14 +23,13 @@ module TSOS {
          }
 
         // Creating a PCB block.
-        public newPCB(base:number, limit:string, state:number):void {
+        public newPCB(base:number, limit:number, state:number):void {
             this.incrementPID();
             this.pid1 = ProcessControlBlock.pid;
             this.base = base;                                   //this.base = (limit.toString(16).toUpperCase()) + 1
-            this.limit = limit.toString(16).toUpperCase();      // this.limit = this.base + this.size;
+            this.limit = limit;     // this.limit = this.base + this.size;
             this.state = this.states[state];
             //this.showResident();
-           // this.showPCB();
         }
 
         // Displays the ready the queue.
@@ -41,7 +40,7 @@ module TSOS {
             document.getElementById("Acc1").innerHTML = this.acc;
             document.getElementById("IR1").innerHTML = this.IR;
             document.getElementById("Base").innerHTML = this.base;
-            document.getElementById("Limit").innerHTML = this.limit;
+            document.getElementById("Limit").innerHTML = parseInt(this.limit,16);
             document.getElementById("XReg1").innerHTML = this.xReg;
             document.getElementById("YReg1").innerHTML = this.yReg;
             document.getElementById("ZFlag1").innerHTML = this.zFlag;
