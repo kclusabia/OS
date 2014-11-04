@@ -64,6 +64,7 @@ var Glados = null;
 
 var sysCall = 11;
 var breakCall = 12;
+var invalidOpCode = 13;
 
 // Creating the memory table
 var _MemoryArray = null;

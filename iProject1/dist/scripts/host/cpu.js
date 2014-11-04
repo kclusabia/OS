@@ -100,7 +100,10 @@ var TSOS;
             } else if (opcode == "FF") {
                 this.sysCall();
             } else {
-                _StdOut.putText("Invalid Opcode");
+                _StdOut.putText("The input contained an invalid op code");
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(invalidOpCode, 3));
+                // _Console.advanceLine();
+                //return;
             }
         };
 
@@ -236,12 +239,9 @@ var TSOS;
                 _CPU.PC++;
                 var byteValue = parseInt(memoryMngr.readMemory(_CPU.PC.toString(), 16), 16);
                 _CPU.PC += byteValue;
-                alert(_CPU.PC); // 265
-                alert(memory.getLimit());
-                if (_CPU.PC >= memory.getLimit()) {
+                if (_CPU.PC >= process.getLimit()) {
                     //alert(memory.getLimit());
-                    _CPU.PC = _CPU.PC - memory.getLimit();
-                    alert(_CPU.PC);
+                    _CPU.PC = _CPU.PC - (process.getLimit() - process.getBase()) - 1;
                 }
 
                 //alert(_CPU.PC +2);
