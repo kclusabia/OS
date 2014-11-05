@@ -68,7 +68,7 @@ var TSOS;
 
             //TODO
             // displays the PID of all active processes.
-            sc = new TSOS.ShellCommand(this.shellRun, "ps", "- Displays the PID of all active processes.");
+            sc = new TSOS.ShellCommand(this.shellPs, "ps", "- Displays the PID of all active processes.");
             this.commandList[this.commandList.length] = sc;
 
             // clear memory
@@ -326,17 +326,38 @@ var TSOS;
         };
 
         Shell.prototype.shellRun = function (args) {
-            readyQueue.enqueue(residentQueue[args]);
+            if (residentQueue[args].getState() == "new") {
+                readyQueue.enqueue(residentQueue[args]);
+            }
         };
 
         Shell.prototype.shellRunAll = function (args) {
             for (i = 0; i < residentQueue.length; i++) {
                 readyQueue.enqueue(residentQueue[i]);
+                //                residentQueue[i].setState(3);            // set state to ready.
+                //                residentQueue[i].setState(1);
+                //                residentQueue[i].setState(4);
+            }
+        };
+
+        //TODO make sure to dequeue the terminated process from ready
+        Shell.prototype.shellPs = function (args) {
+            for (i = 0; i < residentQueue.length; i++) {
+                var obj = residentQueue[i];
+                if (obj.getState() == "running") {
+                    _StdOut.putText("PID: " + obj.getPID());
+                    _Console.advanceLine();
+                }
+                //                else {
+                //                    _StdOut.putText("There are currently no active processes.");
+                //                    _Console.advanceLine();
+                //                    _OsShell.putPrompt();
+                //                }
             }
         };
 
         Shell.prototype.shellClearMem = function (args) {
-            memory.clearMem();
+            memoryMngr.clearMemory();
         };
 
         Shell.prototype.shellShutdown = function (args) {

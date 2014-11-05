@@ -82,9 +82,23 @@ module TSOS {
             this.commandList[this.commandList.length] = sc;
 
             // run all loaded programs at once.
-            sc = new ShellCommand(this.shellRun,
+            sc = new ShellCommand(this.shellRunAll,
                 "runall",
-                "- Runs the given program.");
+                "- Executes all the programs at once.");
+            this.commandList[this.commandList.length] = sc;
+
+            //TODO
+            // kills an active process.
+            sc = new ShellCommand(this.shellKill,
+                "kill",
+                "- <pid> Runs the given program.");
+            this.commandList[this.commandList.length] = sc;
+
+            //TODO
+            // displays the PID of all active processes.
+            sc = new ShellCommand(this.shellPs,
+                "ps",
+                "- Displays the PID of all active processes.");
             this.commandList[this.commandList.length] = sc;
 
             // clear memory
@@ -320,13 +334,13 @@ module TSOS {
                 pcb.newPCB(base, limit, 0);         // (base, limit, state)
 
                 //residentQueue = new Array<ProcessControlBlock>();
-                residentQueue[pcb.getPID()] = pcb;
+                residentQueue.push(pcb);
                 _Console.advanceLine();
 
                 // Displays the current PID.
                 _StdOut.putText("Process ID: " + pcb.getPID());
                 memoryMngr.loadMemory(input.toString(), base);
-                _Console.advanceLine();
+               // _Console.advanceLine();
                 Shell.updateRes();
             }
         }
@@ -352,14 +366,35 @@ module TSOS {
         }
 
         public shellRun(args) {
+            if(residentQueue[args].getState() == "new") {
+                readyQueue.enqueue(residentQueue[args]);
+            }
+        }
+
+        public shellRunAll(args) {
             for (i=0; i < residentQueue.length; i++) {
                 readyQueue.enqueue(residentQueue[i]);
-                //  process = residentQueue[args[0]];
+            }
+        }
+
+        //TODO make sure to dequeue the terminated process from ready
+        public shellPs(args) {
+            for (i=0; i < residentQueue.length; i++) {
+                var obj:TSOS.ProcessControlBlock = residentQueue[i];
+                if(obj.getState() == "running") {
+                    _StdOut.putText("PID: " + obj.getPID());
+                    _Console.advanceLine();
+                }
+//                else {
+//                    _StdOut.putText("There are currently no active processes.");
+//                    _Console.advanceLine();
+//                    _OsShell.putPrompt();
+//                }
             }
         }
 
         public shellClearMem(args) {
-            memory.clearMem();
+            memoryMngr.clearMemory();
         }
 
         public shellShutdown(args) {
