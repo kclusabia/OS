@@ -63,12 +63,16 @@ var TSOS;
 
             //TODO
             // kills an active process.
-            sc = new TSOS.ShellCommand(this.shellKill, "kill", "- <pid> Runs the given program.");
+            sc = new TSOS.ShellCommand(this.shellKill, "kill", "<pid> - Runs the given program.");
             this.commandList[this.commandList.length] = sc;
 
             //TODO
             // displays the PID of all active processes.
             sc = new TSOS.ShellCommand(this.shellPs, "ps", "- Displays the PID of all active processes.");
+            this.commandList[this.commandList.length] = sc;
+
+            // displays the quantum.
+            sc = new TSOS.ShellCommand(this.shellSetQuantum, "quantum", "<number> - Sets the quantum. Default quantum is 6");
             this.commandList[this.commandList.length] = sc;
 
             // clear memory
@@ -334,9 +338,16 @@ var TSOS;
         Shell.prototype.shellRunAll = function (args) {
             for (i = 0; i < residentQueue.length; i++) {
                 readyQueue.enqueue(residentQueue[i]);
-                //                residentQueue[i].setState(3);            // set state to ready.
-                //                residentQueue[i].setState(1);
-                //                residentQueue[i].setState(4);
+            }
+        };
+
+        //TODO dequeue the process from ready and ?resident.
+        Shell.prototype.shellKill = function (args) {
+            if (args == process.getPID()) {
+                residentQueue.splice(process.getPID(), 1); // remove the process with that PID from the resident queue.
+                process.setState(4);
+                _StdOut.putText("Process " + args + " was murdered.");
+                process.updatePCB();
             }
         };
 
@@ -353,6 +364,16 @@ var TSOS;
                 //                    _Console.advanceLine();
                 //                    _OsShell.putPrompt();
                 //                }
+            }
+        };
+
+        Shell.prototype.shellSetQuantum = function (args) {
+            if (args <= 0) {
+                quantum = 6;
+                _StdOut.putText("Cannot have a quantum of 0. Setting to default = " + quantum);
+            } else if (args.length > 0) {
+                quantum = args;
+                _StdOut.putText("Quantum was set to: " + quantum);
             }
         };
 

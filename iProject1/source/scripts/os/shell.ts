@@ -91,7 +91,7 @@ module TSOS {
             // kills an active process.
             sc = new ShellCommand(this.shellKill,
                 "kill",
-                "- <pid> Runs the given program.");
+                "<pid> - Runs the given program.");
             this.commandList[this.commandList.length] = sc;
 
             //TODO
@@ -99,6 +99,12 @@ module TSOS {
             sc = new ShellCommand(this.shellPs,
                 "ps",
                 "- Displays the PID of all active processes.");
+            this.commandList[this.commandList.length] = sc;
+
+            // displays the quantum.
+            sc = new ShellCommand(this.shellSetQuantum,
+                "quantum",
+                "<number> - Sets the quantum. Default quantum is 6");
             this.commandList[this.commandList.length] = sc;
 
             // clear memory
@@ -377,6 +383,16 @@ module TSOS {
             }
         }
 
+        //TODO dequeue the process from ready and ?resident?.
+        public shellKill(args) {
+            if(args == process.getPID()) {
+                residentQueue.splice(process.getPID(), 1);     // remove the process with that PID from the resident queue.
+                process.setState(4);
+                _StdOut.putText("Process " + args + " was murdered.");
+                process.updatePCB();
+            }
+        }
+
         //TODO make sure to dequeue the terminated process from ready
         public shellPs(args) {
             for (i=0; i < residentQueue.length; i++) {
@@ -390,6 +406,17 @@ module TSOS {
 //                    _Console.advanceLine();
 //                    _OsShell.putPrompt();
 //                }
+            }
+        }
+
+        public shellSetQuantum(args) {
+            if(args <= 0) {
+                quantum = 6;
+                _StdOut.putText("Cannot have a quantum of 0. Setting to default = " + quantum);
+            }
+            else if(args.length > 0) {
+                quantum = args;
+                _StdOut.putText("Quantum was set to: " + quantum);
             }
         }
 
