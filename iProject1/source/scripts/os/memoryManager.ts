@@ -30,5 +30,9 @@ module TSOS {
             return memory.updateMem();
         }
 
+        public clearMemory() {
+            memory.clearMem();
+        }
+
     }
 }
