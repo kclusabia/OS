@@ -116,6 +116,7 @@ module TSOS {
             for(var i = residentQueue.length-1; i >= 0; i--) {
                 residentQueue.splice(i, 1);
             }
+            Shell.updateRes();
             return this.newTable();
         }
 
