@@ -80,6 +80,8 @@ var process;
 var readyQueue;
 var residentQueue = null;
 
+var quantum = null;
+
 var onDocumentLoad = function () {
     TSOS.Control.hostInit();
 };

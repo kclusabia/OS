@@ -84,6 +84,8 @@ var process:TSOS.ProcessControlBlock;
 var readyQueue: TSOS.Queue;
 var residentQueue: any[] = null;
 
+var quantum:number = null;
+
 var onDocumentLoad = function() {
 	TSOS.Control.hostInit();
 };
