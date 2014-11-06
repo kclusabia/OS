@@ -70,6 +70,7 @@ var sysCall:number = 11;
 var breakCall:number = 12;
 var invalidOpCode:number = 13;
 var contextSwitch = 14;
+var newProcess = 15;
 
 // Creating the memory table
 var _MemoryArray: any[] = null;
@@ -85,9 +86,9 @@ var process:TSOS.ProcessControlBlock;
 var readyQueue: TSOS.Queue;
 var residentQueue: any[] = null;
 
-var quantum:number = null;
+var quantum:number = 6;
 var clockCycle:number = 0;
-var scheduler:TSOS.Scheduler;
+var scheduler: TSOS.Scheduler;
 
 var onDocumentLoad = function() {
 	TSOS.Control.hostInit();

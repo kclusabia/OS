@@ -23,6 +23,7 @@ var TSOS;
             _Console = new TSOS.Console(); // The command line interface / console I/O device.
             readyQueue = new TSOS.Queue();
             residentQueue = new Array();
+            scheduler = new TSOS.Scheduler();
 
             // Initialize the console.
             _Console.init();
@@ -134,8 +135,12 @@ var TSOS;
 
                     break;
 
-                case contextSwitch:
+                case newProcess:
                     scheduler.startProcess();
+                    break;
+
+                case contextSwitch:
+                    scheduler.contextSwitch();
                     break;
 
                 case sysCall:
@@ -144,7 +149,6 @@ var TSOS;
                         _StdOut.putText("" + _CPU.YReg);
                         _Console.advanceLine();
                         _OsShell.putPrompt();
-                        break;
                     } else if (_CPU.XReg == 2) {
                         var x = 0;
                         while ((parseInt(memoryMngr.readMemory(_CPU.YReg + x), 16)) != 0 && (x < 256)) {

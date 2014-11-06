@@ -3,10 +3,11 @@
  */
 module TSOS {
     export class Scheduler {
-        public schedulerType = "";
-        public schedulers:string[] = ("RoundRobin", "FCFS" , "NonPreemptive");
+        public schedulerType:string = "";
+        public schedulers:string[] = ["RoundRobin", "FCFS", "NonPreemptive"];
 
         constructor() {
+           // this.schedulerType = schedulers[0];
         }
 
         public init() {
@@ -19,15 +20,17 @@ module TSOS {
             this.schedulerType = this.schedulers[index];
         }
 
-        //start new process
-        public startProcess() {
-            if(readyQueue.getSize() > 0) {
-                return readyQueue.dequeue();
-            }
-        }
+//        //start new process
+//        public startProcess() {
+//            if(readyQueue.getSize() > 0) {
+//                process = readyQueue.dequeue();
+//            }
+//        }
 
-        public getNewProcess() {
+        public startProcess() {
+            alert("top");
             if(!readyQueue.isEmpty()) {
+                alert("ssHI");
                 process = readyQueue.dequeue();
                 process.setState(0);            // sets the state to new
                 _CPU.beginProcess(process);
@@ -40,6 +43,7 @@ module TSOS {
         }
 
         public contextSwitch() {
+            this.init();
             if(readyQueue.isEmpty() && process.getState() == "terminated") {
                 _CPU.init();
                 return;
@@ -48,13 +52,15 @@ module TSOS {
                 this.doSwitcheroo();            // puts the current process at the end of ready queue and is waiting.
             }
 
-            var process = readyQueue.dequeue();
+            process = readyQueue.dequeue();
+            _Kernel.krnTrace("Context switched. Processing PID: " + process.getPID());
             process.setState(1);            // set state to running.
             _CPU.beginProcess(process);
             Shell.updateRes();
         }
 
         public doSwitcheroo() {
+            // need this info for the next process to know.
             process.setPC(_CPU.PC);
             process.setAcc(_CPU.Acc);
             process.setIR(_CPU.IR);
@@ -65,11 +71,7 @@ module TSOS {
             process.setState(2);
             process.showPCB();
             _CPU.showCPU();
-            return;
         }
-
-
-
 
     }
 }

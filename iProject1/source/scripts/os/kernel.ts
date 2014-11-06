@@ -25,6 +25,7 @@ module TSOS {
             _Console = new Console();          // The command line interface / console I/O device.
             readyQueue = new Queue();
             residentQueue = new Array();
+            scheduler = new Scheduler();
 
             // Initialize the console.
             _Console.init();
@@ -155,8 +156,12 @@ module TSOS {
 //                    return;
                     break;
 
-                case contextSwitch:
+                case newProcess:
                     scheduler.startProcess();
+                    break;
+
+                case contextSwitch:
+                    scheduler.contextSwitch();
                     break;
                    // scheduler.getNewProcess();
 
@@ -167,7 +172,6 @@ module TSOS {
                         _StdOut.putText("" + _CPU.YReg);
                         _Console.advanceLine();
                         _OsShell.putPrompt();
-                        break;
                     }
                     else if (_CPU.XReg == 2) {
                         var x = 0;

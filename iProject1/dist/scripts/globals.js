@@ -66,6 +66,7 @@ var sysCall = 11;
 var breakCall = 12;
 var invalidOpCode = 13;
 var contextSwitch = 14;
+var newProcess = 15;
 
 // Creating the memory table
 var _MemoryArray = null;
@@ -81,7 +82,7 @@ var process;
 var readyQueue;
 var residentQueue = null;
 
-var quantum = null;
+var quantum = 6;
 var clockCycle = 0;
 var scheduler;
 
