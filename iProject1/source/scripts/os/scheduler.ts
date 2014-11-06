@@ -19,6 +19,7 @@ module TSOS {
             this.schedulerType = this.schedulers[index];
         }
 
+        //start new process
         public startProcess() {
             if(readyQueue.getSize() > 0) {
                 return readyQueue.dequeue();

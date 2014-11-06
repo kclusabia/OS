@@ -18,6 +18,7 @@ var TSOS;
             this.schedulerType = this.schedulers[index];
         };
 
+        //start new process
         Scheduler.prototype.startProcess = function () {
             if (readyQueue.getSize() > 0) {
                 return readyQueue.dequeue();

@@ -342,6 +342,7 @@ var TSOS;
                 readyQueue.enqueue(residentQueue[i]);
             }
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(contextSwitch, 5));
+            process.startProcess();
         };
 
         //TODO dequeue the process from ready and ?resident?.
