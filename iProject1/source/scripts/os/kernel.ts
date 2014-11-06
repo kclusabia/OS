@@ -84,17 +84,22 @@ module TSOS {
                 // TODO: Implement a priority queue based on the IRQ number/id to enforce interrupt priority.
                 var interrupt = _KernelInterruptQueue.dequeue();
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
-            } else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed. {
+            } else if (clockCycle > quantum) { // If there are no interrupts then run one CPU cycle if there is anything being processed. {
+                scheduler.contextSwitch();      // only perform context switch when quantum has expired.
+            }
+            else if(_CPU.isExecuting) {
                 _CPU.cycle();
+                clockCycle++;
             }
-            else if (readyQueue.getSize() > 0) {
-                process = readyQueue.dequeue();
-                _CPU.isExecuting = true;
-                _CPU.PC = process.getBase();
-                process.setState(1);
-                Shell.updateRes();
-                _CPU.showCPU();
-            }
+//            else if (readyQueue.getSize() > 0) {
+//                //_KernelInterruptQueue.enqueue(new Interrupt(contextSwitch, 5));
+//                process = readyQueue.dequeue();
+//                _CPU.isExecuting = true;
+//                _CPU.PC = process.getBase();
+//                process.setState(1);
+//                Shell.updateRes();
+//                _CPU.showCPU();
+//            }
             else {                      // If there are no interrupts and there is nothing being executed then just be idle. {
                 this.krnTrace("Idle");
             }
@@ -136,17 +141,24 @@ module TSOS {
                 case breakCall:
                     _CPU.init();
                     _CPU.showCPU();
-                    pcb.setState(4);
-                    pcb.showPCB();
+                    process.setState(4);
+                    process.showPCB();
+                    Shell.updateRes();
+                    scheduler.startProcess();
                     break;
 
                 case invalidOpCode:
-                    _CPU.init();
-                    _Console.advanceLine();
-                    _OsShell.putPrompt();
-                    return;
+                    _StdOut.putText("The input contained an invalid op code");
+//                    _CPU.init();
+//                    _Console.advanceLine();
+//                    _OsShell.putPrompt();
+//                    return;
                     break;
 
+                case contextSwitch:
+                    scheduler.startProcess();
+                    break;
+                   // scheduler.getNewProcess();
 
                 // Indicates that there was a software interrupt.
                 case sysCall:

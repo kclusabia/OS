@@ -69,6 +69,7 @@ var Glados: any = null;
 var sysCall:number = 11;
 var breakCall:number = 12;
 var invalidOpCode:number = 13;
+var contextSwitch = 14;
 
 // Creating the memory table
 var _MemoryArray: any[] = null;
@@ -85,6 +86,8 @@ var readyQueue: TSOS.Queue;
 var residentQueue: any[] = null;
 
 var quantum:number = null;
+var clockCycle:number = 0;
+var scheduler:TSOS.Scheduler;
 
 var onDocumentLoad = function() {
 	TSOS.Control.hostInit();

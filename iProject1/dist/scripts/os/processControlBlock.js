@@ -84,6 +84,54 @@ var TSOS;
         ProcessControlBlock.prototype.getLimit = function () {
             return this.limit;
         };
+
+        ProcessControlBlock.prototype.getPC = function () {
+            return this.pc;
+        };
+
+        ProcessControlBlock.prototype.setPC = function (pc) {
+            this.pc = pc;
+        };
+
+        ProcessControlBlock.prototype.getAcc = function () {
+            return this.acc;
+        };
+
+        ProcessControlBlock.prototype.setAcc = function (Acc) {
+            this.acc = Acc;
+        };
+
+        ProcessControlBlock.prototype.getIR = function () {
+            return this.IR;
+        };
+
+        ProcessControlBlock.prototype.setIR = function (ir) {
+            this.IR = ir;
+        };
+
+        ProcessControlBlock.prototype.getXReg = function () {
+            return this.xReg;
+        };
+
+        ProcessControlBlock.prototype.setXReg = function (xreg) {
+            this.xReg = xreg;
+        };
+
+        ProcessControlBlock.prototype.getYReg = function () {
+            return this.yReg;
+        };
+
+        ProcessControlBlock.prototype.setYReg = function (yreg) {
+            this.yReg = yreg;
+        };
+
+        ProcessControlBlock.prototype.getZFlag = function () {
+            return this.zFlag;
+        };
+
+        ProcessControlBlock.prototype.setZFlag = function (zflag) {
+            this.zFlag = zflag;
+        };
         ProcessControlBlock.pid = -1;
         return ProcessControlBlock;
     })();

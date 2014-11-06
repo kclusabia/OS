@@ -331,17 +331,20 @@ var TSOS;
 
         Shell.prototype.shellRun = function (args) {
             if (residentQueue[args].getState() == "new") {
+                alert("hi");
                 readyQueue.enqueue(residentQueue[args]);
+                process.startProcess();
             }
         };
 
-        Shell.prototype.shellRunAll = function (args) {
+        Shell.prototype.shellRunAll = function () {
             for (i = 0; i < residentQueue.length; i++) {
                 readyQueue.enqueue(residentQueue[i]);
             }
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(contextSwitch, 5));
         };
 
-        //TODO dequeue the process from ready and ?resident.
+        //TODO dequeue the process from ready and ?resident?.
         Shell.prototype.shellKill = function (args) {
             if (args == process.getPID()) {
                 residentQueue.splice(process.getPID(), 1); // remove the process with that PID from the resident queue.

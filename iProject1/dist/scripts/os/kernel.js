@@ -81,15 +81,11 @@ var TSOS;
                 // TODO: Implement a priority queue based on the IRQ number/id to enforce interrupt priority.
                 var interrupt = _KernelInterruptQueue.dequeue();
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
+            } else if (clockCycle > quantum) {
+                scheduler.contextSwitch(); // only perform context switch when quantum has expired.
             } else if (_CPU.isExecuting) {
                 _CPU.cycle();
-            } else if (readyQueue.getSize() > 0) {
-                process = readyQueue.dequeue();
-                _CPU.isExecuting = true;
-                _CPU.PC = process.getBase();
-                process.setState(1);
-                TSOS.Shell.updateRes();
-                _CPU.showCPU();
+                clockCycle++;
             } else {
                 this.krnTrace("Idle");
             }
@@ -127,15 +123,19 @@ var TSOS;
                 case breakCall:
                     _CPU.init();
                     _CPU.showCPU();
-                    pcb.setState(4);
-                    pcb.showPCB();
+                    process.setState(4);
+                    process.showPCB();
+                    TSOS.Shell.updateRes();
+                    scheduler.startProcess();
                     break;
 
                 case invalidOpCode:
-                    _CPU.init();
-                    _Console.advanceLine();
-                    _OsShell.putPrompt();
-                    return;
+                    _StdOut.putText("The input contained an invalid op code");
+
+                    break;
+
+                case contextSwitch:
+                    scheduler.startProcess();
                     break;
 
                 case sysCall:

@@ -373,14 +373,18 @@ module TSOS {
 
         public shellRun(args) {
             if(residentQueue[args].getState() == "new") {
+                alert("hi");
                 readyQueue.enqueue(residentQueue[args]);
+                process.startProcess();
             }
         }
 
-        public shellRunAll(args) {
+        public shellRunAll() {
             for (i=0; i < residentQueue.length; i++) {
                 readyQueue.enqueue(residentQueue[i]);
             }
+            _KernelInterruptQueue.enqueue(new Interrupt(contextSwitch, 5));
+            process.startProcess();
         }
 
         //TODO dequeue the process from ready and ?resident?.

@@ -90,5 +90,54 @@ module TSOS {
             return this.limit;
         }
 
+        public getPC() {
+            return this.pc;
+        }
+
+        public setPC(pc:number) {
+            this.pc = pc;
+        }
+
+        public getAcc() {
+            return this.acc;
+        }
+
+        public setAcc(Acc) {
+            this.acc = Acc;
+        }
+
+        public getIR() {
+            return this.IR;
+        }
+
+        public setIR(ir) {
+            this.IR = ir;
+        }
+
+        public getXReg() {
+            return this.xReg;
+        }
+
+        public setXReg(xreg) {
+            this.xReg = xreg;
+        }
+
+        public getYReg() {
+            return this.yReg;
+        }
+
+        public setYReg(yreg) {
+            this.yReg = yreg;
+        }
+
+        public getZFlag() {
+            return this.zFlag;
+        }
+
+        public setZFlag(zflag) {
+            this.zFlag = zflag;
+        }
+
+
     }
 }

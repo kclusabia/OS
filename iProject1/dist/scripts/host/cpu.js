@@ -39,6 +39,16 @@ var TSOS;
             this.isExecuting = false;
         };
 
+        Cpu.prototype.beginProcess = function (p) {
+            _CPU.PC = p.getPC();
+            _CPU.Acc = p.getAcc();
+            _CPU.IR = p.getIR();
+            _CPU.XReg = p.getXReg();
+            _CPU.YReg = p.getYReg();
+            _CPU.ZFlag = p.getZFlag();
+            _CPU.isExecuting = true;
+        };
+
         Cpu.prototype.cycle = function () {
             _Kernel.krnTrace('CPU cycle');
 
@@ -100,7 +110,7 @@ var TSOS;
             } else if (opcode == "FF") {
                 this.sysCall();
             } else {
-                _StdOut.putText("The input contained an invalid op code");
+                //_StdOut.putText("The input contained an invalid op code");
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(invalidOpCode, 3));
                 // _Console.advanceLine();
                 //return;

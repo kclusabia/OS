@@ -39,6 +39,16 @@ module TSOS {
             this.isExecuting = false;
         }
 
+        public beginProcess(p:TSOS.ProcessControlBlock):void {
+            _CPU.PC = p.getPC();
+            _CPU.Acc = p.getAcc();
+            _CPU.IR = p.getIR();
+            _CPU.XReg = p.getXReg();
+            _CPU.YReg = p.getYReg();
+            _CPU.ZFlag = p.getZFlag();
+            _CPU.isExecuting = true;
+        }
+
         public cycle(): void {
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
@@ -113,7 +123,7 @@ module TSOS {
                 this.sysCall();
             }
             else {
-                _StdOut.putText("The input contained an invalid op code");
+                //_StdOut.putText("The input contained an invalid op code");
                 _KernelInterruptQueue.enqueue(new Interrupt(invalidOpCode, 3));
                // _Console.advanceLine();
                 //return;

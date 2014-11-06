@@ -65,6 +65,7 @@ var Glados = null;
 var sysCall = 11;
 var breakCall = 12;
 var invalidOpCode = 13;
+var contextSwitch = 14;
 
 // Creating the memory table
 var _MemoryArray = null;
@@ -81,6 +82,8 @@ var readyQueue;
 var residentQueue = null;
 
 var quantum = null;
+var clockCycle = 0;
+var scheduler;
 
 var onDocumentLoad = function () {
     TSOS.Control.hostInit();
