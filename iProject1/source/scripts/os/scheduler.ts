@@ -30,7 +30,7 @@ module TSOS {
         public startProcess() {
             alert("top");
             if(!readyQueue.isEmpty()) {
-                alert("ssHI");
+                alert("In startProcess");
                 process = readyQueue.dequeue();
                 process.setState(0);            // sets the state to new
                 _CPU.beginProcess(process);
@@ -48,9 +48,9 @@ module TSOS {
                 _CPU.init();
                 return;
             }
-            else {
+          //  else {
                 this.doSwitcheroo();            // puts the current process at the end of ready queue and is waiting.
-            }
+        //    }
 
             process = readyQueue.dequeue();
             _Kernel.krnTrace("Context switched. Processing PID: " + process.getPID());

@@ -85,7 +85,7 @@ module TSOS {
                 // TODO: Implement a priority queue based on the IRQ number/id to enforce interrupt priority.
                 var interrupt = _KernelInterruptQueue.dequeue();
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
-            } else if (clockCycle > quantum) { // If there are no interrupts then run one CPU cycle if there is anything being processed. {
+            } else if (clockCycle >= quantum) { // If there are no interrupts then run one CPU cycle if there is anything being processed. {
                 scheduler.contextSwitch();      // only perform context switch when quantum has expired.
             }
             else if(_CPU.isExecuting) {
@@ -233,7 +233,7 @@ module TSOS {
 
         public krnTrapError(msg) {
             Control.hostLog("OS ERROR - TRAP: " + msg);
-            _Console.ifError();
+            //_Console.ifError();
 
             // TODO: Display error on console, perhaps in some sort of colored screen. (Perhaps blue?)
             this.krnShutdown();

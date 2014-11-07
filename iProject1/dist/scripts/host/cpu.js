@@ -39,7 +39,9 @@ var TSOS;
             this.isExecuting = false;
         };
 
+        // Goes through this twice.
         Cpu.prototype.beginProcess = function (p) {
+            alert("beginProcess");
             _CPU.PC = p.getPC();
             _CPU.Acc = p.getAcc();
             _CPU.IR = p.getIR();
@@ -47,6 +49,7 @@ var TSOS;
             _CPU.YReg = p.getYReg();
             _CPU.ZFlag = p.getZFlag();
             _CPU.isExecuting = true;
+            alert("PA");
         };
 
         Cpu.prototype.cycle = function () {

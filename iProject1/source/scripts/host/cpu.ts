@@ -39,7 +39,9 @@ module TSOS {
             this.isExecuting = false;
         }
 
+        // Goes through this twice.
         public beginProcess(p:TSOS.ProcessControlBlock):void {
+            alert("beginProcess");
             _CPU.PC = p.getPC();
             _CPU.Acc = p.getAcc();
             _CPU.IR = p.getIR();
@@ -47,6 +49,7 @@ module TSOS {
             _CPU.YReg = p.getYReg();
             _CPU.ZFlag = p.getZFlag();
             _CPU.isExecuting = true;
+            alert("PA");
         }
 
         public cycle(): void {
