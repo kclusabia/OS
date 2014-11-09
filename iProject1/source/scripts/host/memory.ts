@@ -13,7 +13,7 @@ module TSOS {
             var memTable = "<table>";
             _MemoryArray = new Array();
 
-            for (var i = 0; i <= _MemorySize; i += 8) {
+            for (var i = 0; i < _MemorySize; i += 8) {
                 // Creating a row of 256 bytes.
                 memTable += "<tr>";
                 //Base
@@ -52,7 +52,7 @@ module TSOS {
         public updateMem(){
             var memTable = "<table>";
 
-            for(var i=0; i<=_MemorySize;i+=8) {
+            for(var i = 0; i < _MemorySize; i+=8) {
 
                 memTable += "<tr>";
                 memTable += "<td>" + "00x" + i.toString(16) + "</td>";
@@ -83,29 +83,29 @@ module TSOS {
         public getBase() {
             if(residentQueue.length == 0) {
                 this.base = 0;
+               // alert("base: " + this.base);
                 return this.base;
             }
             else if(residentQueue.length == 1) {  //TODO && (residentQueue[0].getState() != "running" || residentQueue[0].getState() != "waiting")) {
                 this.base = 256;
+               // alert("base: " + this.base);
                 return this.base;
             }
             else if (residentQueue.length == 2) {
                 this.base = 512;
+              //  alert("base: " + this.base);
                 return this.base;
             }
-            else
-                return -1;
+            else {
+                this.base = -1;
+                return this.base;
+            }
         }
 
         public getLimit():number {
-            if(this.base == 0) {
-                return 255;
-            }
-            else if(this.base  == 256) {
-                return 511;
-            }
-            else if (this.base == 512) {
-                return 767;
+            if(this.base != -1) {
+               // alert("limit: " + parseInt(this.base+255));
+                return parseInt(this.base+255);
             }
             else
                 return -1;

@@ -373,7 +373,7 @@ module TSOS {
 
         public shellRun(args) {
             if(residentQueue[args].getState() == "new") {
-                alert("hi");
+              //  alert("hi");
                 readyQueue.enqueue(residentQueue[args]);
                 _KernelInterruptQueue.enqueue(new Interrupt(newProcess, 5));
             }

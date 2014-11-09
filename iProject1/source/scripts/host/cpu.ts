@@ -41,7 +41,6 @@ module TSOS {
 
         // Goes through this twice.
         public beginProcess(p:TSOS.ProcessControlBlock):void {
-            alert("beginProcess");
             _CPU.PC = p.getPC();
             _CPU.Acc = p.getAcc();
             _CPU.IR = p.getIR();
@@ -49,7 +48,6 @@ module TSOS {
             _CPU.YReg = p.getYReg();
             _CPU.ZFlag = p.getZFlag();
             _CPU.isExecuting = true;
-            alert("PA");
         }
 
         public cycle(): void {
@@ -57,16 +55,18 @@ module TSOS {
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
 
+           // alert("PC: " + parseInt(_CPU.PC + process.getBase()));
             // Goes through all the opcodes.
-            _CPU.runOpCode(memory.readMem(_CPU.PC));
+            _CPU.runOpCode(memoryMngr.readMemory(_CPU.PC));
 
             // Updates the CPU block.
             _CPU.showCPU();
 
             // Updates the PCB.
-            pcb.updatePCB();
+            process.updatePCB();
             // Redraws the PCB.
-            pcb.showPCB();
+            process.showPCB();
+
         }
 
         // The CPU block
@@ -127,6 +127,7 @@ module TSOS {
             }
             else {
                 //_StdOut.putText("The input contained an invalid op code");
+               // alert("opcode: " + opcode + "PC: " + _CPU.PC);
                 _KernelInterruptQueue.enqueue(new Interrupt(invalidOpCode, 3));
                // _Console.advanceLine();
                 //return;
@@ -136,7 +137,7 @@ module TSOS {
         // A9
         public loadAccConstant() {
             _CPU.IR = "A9";
-            this.PC++;
+            _CPU.PC++;
             _CPU.Acc = memoryMngr.readMemory(_CPU.PC);
             _CPU.PC++;
             memoryMngr.updateMemory();
@@ -167,7 +168,7 @@ module TSOS {
 
             var storage = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
             var acc = _CPU.Acc;
-            memoryMngr.storeData(parseInt(storage.toString(),10), acc);
+            memoryMngr.storeData(storage, acc.toString(16));
             _CPU.PC += 2;
             memoryMngr.updateMemory();
         }
@@ -191,7 +192,7 @@ module TSOS {
         public loadXRegCons() {
             _CPU.IR = "A2";
             _CPU.PC++;
-            _CPU.XReg = parseInt(memory.readMem(_CPU.PC.toString()), 16);
+            _CPU.XReg = parseInt(memoryMngr.readMemory(_CPU.PC, 16));
             _CPU.PC++;
             memoryMngr.updateMemory();
         }
@@ -201,7 +202,7 @@ module TSOS {
             _CPU.IR = "AE";
             _CPU.PC++;
             var loc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
-            _CPU.XReg = parseInt(memoryMngr.readMemory(loc.toString()), 16);
+            _CPU.XReg = parseInt(memoryMngr.readMemory(loc, 16));
             _CPU.PC += 2;
             memoryMngr.updateMemory();
         }
@@ -210,7 +211,7 @@ module TSOS {
         public loadYRegCons() {
             _CPU.IR = "A0";
             _CPU.PC++;
-            _CPU.YReg = parseInt(memory.readMem(_CPU.PC.toString()), 16);
+            _CPU.YReg = parseInt(memoryMngr.readMemory(_CPU.PC).toString(), 16);
             _CPU.PC++;
             memoryMngr.updateMemory();
         }
@@ -220,7 +221,7 @@ module TSOS {
             _CPU.IR = "AC";
             _CPU.PC++;
             var loc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
-            _CPU.YReg = parseInt(memoryMngr.readMemory(loc.toString()), 16);
+            _CPU.YReg = parseInt(memoryMngr.readMemory(loc, 16));
             _CPU.PC += 2;
             memoryMngr.updateMemory();
         }
@@ -258,12 +259,16 @@ module TSOS {
             _CPU.IR = "D0";
             if(_CPU.ZFlag == 0) {
                 _CPU.PC++;
-                var byteValue:number = parseInt(memoryMngr.readMemory(_CPU.PC.toString(), 16), 16);
+                alert("PC before Byte: " + _CPU.PC);
+                var byteValue:number = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
                 _CPU.PC += byteValue;
-                if(_CPU.PC >= process.getLimit()) {
+                alert("PC" + _CPU.PC);
+                alert("PC Before: "+parseInt(_CPU.PC+process.getBase())+", Limit: "+process.getLimit());
+                if(_CPU.PC > 256) {
                     //alert(memory.getLimit());
-                    _CPU.PC = _CPU.PC - (process.getLimit() - process.getBase())-1;
+                    _CPU.PC = _CPU.PC - (256);
                 }
+                alert("PC After: "+parseInt(_CPU.PC+process.getBase()));
                 //alert(_CPU.PC +2);
                 _CPU.PC++;
               memoryMngr.updateMemory();
@@ -281,7 +286,7 @@ module TSOS {
             var loc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
             var value = parseInt(memoryMngr.readMemory(loc));
             value++;
-            memoryMngr.storeData(loc, parseInt(value.toString(), 16));
+            memoryMngr.storeData(loc, value.toString(16));
             _CPU.PC += 2;
             memoryMngr.updateMemory();
         }

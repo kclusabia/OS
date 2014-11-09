@@ -331,7 +331,7 @@ var TSOS;
 
         Shell.prototype.shellRun = function (args) {
             if (residentQueue[args].getState() == "new") {
-                alert("hi");
+                //  alert("hi");
                 readyQueue.enqueue(residentQueue[args]);
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(newProcess, 5));
             }

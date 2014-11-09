@@ -70,7 +70,7 @@ var newProcess = 15;
 
 // Creating the memory table
 var _MemoryArray = null;
-var _MemorySize = 767;
+var _MemorySize = 768;
 var memory;
 var memoryMngr;
 

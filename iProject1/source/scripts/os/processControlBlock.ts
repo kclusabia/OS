@@ -26,6 +26,7 @@ module TSOS {
         public newPCB(base:number, limit:number, state:number):void {
             this.incrementPID();
             this.pid1 = ProcessControlBlock.pid;
+            this.pc = 0;
             this.base = base;                                   //this.base = (limit.toString(16).toUpperCase()) + 1
             this.limit = limit;     // this.limit = this.base + this.size;
             this.state = this.states[state];
@@ -56,12 +57,12 @@ module TSOS {
         // Updates the PCB block.
         public updatePCB() {
 //            ProcessControlBlock.pid = pcb.getPID();//
-            pcb.pc = _CPU.PC;
-            pcb.acc = _CPU.Acc;
-            pcb.IR = _CPU.IR;
-            pcb.xReg = _CPU.XReg;
-            pcb.yReg = _CPU.YReg;
-            pcb.zFlag = _CPU.ZFlag;
+            process.pc = _CPU.PC;
+            process.acc = _CPU.Acc;
+            process.IR = _CPU.IR;
+            process.xReg = _CPU.XReg;
+            process.yReg = _CPU.YReg;
+            process.zFlag = _CPU.ZFlag;
         }
 
         // Increments the PID.

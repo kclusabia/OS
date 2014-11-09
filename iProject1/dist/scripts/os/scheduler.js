@@ -26,11 +26,9 @@ var TSOS;
         //            }
         //        }
         Scheduler.prototype.startProcess = function () {
-            alert("top");
             if (!readyQueue.isEmpty()) {
-                alert("In startProcess");
                 process = readyQueue.dequeue();
-                process.setState(0); // sets the state to new
+                process.setState(1); // sets the state to running
                 _CPU.beginProcess(process);
                 TSOS.Shell.updateRes();
             } else if (readyQueue.isEmpty() && process.getState() == "terminated") {
@@ -65,9 +63,10 @@ var TSOS;
             process.setXReg(_CPU.XReg);
             process.setYReg(_CPU.YReg);
             process.setZFlag(_CPU.ZFlag);
-            readyQueue.enqueue(process);
             process.setState(2);
-            process.showPCB();
+            readyQueue.enqueue(process);
+
+            // process.showPCB();
             _CPU.showCPU();
         };
         return Scheduler;

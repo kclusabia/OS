@@ -146,17 +146,21 @@ var TSOS;
                 case sysCall:
                     // Print the contents in Y register.
                     if (_CPU.XReg == 1) {
-                        _StdOut.putText("" + _CPU.YReg);
+                        _StdOut.putText("" + _CPU.YReg.toString());
                         _Console.advanceLine();
                         _OsShell.putPrompt();
-                    } else if (_CPU.XReg == 2) {
+                    }
+                    if (_CPU.XReg == 2) {
                         var x = 0;
-                        while ((parseInt(memoryMngr.readMemory(_CPU.YReg + x), 16)) != 0 && (x < 256)) {
-                            var ascii = parseInt(memoryMngr.readMemory((_CPU.YReg + x).toString()), 16);
-                            var char = String.fromCharCode(ascii);
-
-                            _StdOut.putText(char);
+                        var addr = parseInt(memoryMngr.readMemory(_CPU.YReg), 16);
+                        alert("Yreg: " + _CPU.YReg);
+                        alert("Address in FF is: " + (addr) + " PID: " + process.getPID() + " PC: " + parseInt(process.getBase() + _CPU.PC));
+                        while (addr != 0) {
+                            alert("addr" + addr);
+                            _StdOut.putText(String.fromCharCode(addr).toString());
+                            alert(String.fromCharCode(addr).toString());
                             x++;
+                            addr = parseInt(memoryMngr.readMemory(parseInt(_CPU.YReg + x)), 16);
                         }
                         _Console.advanceLine();
                         _OsShell.putPrompt();

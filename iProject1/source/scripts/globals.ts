@@ -74,7 +74,7 @@ var newProcess = 15;
 
 // Creating the memory table
 var _MemoryArray: any[] = null;
-var _MemorySize: number = 767;
+var _MemorySize: number = 768;
 var memory: TSOS.Memory;
 var memoryMngr : TSOS.MemoryManager;
 
