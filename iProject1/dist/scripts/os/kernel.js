@@ -140,12 +140,41 @@ var TSOS;
                     break;
 
                 case contextSwitch:
-                    scheduler.contextSwitch();
+                    //scheduler.contextSwitch();
+                    // scheduler.init();
+                    clockCycle = 0;
+                    _CPU.showCPU();
+                    process.showPCB();
+
+                    // scheduler.contextSwitch()
+                    if (readyQueue.isEmpty() && process.getState() == "terminated") {
+                        _CPU.init();
+                        return;
+                    }
+
+                    // scheduler.doSwitcheroo()
+                    process.setPC(_CPU.PC);
+                    process.setAcc(_CPU.Acc);
+                    process.setIR(_CPU.IR);
+                    process.setXReg(_CPU.XReg);
+                    process.setYReg(_CPU.YReg);
+                    process.setZFlag(_CPU.ZFlag);
+                    process.setState(2);
+                    readyQueue.enqueue(process);
+                    _CPU.showCPU();
+
+                    // scheduler.contextSwitch()
+                    process = readyQueue.dequeue();
+                    _Kernel.krnTrace("Context switched. Processing PID: " + process.getPID());
+                    process.setState(1); // set state to running.
+                    _CPU.beginProcess(process);
+                    TSOS.Shell.updateRes();
                     break;
 
                 case sysCall:
                     // Print the contents in Y register.
                     if (_CPU.XReg == 1) {
+                        // alert("syscall:"+ _CPU.YReg);
                         _StdOut.putText("" + _CPU.YReg.toString());
                         _Console.advanceLine();
                         _OsShell.putPrompt();
@@ -153,12 +182,12 @@ var TSOS;
                     if (_CPU.XReg == 2) {
                         var x = 0;
                         var addr = parseInt(memoryMngr.readMemory(_CPU.YReg), 16);
-                        alert("Yreg: " + _CPU.YReg);
-                        alert("Address in FF is: " + (addr) + " PID: " + process.getPID() + " PC: " + parseInt(process.getBase() + _CPU.PC));
+
                         while (addr != 0) {
-                            alert("addr" + addr);
+                            // alert("addr" + addr);
                             _StdOut.putText(String.fromCharCode(addr).toString());
-                            alert(String.fromCharCode(addr).toString());
+
+                            // alert(String.fromCharCode(addr).toString());
                             x++;
                             addr = parseInt(memoryMngr.readMemory(parseInt(_CPU.YReg + x)), 16);
                         }

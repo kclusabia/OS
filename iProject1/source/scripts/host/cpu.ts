@@ -82,7 +82,7 @@ module TSOS {
         // Lists all the opcodes.
         public runOpCode(opcode) {
             opcode = opcode.toString().toUpperCase();
-            
+            //alert("opcode: " + opcode)
             if(opcode == "A9") {
                 this.loadAccConstant();
             }
@@ -138,7 +138,7 @@ module TSOS {
         public loadAccConstant() {
             _CPU.IR = "A9";
             _CPU.PC++;
-            _CPU.Acc = memoryMngr.readMemory(_CPU.PC);
+            _CPU.Acc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
             _CPU.PC++;
             memoryMngr.updateMemory();
         }
@@ -152,18 +152,17 @@ module TSOS {
 //            var temp = firstByte + secondByte;
             _CPU.PC++;
             var value = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
-            _CPU.Acc = parseInt(memoryMngr.readMemory(value));
+            _CPU.Acc = parseInt(memoryMngr.readMemory(value), 16);
             _CPU.PC += 2;
             memoryMngr.updateMemory();
         }
 
         // 8D
         public storeAccMem() {
-            _CPU.IR = "8D";
-            // Getting the address to store the accumulator.
+//            _CPU.IR = "8D";
 //            var firstByte = parseInt(memoryMngr.readMemory(_CPU.PC+1));
 //            var secondByte = parseInt(memoryMngr.readMemory(_CPU.PC+2));
-//            var temp = firstByte + secondByte;
+//            var addr = parseInt(firstByte + secondByte);
             _CPU.PC++;
 
             var storage = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
@@ -177,13 +176,12 @@ module TSOS {
         public addWithCarry() {
             _CPU.IR = "6D";
             _CPU.PC++;
-            var loc = parseInt(memoryMngr.readMemory(_CPU.PC.toString()), 16);
+            var loc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
             var value = parseInt(memoryMngr.readMemory(loc), 16);
 
-            // Changed to string to change its base to hex.
             var acc = parseInt(_CPU.Acc.toString());
 
-            _CPU.Acc = value + acc;
+            _CPU.Acc = value+ acc;
             _CPU.PC += 2;
             memoryMngr.updateMemory();
         }
@@ -192,7 +190,9 @@ module TSOS {
         public loadXRegCons() {
             _CPU.IR = "A2";
             _CPU.PC++;
-            _CPU.XReg = parseInt(memoryMngr.readMemory(_CPU.PC, 16));
+           // alert("A2 CPU PC has: " + memoryMngr.readMemory(_CPU.PC));
+            _CPU.XReg = parseInt(memoryMngr.readMemory(_CPU.PC).toString(), 16);
+           // alert("XReg has" + _CPU.XReg);
             _CPU.PC++;
             memoryMngr.updateMemory();
         }
@@ -201,8 +201,11 @@ module TSOS {
         public loadXMem() {
             _CPU.IR = "AE";
             _CPU.PC++;
+//            var firstByte = parseInt(memoryMngr.readMemory(_CPU.PC+1), 16);
+//            var secondByte = parseInt(memoryMngr.readMemory(_CPU.PC+2), 16);
+//            var addr = parseInt(firstByte + secondByte);
             var loc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
-            _CPU.XReg = parseInt(memoryMngr.readMemory(loc, 16));
+            _CPU.XReg = parseInt(memoryMngr.readMemory(loc), 16);
             _CPU.PC += 2;
             memoryMngr.updateMemory();
         }
@@ -211,7 +214,9 @@ module TSOS {
         public loadYRegCons() {
             _CPU.IR = "A0";
             _CPU.PC++;
+            //alert("A0 CPU PC has: " + memoryMngr.readMemory(_CPU.PC));
             _CPU.YReg = parseInt(memoryMngr.readMemory(_CPU.PC).toString(), 16);
+           // alert("YReg has" + _CPU.YReg);
             _CPU.PC++;
             memoryMngr.updateMemory();
         }
@@ -221,7 +226,12 @@ module TSOS {
             _CPU.IR = "AC";
             _CPU.PC++;
             var loc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
-            _CPU.YReg = parseInt(memoryMngr.readMemory(loc, 16));
+            alert("AC loc: " + loc);
+//            var firstByte = parseInt(memoryMngr.readMemory(_CPU.PC+1), 16);
+//            var secondByte = parseInt(memoryMngr.readMemory(_CPU.PC+2), 16);
+//            var addr = parseInt(firstByte + secondByte);
+            _CPU.YReg = parseInt(memoryMngr.readMemory(loc), 16);
+            alert("AC YReg has" + _CPU.YReg);
             _CPU.PC += 2;
             memoryMngr.updateMemory();
         }
@@ -244,9 +254,10 @@ module TSOS {
             // Gets the address
             var loc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
             // Gets the value in the specified address
-            var value = parseInt(memoryMngr.readMemory(loc));
+            var value = parseInt(memoryMngr.readMemory(loc).toString(), 16);
+           // alert("EC value: " + value);
             // Compares the content of the address with the X register.
-            if(value == _CPU.XReg.toString(10))
+            if(value == _CPU.XReg)
                 _CPU.ZFlag = 1;
             else
                 _CPU.ZFlag = 0;
@@ -257,18 +268,18 @@ module TSOS {
         // D0
         public branchX() {
             _CPU.IR = "D0";
+            //alert("D0 PC" +_CPU.PC + "ZFlag" + _CPU.ZFlag);
             if(_CPU.ZFlag == 0) {
                 _CPU.PC++;
-                alert("PC before Byte: " + _CPU.PC);
                 var byteValue:number = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
                 _CPU.PC += byteValue;
-                alert("PC" + _CPU.PC);
-                alert("PC Before: "+parseInt(_CPU.PC+process.getBase())+", Limit: "+process.getLimit());
+               // alert("PC: " + _CPU.PC);
+               // alert("PC Before: "+parseInt(_CPU.PC+process.getBase())+", Limit: "+process.getLimit());
                 if(_CPU.PC > 256) {
                     //alert(memory.getLimit());
                     _CPU.PC = _CPU.PC - (256);
                 }
-                alert("PC After: "+parseInt(_CPU.PC+process.getBase()));
+                //alert("PC After: "+parseInt(_CPU.PC+process.getBase()));
                 //alert(_CPU.PC +2);
                 _CPU.PC++;
               memoryMngr.updateMemory();

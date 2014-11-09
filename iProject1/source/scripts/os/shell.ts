@@ -353,17 +353,26 @@ module TSOS {
 
         public static updateRes(){
             var tableView = "<table>";
+            tableView +="<th>PC</th>";
             tableView +="<th>PID</th>";
             tableView +="<th>Base</th>";
             tableView +="<th>Limit</th>";
+            tableView +="<th>XReg</th>";
+            tableView +="<th>YReg</th>";
+            tableView +="<th>ZFlag</th>";
             tableView +="<th>State</th>";
             for(var i =0; i<residentQueue.length;i++) {
 
                 var s:TSOS.ProcessControlBlock = residentQueue[i];
                 tableView += "<tr>";
+                var newPC = s.getPC()+s.getBase();
+                tableView += "<td>" + newPC.toString() + "</td>";
                 tableView += "<td>" + s.getPID().toString() + "</td>";
                 tableView += "<td>" + s.getBase().toString() + "</td>";
                 tableView += "<td>" + s.getLimit().toString() + "</td>";
+                tableView += "<td>" + s.getXReg().toString() + "</td>";
+                tableView += "<td>" + s.getYReg().toString() + "</td>";
+                tableView += "<td>" + s.getYReg().toString() + "</td>";
                 tableView += "<td>" + s.getState().toString()+ "</td>";
                 tableView += "</tr>";
             }
@@ -392,6 +401,7 @@ module TSOS {
                 residentQueue.splice(process.getPID(), 1);     // remove the process with that PID from the resident queue.
                 process.setState(4);
                 _StdOut.putText("Process " + args + " was murdered.");
+                shell.updateRes();
                 process.updatePCB();
             }
         }

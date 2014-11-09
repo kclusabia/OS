@@ -26,7 +26,6 @@ var TSOS;
             this.base = base; //this.base = (limit.toString(16).toUpperCase()) + 1
             this.limit = limit; // this.limit = this.base + this.size;
             this.state = this.states[state];
-            //this.showResident();
         };
 
         // Displays the ready the queue.

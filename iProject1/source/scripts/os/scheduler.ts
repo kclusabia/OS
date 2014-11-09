@@ -20,12 +20,6 @@ module TSOS {
             this.schedulerType = this.schedulers[index];
         }
 
-//        //start new process
-//        public startProcess() {
-//            if(readyQueue.getSize() > 0) {
-//                process = readyQueue.dequeue();
-//            }
-//        }
 
         public startProcess() {
             if(!readyQueue.isEmpty()) {
@@ -36,6 +30,7 @@ module TSOS {
             }
             else if(readyQueue.isEmpty() && process.getState() == "terminated") {
                 this.init();
+                alert("breakCall startProcess");
                 return;
             }
         }
@@ -46,9 +41,7 @@ module TSOS {
                 _CPU.init();
                 return;
             }
-          //  else {
                 this.doSwitcheroo();            // puts the current process at the end of ready queue and is waiting.
-        //    }
 
             process = readyQueue.dequeue();
             _Kernel.krnTrace("Context switched. Processing PID: " + process.getPID());
