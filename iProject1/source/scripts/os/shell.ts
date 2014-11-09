@@ -389,7 +389,7 @@ module TSOS {
         }
 
         public shellRunAll() {
-            for (i=0; i < residentQueue.length; i++) {
+            for (var i=0; i < residentQueue.length; i++) {
                 readyQueue.enqueue(residentQueue[i]);
             }
             _KernelInterruptQueue.enqueue(new Interrupt(newProcess, 5));
@@ -397,12 +397,19 @@ module TSOS {
 
         //TODO dequeue the process from ready and ?resident?.
         public shellKill(args) {
-            if(args == process.getPID()) {
+            if((args == process.getPID()) && (process.getState() == "running" || process.getState() == "waiting")) {
                 residentQueue.splice(process.getPID(), 1);     // remove the process with that PID from the resident queue.
                 process.setState(4);
                 _StdOut.putText("Process " + args + " was murdered.");
                 shell.updateRes();
+
+                //_KernelInterruptQueue.enqueue(new Interrupt(murdered,6));
                 process.updatePCB();
+                _CPU.init();
+                _CPU.showCPU();
+            }
+            else {
+                _StdOut.putText("Illegal move. PID " + args + " is not active.");
             }
         }
 

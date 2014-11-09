@@ -83,7 +83,8 @@ var TSOS;
                 var interrupt = _KernelInterruptQueue.dequeue();
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (clockCycle >= quantum) {
-                scheduler.contextSwitch(); // only perform context switch when quantum has expired.
+                this.krnInterruptHandler(contextSwitch, 0);
+                return;
             } else if (_CPU.isExecuting) {
                 _CPU.cycle();
                 clockCycle++;
@@ -124,15 +125,22 @@ var TSOS;
                 case breakCall:
                     _CPU.init();
                     _CPU.showCPU();
-                    process.setState(4);
-                    process.showPCB();
+                    process.setState(4); // set state to terminated;
                     TSOS.Shell.updateRes();
+                    _Kernel.krnTrace("Terminating PID: " + process.getPID());
                     scheduler.startProcess();
+                    alert("After startprocess");
                     break;
 
                 case invalidOpCode:
                     _StdOut.putText("The input contained an invalid op code");
 
+                    break;
+
+                case murdered:
+                    _Kernel.krnTrace("\n Murdered PID " + process.getPID());
+                    TSOS.Shell.updateRes();
+                    scheduler.startProcess();
                     break;
 
                 case newProcess:
@@ -144,31 +152,29 @@ var TSOS;
                     // scheduler.init();
                     clockCycle = 0;
                     _CPU.showCPU();
-                    process.showPCB();
 
                     // scheduler.contextSwitch()
                     if (readyQueue.isEmpty() && process.getState() == "terminated") {
                         _CPU.init();
-                        return;
+                    } else {
+                        process.setPC(_CPU.PC);
+                        process.setAcc(_CPU.Acc);
+                        process.setIR(_CPU.IR);
+                        process.setXReg(_CPU.XReg);
+                        process.setYReg(_CPU.YReg);
+                        process.setZFlag(_CPU.ZFlag);
+                        process.setState(2);
+                        readyQueue.enqueue(process);
+                        _CPU.showCPU();
+
+                        // scheduler.contextSwitch()
+                        process = readyQueue.dequeue();
+                        _Kernel.krnTrace(" Context switched. Processing PID: " + process.getPID());
+                        process.setState(1); // set state to running.
+                        _CPU.beginProcess(process);
+                        _Kernel.krnTrace("Processing PID: " + process.getPID());
+                        TSOS.Shell.updateRes();
                     }
-
-                    // scheduler.doSwitcheroo()
-                    process.setPC(_CPU.PC);
-                    process.setAcc(_CPU.Acc);
-                    process.setIR(_CPU.IR);
-                    process.setXReg(_CPU.XReg);
-                    process.setYReg(_CPU.YReg);
-                    process.setZFlag(_CPU.ZFlag);
-                    process.setState(2);
-                    readyQueue.enqueue(process);
-                    _CPU.showCPU();
-
-                    // scheduler.contextSwitch()
-                    process = readyQueue.dequeue();
-                    _Kernel.krnTrace("Context switched. Processing PID: " + process.getPID());
-                    process.setState(1); // set state to running.
-                    _CPU.beginProcess(process);
-                    TSOS.Shell.updateRes();
                     break;
 
                 case sysCall:
@@ -193,8 +199,8 @@ var TSOS;
                         }
                         _Console.advanceLine();
                         _OsShell.putPrompt();
-                        break;
                     }
+                    break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }

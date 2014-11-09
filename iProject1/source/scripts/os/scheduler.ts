@@ -22,33 +22,33 @@ module TSOS {
 
 
         public startProcess() {
-            if(!readyQueue.isEmpty()) {
+            if(readyQueue.getSize() > 0) {
                 process = readyQueue.dequeue();
                 process.setState(1);            // sets the state to running
                 _CPU.beginProcess(process);
+                _Kernel.krnTrace("Processing PID " + process.getPID());
                 Shell.updateRes();
             }
-            else if(readyQueue.isEmpty() && process.getState() == "terminated") {
-                this.init();
+            else if(readyQueue.isEmpty() && (process.getState() != "terminated")) {
+               this.init();
                 alert("breakCall startProcess");
-                return;
             }
         }
 
-        public contextSwitch() {
-            this.init();
-            if(readyQueue.isEmpty() && process.getState() == "terminated") {
-                _CPU.init();
-                return;
-            }
-                this.doSwitcheroo();            // puts the current process at the end of ready queue and is waiting.
-
-            process = readyQueue.dequeue();
-            _Kernel.krnTrace("Context switched. Processing PID: " + process.getPID());
-            process.setState(1);            // set state to running.
-            _CPU.beginProcess(process);
-            Shell.updateRes();
-        }
+//        public contextSwitch() {
+//            this.init();
+//            if(readyQueue.isEmpty() && process.getState() == "terminated") {
+//                _CPU.init();
+//                return;
+//            }
+//                this.doSwitcheroo();            // puts the current process at the end of ready queue and is waiting.
+//
+//            process = readyQueue.dequeue();
+//            _Kernel.krnTrace("Context switched. Processing PID: " + process.getPID());
+//            process.setState(1);            // set state to running.
+//            _CPU.beginProcess(process);
+//            Shell.updateRes();
+//        }
 
         public doSwitcheroo() {
             // need this info for the next process to know.

@@ -226,12 +226,12 @@ module TSOS {
             _CPU.IR = "AC";
             _CPU.PC++;
             var loc = parseInt(memoryMngr.readMemory(_CPU.PC), 16);
-            alert("AC loc: " + loc);
+            //alert("AC loc: " + loc);
 //            var firstByte = parseInt(memoryMngr.readMemory(_CPU.PC+1), 16);
 //            var secondByte = parseInt(memoryMngr.readMemory(_CPU.PC+2), 16);
 //            var addr = parseInt(firstByte + secondByte);
             _CPU.YReg = parseInt(memoryMngr.readMemory(loc), 16);
-            alert("AC YReg has" + _CPU.YReg);
+           // alert("AC YReg has" + _CPU.YReg);
             _CPU.PC += 2;
             memoryMngr.updateMemory();
         }

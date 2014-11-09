@@ -67,6 +67,7 @@ var breakCall = 12;
 var invalidOpCode = 13;
 var contextSwitch = 14;
 var newProcess = 15;
+var murdered = 16;
 
 // Creating the memory table
 var _MemoryArray = null;
