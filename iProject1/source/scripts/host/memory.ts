@@ -113,9 +113,11 @@ module TSOS {
 
         // Clear the memory and resetting the resident queue.
         public clearMem() {
-            for(var i = residentQueue.length-1; i >= 0; i--) {
+            _StdOut.putText("Memory cleared! Processes has been terminated!");
+            for (var i = residentQueue.length - 1; i >= 0; i--) {
+                var obj:TSOS.ProcessControlBlock = residentQueue[i];
                 residentQueue.splice(i, 1);
-            }
+                }
             Shell.updateRes();
             return this.newTable();
         }

@@ -397,20 +397,17 @@ module TSOS {
 
         //TODO dequeue the process from ready and ?resident?.
         public shellKill(args) {
-            if((args == process.getPID()) && (process.getState() == "running" || process.getState() == "waiting")) {
-                residentQueue.splice(process.getPID(), 1);     // remove the process with that PID from the resident queue.
-                process.setState(4);
-                _StdOut.putText("Process " + args + " was murdered.");
-                shell.updateRes();
-
-                //_KernelInterruptQueue.enqueue(new Interrupt(murdered,6));
-                process.updatePCB();
-                _CPU.init();
-                _CPU.showCPU();
-            }
-            else {
-                _StdOut.putText("Illegal move. PID " + args + " is not active.");
-            }
+            for (var i = 0; i < residentQueue.length; i++) {
+                var obj:TSOS.ProcessControlBlock = residentQueue[i];
+                if (args == obj.getPID()) {
+                    residentQueue.splice(i, 1);
+                    _StdOut.putText("Process " + args + " was murdered.");
+                    _KernelInterruptQueue.enqueue(new Interrupt(murdered, 6));
+                }
+//                else {
+//                    _StdOut.putText("Illegal move. PID " + args + " is not in the ready queue.");
+//                }
+            }    
         }
 
         public shellPs(args) {
@@ -424,11 +421,6 @@ module TSOS {
                     _StdOut.putText("There are currently no active processes.");
                     break;
                 }
-//                else {
-//                    _StdOut.putText("There are currently no active processes.");
-//                    _Console.advanceLine();
-//                    _OsShell.putPrompt();
-//                }
             }
         }
 

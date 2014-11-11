@@ -20,18 +20,24 @@ module TSOS {
             this.schedulerType = this.schedulers[index];
         }
 
-
+        // Gets the next process and executes it.
         public startProcess() {
             if(readyQueue.getSize() > 0) {
                 process = readyQueue.dequeue();
                 process.setState(1);            // sets the state to running
-                _CPU.beginProcess(process);
-                _Kernel.krnTrace("Processing PID " + process.getPID());
-                Shell.updateRes();
+                if(process.getState() == "terminated") {
+                    this.init();
+                    Shell.updateRes();
+                }
+                else {
+                    _CPU.beginProcess(process);
+                    _Kernel.krnTrace("Processing PID " + process.getPID());
+                    Shell.updateRes();
+                }
             }
+            // Resets the clock cycle.
             else if(readyQueue.isEmpty() && (process.getState() != "terminated")) {
                this.init();
-                alert("breakCall startProcess");
             }
         }
 
@@ -50,17 +56,16 @@ module TSOS {
 //            Shell.updateRes();
 //        }
 
+        // Storing the information from the previous process, so the next process knows where the previous process left off.
         public doSwitcheroo() {
-            // need this info for the next process to know.
             process.setPC(_CPU.PC);
             process.setAcc(_CPU.Acc);
             process.setIR(_CPU.IR);
             process.setXReg(_CPU.XReg);
             process.setYReg(_CPU.YReg);
             process.setZFlag(_CPU.ZFlag);
-            process.setState(2);
+            process.setState(2);            // waiting state
             readyQueue.enqueue(process);
-           // process.showPCB();
             _CPU.showCPU();
         }
 

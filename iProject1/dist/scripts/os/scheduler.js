@@ -19,16 +19,21 @@ var TSOS;
             this.schedulerType = this.schedulers[index];
         };
 
+        // Gets the next process and executes it.
         Scheduler.prototype.startProcess = function () {
             if (readyQueue.getSize() > 0) {
                 process = readyQueue.dequeue();
                 process.setState(1); // sets the state to running
-                _CPU.beginProcess(process);
-                _Kernel.krnTrace("Processing PID " + process.getPID());
-                TSOS.Shell.updateRes();
+                if (process.getState() == "terminated") {
+                    this.init();
+                    TSOS.Shell.updateRes();
+                } else {
+                    _CPU.beginProcess(process);
+                    _Kernel.krnTrace("Processing PID " + process.getPID());
+                    TSOS.Shell.updateRes();
+                }
             } else if (readyQueue.isEmpty() && (process.getState() != "terminated")) {
                 this.init();
-                alert("breakCall startProcess");
             }
         };
 
@@ -46,18 +51,16 @@ var TSOS;
         //            _CPU.beginProcess(process);
         //            Shell.updateRes();
         //        }
+        // Storing the information from the previous process, so the next process knows where the previous process left off.
         Scheduler.prototype.doSwitcheroo = function () {
-            // need this info for the next process to know.
             process.setPC(_CPU.PC);
             process.setAcc(_CPU.Acc);
             process.setIR(_CPU.IR);
             process.setXReg(_CPU.XReg);
             process.setYReg(_CPU.YReg);
             process.setZFlag(_CPU.ZFlag);
-            process.setState(2);
+            process.setState(2); // waiting state
             readyQueue.enqueue(process);
-
-            // process.showPCB();
             _CPU.showCPU();
         };
         return Scheduler;

@@ -138,7 +138,10 @@ var TSOS;
                     break;
 
                 case murdered:
+                    process.setState(4);
                     _Kernel.krnTrace("\n Murdered PID " + process.getPID());
+                    _CPU.init();
+                    _CPU.showCPU();
                     TSOS.Shell.updateRes();
                     scheduler.startProcess();
                     break;
