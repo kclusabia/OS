@@ -32,27 +32,6 @@ module TSOS {
             this.state = this.states[state];
         }
 
-        // Displays the ready the queue.
-        public showPCB() {
-            document.getElementById("PID").innerHTML = this.getPID();
-            document.getElementById("PC1").innerHTML = this.pc;
-            document.getElementById("State").innerHTML = this.state;
-            document.getElementById("Acc1").innerHTML = this.acc;
-            document.getElementById("IR1").innerHTML = this.IR;
-            document.getElementById("Base").innerHTML = this.base;
-            document.getElementById("Limit").innerHTML = parseInt(this.limit,16);
-            document.getElementById("XReg1").innerHTML = this.xReg;
-            document.getElementById("YReg1").innerHTML = this.yReg;
-            document.getElementById("ZFlag1").innerHTML = this.zFlag;
-        }
-
-//        public showResident() {
-//            document.getElementById("PIDR").innerHTML = this.getPID();
-//            document.getElementById("StateR").innerHTML = this.state;
-//            document.getElementById("BaseR").innerHTML = this.base;
-//            document.getElementById("LimitR").innerHTML = this.limit;
-//        }
-
         // Updates the PCB block.
         public updatePCB() {
 //            ProcessControlBlock.pid = pcb.getPID();//
@@ -64,12 +43,10 @@ module TSOS {
             process.zFlag = _CPU.ZFlag;
         }
 
-        // Increments the PID.
         public incrementPID():void {
             ProcessControlBlock.pid++;
         }
 
-        // Gets the current PID.
         public getPID():number{
             return this.pid1;
         }

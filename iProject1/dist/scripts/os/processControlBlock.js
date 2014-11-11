@@ -28,26 +28,6 @@ var TSOS;
             this.state = this.states[state];
         };
 
-        // Displays the ready the queue.
-        ProcessControlBlock.prototype.showPCB = function () {
-            document.getElementById("PID").innerHTML = this.getPID();
-            document.getElementById("PC1").innerHTML = this.pc;
-            document.getElementById("State").innerHTML = this.state;
-            document.getElementById("Acc1").innerHTML = this.acc;
-            document.getElementById("IR1").innerHTML = this.IR;
-            document.getElementById("Base").innerHTML = this.base;
-            document.getElementById("Limit").innerHTML = parseInt(this.limit, 16);
-            document.getElementById("XReg1").innerHTML = this.xReg;
-            document.getElementById("YReg1").innerHTML = this.yReg;
-            document.getElementById("ZFlag1").innerHTML = this.zFlag;
-        };
-
-        //        public showResident() {
-        //            document.getElementById("PIDR").innerHTML = this.getPID();
-        //            document.getElementById("StateR").innerHTML = this.state;
-        //            document.getElementById("BaseR").innerHTML = this.base;
-        //            document.getElementById("LimitR").innerHTML = this.limit;
-        //        }
         // Updates the PCB block.
         ProcessControlBlock.prototype.updatePCB = function () {
             //            ProcessControlBlock.pid = pcb.getPID();//
@@ -59,12 +39,10 @@ var TSOS;
             process.zFlag = _CPU.ZFlag;
         };
 
-        // Increments the PID.
         ProcessControlBlock.prototype.incrementPID = function () {
             ProcessControlBlock.pid++;
         };
 
-        // Gets the current PID.
         ProcessControlBlock.prototype.getPID = function () {
             return this.pid1;
         };
