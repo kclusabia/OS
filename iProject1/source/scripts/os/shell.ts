@@ -372,12 +372,12 @@ module TSOS {
                 tableView += "<td>" + s.getLimit().toString() + "</td>";
                 tableView += "<td>" + s.getXReg().toString() + "</td>";
                 tableView += "<td>" + s.getYReg().toString() + "</td>";
-                tableView += "<td>" + s.getYReg().toString() + "</td>";
+                tableView += "<td>" + s.getZFlag().toString() + "</td>";
                 tableView += "<td>" + s.getState().toString()+ "</td>";
                 tableView += "</tr>";
             }
             tableView += "</table>";
-            document.getElementById("ResidentQueue").innerHTML = tableView;
+            document.getElementById("ReadyQueue").innerHTML = tableView;
         }
 
         public shellRun(args) {
@@ -413,13 +413,16 @@ module TSOS {
             }
         }
 
-        //TODO make sure to dequeue the terminated process from ready
         public shellPs(args) {
-            for (i=0; i < residentQueue.length; i++) {
+            for (var i=0; i < residentQueue.length; i++) {
                 var obj:TSOS.ProcessControlBlock = residentQueue[i];
-                if(obj.getState() == "running") {
-                    _StdOut.putText("PID: " + obj.getPID());
+                if(obj.getState() == "running" || obj.getState() == "waiting") {
+                    _StdOut.putText("Active processes are PID: " + obj.getPID());
                     _Console.advanceLine();
+                }
+                else {
+                    _StdOut.putText("There are currently no active processes.");
+                    break;
                 }
 //                else {
 //                    _StdOut.putText("There are currently no active processes.");
