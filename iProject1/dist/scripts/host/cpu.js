@@ -64,9 +64,7 @@ var TSOS;
 
             // Updates the PCB.
             process.updatePCB();
-
-            // Redraws the PCB.
-            process.showPCB();
+            TSOS.Shell.updateRes();
         };
 
         // The CPU block

@@ -64,8 +64,8 @@ module TSOS {
 
             // Updates the PCB.
             process.updatePCB();
-            // Redraws the PCB.
-            process.showPCB();
+            Shell.updateRes();
+
 
         }
 
