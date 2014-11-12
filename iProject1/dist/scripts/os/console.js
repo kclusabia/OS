@@ -95,6 +95,7 @@ var TSOS;
             _DrawingContext.drawText("sans", 45, 145, 150, "Oh no!");
             _DrawingContext.drawText("sans", 30, 45, 200, "Error #007 occurred!");
             _DrawingContext.drawText("sans", 45, 195, 250, "o.o");
+            _CPU.init();
         };
 
         // navigating through the history of commands
