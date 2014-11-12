@@ -82,10 +82,10 @@ var TSOS;
                 // TODO: Implement a priority queue based on the IRQ number/id to enforce interrupt priority.
                 var interrupt = _KernelInterruptQueue.dequeue();
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
+                // Context switch is called when quantum had expired.
             } else if (clockCycle >= quantum) {
                 this.krnInterruptHandler(contextSwitch, 0);
                 return;
-                // only perform context switch when quantum has expired.
             } else if (_CPU.isExecuting) {
                 _CPU.cycle();
                 clockCycle++;
@@ -113,7 +113,7 @@ var TSOS;
             // This is the Interrupt Handler Routine.  Pages 8 and 560. {
             // Trace our entrance here so we can compute Interrupt Latency by analyzing the log file later on.  Page 766.
             this.krnTrace("Handling IRQ~" + irq);
-            _Mode = 1;
+            _Mode = 0;
 
             switch (irq) {
                 case TIMER_IRQ:
@@ -127,23 +127,14 @@ var TSOS;
                 case breakCall:
                     _CPU.init();
                     _CPU.showCPU();
-                    process.setState(4); // set state to terminated;
+                    process.setState(4); // set state to terminated
                     TSOS.Shell.updateRes();
                     _Kernel.krnTrace("Terminating PID: " + process.getPID());
                     scheduler.startProcess();
-                    alert("After startprocess");
-                    break;
-
-                case invalidOpCode:
-                    _StdOut.putText("The input contained an invalid op code");
-
                     break;
 
                 case murdered:
                     _Kernel.krnTrace("Murdered PID " + params.getPID());
-
-                    // _CPU.init();
-                    //  _CPU.showCPU();
                     TSOS.Shell.updateRes();
                     scheduler.startProcess();
                     break;
@@ -153,7 +144,6 @@ var TSOS;
                     break;
 
                 case contextSwitch:
-                    //scheduler.contextSwitch();
                     // scheduler.init();
                     clockCycle = 0;
                     _CPU.showCPU();
@@ -262,8 +252,8 @@ var TSOS;
 
         Kernel.prototype.krnTrapError = function (msg) {
             TSOS.Control.hostLog("OS ERROR - TRAP: " + msg);
+            _Console.ifError();
 
-            //_Console.ifError();
             // TODO: Display error on console, perhaps in some sort of colored screen. (Perhaps blue?)
             this.krnShutdown();
         };

@@ -72,7 +72,6 @@ module TSOS {
             this.krnTrace("end shutdown OS");
         }
 
-
         public krnOnCPUClockPulse() {
             /* This gets called from the host hardware sim every time there is a hardware clock pulse.
                This is NOT the same as a TIMER, which causes an interrupt and is handled like other interrupts.
@@ -85,10 +84,11 @@ module TSOS {
                 // TODO: Implement a priority queue based on the IRQ number/id to enforce interrupt priority.
                 var interrupt = _KernelInterruptQueue.dequeue();
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
+
+            // Context switch is called when quantum had expired.
             } else if (clockCycle >= quantum) { // If there are no interrupts then run one CPU cycle if there is anything being processed. {
-               this.krnInterruptHandler(contextSwitch,0);
+               this.krnInterruptHandler(contextSwitch, 0);
                 return;
-                // only perform context switch when quantum has expired.
             }
             else if(_CPU.isExecuting) {
                 _CPU.cycle();
@@ -144,35 +144,25 @@ module TSOS {
                 case breakCall:
                     _CPU.init();
                     _CPU.showCPU();
-                    process.setState(4);        // set state to terminated;
+                    process.setState(4);        // set state to terminated
                     Shell.updateRes();
                     _Kernel.krnTrace("Terminating PID: " + process.getPID());
                     scheduler.startProcess();
-                    alert("After startprocess");
                     break;
 
-                case invalidOpCode:
-                    _StdOut.putText("The input contained an invalid op code");
-//                    _CPU.init();
-//                    _Console.advanceLine();
-//                    _OsShell.putPrompt();
-                    break;
-
+                // Killing a program.
                 case murdered:
                     _Kernel.krnTrace("Murdered PID " + params.getPID());
-                   // _CPU.init();
-                  //  _CPU.showCPU();
                     Shell.updateRes();
                     scheduler.startProcess();
                     break;
 
+                // Begins executing the next program in ready queue.
                 case newProcess:
                     scheduler.startProcess();
                     break;
 
                 case contextSwitch:
-                      //scheduler.contextSwitch();
-
                     // scheduler.init();
                     clockCycle = 0;
                     _CPU.showCPU();
@@ -285,7 +275,7 @@ module TSOS {
 
         public krnTrapError(msg) {
             Control.hostLog("OS ERROR - TRAP: " + msg);
-            //_Console.ifError();
+            _Console.ifError();
 
             // TODO: Display error on console, perhaps in some sort of colored screen. (Perhaps blue?)
             this.krnShutdown();
