@@ -12,7 +12,7 @@ var TSOS;
         Scheduler.prototype.init = function () {
             clockCycle = 0;
             _CPU.showCPU();
-            process.showPCB();
+            //  process.showPCB();
         };
 
         Scheduler.prototype.getScheduler = function (index) {
@@ -23,17 +23,19 @@ var TSOS;
         Scheduler.prototype.startProcess = function () {
             if (readyQueue.getSize() > 0) {
                 process = readyQueue.dequeue();
-                process.setState(1); // sets the state to running
                 if (process.getState() == "terminated") {
                     this.init();
+                    this.startProcess();
                     TSOS.Shell.updateRes();
                 } else {
+                    process.setState(1); // sets the state to running
                     _CPU.beginProcess(process);
                     _Kernel.krnTrace("Processing PID " + process.getPID());
                     TSOS.Shell.updateRes();
                 }
             } else if (readyQueue.isEmpty() && (process.getState() != "terminated")) {
                 this.init();
+                return;
             }
         };
 

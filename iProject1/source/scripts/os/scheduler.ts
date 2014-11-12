@@ -13,7 +13,7 @@ module TSOS {
         public init() {
             clockCycle = 0;
             _CPU.showCPU();
-            process.showPCB();
+          //  process.showPCB();
         }
 
         public getScheduler(index:number) {
@@ -24,12 +24,13 @@ module TSOS {
         public startProcess() {
             if(readyQueue.getSize() > 0) {
                 process = readyQueue.dequeue();
-                process.setState(1);            // sets the state to running
                 if(process.getState() == "terminated") {
                     this.init();
+                    this.startProcess();
                     Shell.updateRes();
                 }
                 else {
+                    process.setState(1);            // sets the state to running
                     _CPU.beginProcess(process);
                     _Kernel.krnTrace("Processing PID " + process.getPID());
                     Shell.updateRes();
@@ -38,6 +39,7 @@ module TSOS {
             // Resets the clock cycle.
             else if(readyQueue.isEmpty() && (process.getState() != "terminated")) {
                this.init();
+                return;
             }
         }
 

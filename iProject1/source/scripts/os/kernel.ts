@@ -87,7 +87,8 @@ module TSOS {
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (clockCycle >= quantum) { // If there are no interrupts then run one CPU cycle if there is anything being processed. {
                this.krnInterruptHandler(contextSwitch,0);
-                     return;// only perform context switch when quantum has expired.
+                return;
+                // only perform context switch when quantum has expired.
             }
             else if(_CPU.isExecuting) {
                 _CPU.cycle();
@@ -158,10 +159,9 @@ module TSOS {
                     break;
 
                 case murdered:
-                    process.setState(4);
-                    _Kernel.krnTrace("\n Murdered PID " + process.getPID());
-                    _CPU.init();
-                    _CPU.showCPU();
+                    _Kernel.krnTrace("Murdered PID " + params.getPID());
+                   // _CPU.init();
+                  //  _CPU.showCPU();
                     Shell.updateRes();
                     scheduler.startProcess();
                     break;
@@ -171,7 +171,7 @@ module TSOS {
                     break;
 
                 case contextSwitch:
-                    //scheduler.contextSwitch();
+                      //scheduler.contextSwitch();
 
                     // scheduler.init();
                     clockCycle = 0;
@@ -188,17 +188,21 @@ module TSOS {
                         process.setXReg(_CPU.XReg);
                         process.setYReg(_CPU.YReg);
                         process.setZFlag(_CPU.ZFlag);
-                        process.setState(2);
+                        process.setState(2);            // set state to waiting
                         readyQueue.enqueue(process);
                         _CPU.showCPU();
 
                         // scheduler.contextSwitch()
                         process = readyQueue.dequeue();
-                        _Kernel.krnTrace(" Context switched. Processing PID: " + process.getPID());
-                        process.setState(1);            // set state to running.
-                        _CPU.beginProcess(process);
-                        _Kernel.krnTrace("Processing PID: " + process.getPID());
-                        Shell.updateRes();
+                        if (process.getState() == "terminated") {
+                            scheduler.init();
+                            scheduler.startProcess();
+                        }
+                            _Kernel.krnTrace(" Context switched. Processing PID: " + process.getPID());
+                            process.setState(1);            // set state to running.
+                            _CPU.beginProcess(process);
+                            _Kernel.krnTrace("Processing PID: " + process.getPID());
+                            Shell.updateRes();
                     }
                     break;
 

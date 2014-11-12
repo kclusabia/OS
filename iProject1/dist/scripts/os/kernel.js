@@ -85,6 +85,7 @@ var TSOS;
             } else if (clockCycle >= quantum) {
                 this.krnInterruptHandler(contextSwitch, 0);
                 return;
+                // only perform context switch when quantum has expired.
             } else if (_CPU.isExecuting) {
                 _CPU.cycle();
                 clockCycle++;
@@ -138,10 +139,10 @@ var TSOS;
                     break;
 
                 case murdered:
-                    process.setState(4);
-                    _Kernel.krnTrace("\n Murdered PID " + process.getPID());
-                    _CPU.init();
-                    _CPU.showCPU();
+                    _Kernel.krnTrace("Murdered PID " + params.getPID());
+
+                    // _CPU.init();
+                    //  _CPU.showCPU();
                     TSOS.Shell.updateRes();
                     scheduler.startProcess();
                     break;
@@ -166,12 +167,16 @@ var TSOS;
                         process.setXReg(_CPU.XReg);
                         process.setYReg(_CPU.YReg);
                         process.setZFlag(_CPU.ZFlag);
-                        process.setState(2);
+                        process.setState(2); // set state to waiting
                         readyQueue.enqueue(process);
                         _CPU.showCPU();
 
                         // scheduler.contextSwitch()
                         process = readyQueue.dequeue();
+                        if (process.getState() == "terminated") {
+                            scheduler.init();
+                            scheduler.startProcess();
+                        }
                         _Kernel.krnTrace(" Context switched. Processing PID: " + process.getPID());
                         process.setState(1); // set state to running.
                         _CPU.beginProcess(process);
