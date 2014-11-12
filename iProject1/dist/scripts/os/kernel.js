@@ -113,6 +113,7 @@ var TSOS;
             // This is the Interrupt Handler Routine.  Pages 8 and 560. {
             // Trace our entrance here so we can compute Interrupt Latency by analyzing the log file later on.  Page 766.
             this.krnTrace("Handling IRQ~" + irq);
+            _Mode = 1;
 
             switch (irq) {
                 case TIMER_IRQ:
@@ -209,9 +210,16 @@ var TSOS;
                         _OsShell.putPrompt();
                     }
                     break;
+
+                case memoryBounded:
+                    _CPU.init();
+                    scheduler.init();
+                    scheduler.startProcess();
+
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }
+            _Mode = 1;
         };
 
         Kernel.prototype.krnTimerISR = function () {

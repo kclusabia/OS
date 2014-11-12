@@ -14,8 +14,8 @@ module TSOS {
 
         // Reads the data from the specified address, denoted as the index.
         public readMemory(index) {
-           //alert("read at: "+ parseInt(process.getBase()+index)+", OP: "+_CPU.IR);
-            return memory.readMem(parseInt(index+process.getBase()));
+                return memory.readMem(parseInt(index + process.getBase()));
+
         }
 
         public loadMemory(data1, base) {
@@ -24,8 +24,7 @@ module TSOS {
 
         // Stores the data into the specified address, denoted by the index.
         public storeData(index, data) {
-          // alert("store at: "+parseInt(process.getBase()+index)+", str: "+data);
-            memory.storeData(parseInt(index+process.getBase()), data);
+               return memory.storeData(parseInt(index+process.getBase()), data);
         }
 
         public updateMemory() {

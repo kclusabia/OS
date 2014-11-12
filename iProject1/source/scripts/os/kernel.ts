@@ -127,7 +127,7 @@ module TSOS {
             // This is the Interrupt Handler Routine.  Pages 8 and 560. {
             // Trace our entrance here so we can compute Interrupt Latency by analyzing the log file later on.  Page 766.
             this.krnTrace("Handling IRQ~" + irq);
-
+            _Mode = 0;
             // Invoke the requested Interrupt Service Routine via Switch/Case rather than an Interrupt Vector.
             // TODO: Consider using an Interrupt Vector in the future.
             // Note: There is no need to "dismiss" or acknowledge the interrupts in our design here.
@@ -231,9 +231,16 @@ module TSOS {
                         _OsShell.putPrompt();
                     }
                     break;
+
+                case memoryBounded:
+                    _CPU.init();
+                    scheduler.init();
+                    scheduler.startProcess();
+
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }
+            _Mode = 1;
         }
 
         public krnTimerISR() {
