@@ -322,17 +322,19 @@ var TSOS;
             tableView += "<th>State</th>";
             for (var i = 0; i < residentQueue.length; i++) {
                 var s = residentQueue[i];
-                tableView += "<tr>";
-                var newPC = s.getPC() + s.getBase();
-                tableView += "<td>" + newPC.toString() + "</td>";
-                tableView += "<td>" + s.getPID().toString() + "</td>";
-                tableView += "<td>" + s.getBase().toString() + "</td>";
-                tableView += "<td>" + s.getLimit().toString() + "</td>";
-                tableView += "<td>" + s.getXReg().toString() + "</td>";
-                tableView += "<td>" + s.getYReg().toString() + "</td>";
-                tableView += "<td>" + s.getZFlag().toString() + "</td>";
-                tableView += "<td>" + s.getState().toString() + "</td>";
-                tableView += "</tr>";
+                if (s.getState() != "new") {
+                    tableView += "<tr>";
+                    var newPC = s.getPC() + s.getBase();
+                    tableView += "<td>" + newPC.toString() + "</td>";
+                    tableView += "<td>" + s.getPID().toString() + "</td>";
+                    tableView += "<td>" + s.getBase().toString() + "</td>";
+                    tableView += "<td>" + s.getLimit().toString() + "</td>";
+                    tableView += "<td>" + s.getXReg().toString() + "</td>";
+                    tableView += "<td>" + s.getYReg().toString() + "</td>";
+                    tableView += "<td>" + s.getZFlag().toString() + "</td>";
+                    tableView += "<td>" + s.getState().toString() + "</td>";
+                    tableView += "</tr>";
+                }
             }
             tableView += "</table>";
             document.getElementById("ReadyQueue").innerHTML = tableView;
@@ -355,16 +357,22 @@ var TSOS;
 
         //TODO dequeue the process from ready and ?resident?.
         Shell.prototype.shellKill = function (args) {
-            for (var i = 0; i < residentQueue.length; i++) {
-                var obj = residentQueue[i];
-                if (args == obj.getPID()) {
-                    residentQueue.splice(i, 1);
-                    _StdOut.putText("Process " + args + " was murdered.");
-                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(murdered, 6));
+            if (args == process.getPID() && process.getState() == "running") {
+                alert("About to kill " + process.getPID());
+                process.setState(4); // set state to terminated
+                Shell.updateRes();
+                _StdOut.putText("PID " + args + " was murdered.");
+                scheduler.init();
+                _Kernel.krnInterruptHandler(newProcess, args);
+            } else {
+                for (var i = 0; i < residentQueue.length; i++) {
+                    var obj = residentQueue[i];
+                    if (args == obj.getPID()) {
+                        obj.setState(4);
+                        Shell.updateRes();
+                        _StdOut.putText("Process " + args + " was murdered.");
+                    }
                 }
-                //                else {
-                //                    _StdOut.putText("Illegal move. PID " + args + " is not in the ready queue.");
-                //                }
             }
         };
 
