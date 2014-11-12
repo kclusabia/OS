@@ -13,7 +13,6 @@ module TSOS {
         public init() {
             clockCycle = 0;
             _CPU.showCPU();
-          //  process.showPCB();
         }
 
         public getScheduler(index:number) {
@@ -22,6 +21,10 @@ module TSOS {
 
         // Gets the next process and executes it.
         public startProcess() {
+            if(readyQueue.isEmpty() && process.getState() == "terminated") {
+                _CPU.init();
+                Shell.updateRes();
+            }
             if(readyQueue.getSize() > 0) {
                 process = readyQueue.dequeue();
                 if(process.getState() == "terminated") {

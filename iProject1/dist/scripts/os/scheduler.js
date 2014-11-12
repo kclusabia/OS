@@ -12,7 +12,6 @@ var TSOS;
         Scheduler.prototype.init = function () {
             clockCycle = 0;
             _CPU.showCPU();
-            //  process.showPCB();
         };
 
         Scheduler.prototype.getScheduler = function (index) {
@@ -21,6 +20,10 @@ var TSOS;
 
         // Gets the next process and executes it.
         Scheduler.prototype.startProcess = function () {
+            if (readyQueue.isEmpty() && process.getState() == "terminated") {
+                _CPU.init();
+                TSOS.Shell.updateRes();
+            }
             if (readyQueue.getSize() > 0) {
                 process = readyQueue.dequeue();
                 if (process.getState() == "terminated") {
