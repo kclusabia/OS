@@ -310,6 +310,7 @@ var TSOS;
             }
         };
 
+        // Updates the resident queue.
         Shell.updateRes = function () {
             var tableView = "<table>";
             tableView += "<th>PC</th>";
@@ -342,7 +343,6 @@ var TSOS;
 
         Shell.prototype.shellRun = function (args) {
             if (residentQueue[args].getState() == "new") {
-                //  alert("hi");
                 readyQueue.enqueue(residentQueue[args]);
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(newProcess, 5));
             }
@@ -355,10 +355,8 @@ var TSOS;
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(newProcess, 5));
         };
 
-        //TODO dequeue the process from ready and ?resident?.
         Shell.prototype.shellKill = function (args) {
             if (args == process.getPID() && process.getState() == "running") {
-                alert("About to kill " + process.getPID());
                 process.setState(4); // set state to terminated
                 Shell.updateRes();
                 _StdOut.putText("PID " + args + " was murdered.");
@@ -376,13 +374,14 @@ var TSOS;
             }
         };
 
+        // Consider active processes that have a state of running or waiting.
         Shell.prototype.shellPs = function (args) {
             for (var i = 0; i < residentQueue.length; i++) {
                 var obj = residentQueue[i];
                 if (obj.getState() == "running" || obj.getState() == "waiting") {
                     _StdOut.putText("Active processes are PID: " + obj.getPID());
                     _Console.advanceLine();
-                } else {
+                } else if (obj.getState() == "terminated" && readyQueue.isEmpty()) {
                     _StdOut.putText("There are currently no active processes.");
                     break;
                 }

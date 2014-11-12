@@ -15,7 +15,6 @@ module TSOS {
         // Reads the data from the specified address, denoted as the index.
         public readMemory(index) {
                 return memory.readMem(parseInt(index + process.getBase()));
-
         }
 
         public loadMemory(data1, base) {

@@ -351,6 +351,7 @@ module TSOS {
             }
         }
 
+        // Updates the resident queue.
         public static updateRes() {
                 var tableView = "<table>";
                 tableView += "<th>PC</th>";
@@ -384,7 +385,6 @@ module TSOS {
 
         public shellRun(args) {
             if(residentQueue[args].getState() == "new") {
-              //  alert("hi");
                 readyQueue.enqueue(residentQueue[args]);
                 _KernelInterruptQueue.enqueue(new Interrupt(newProcess, 5));
             }
@@ -397,10 +397,8 @@ module TSOS {
             _KernelInterruptQueue.enqueue(new Interrupt(newProcess, 5));
         }
 
-        //TODO dequeue the process from ready and ?resident?.
         public shellKill(args) {
             if (args == process.getPID() && process.getState() == "running") {
-                alert("About to kill " + process.getPID());
                 process.setState(4);            // set state to terminated
                 Shell.updateRes();
                 _StdOut.putText("PID " + args + " was murdered.");
@@ -408,6 +406,7 @@ module TSOS {
                 _Kernel.krnInterruptHandler(newProcess, args);
             }
             else {
+                // Can kill a process even though it is waiting.
                 for (var i = 0; i < residentQueue.length; i++) {
                     var obj:TSOS.ProcessControlBlock = residentQueue[i];
                     if (args == obj.getPID()) {
@@ -419,6 +418,7 @@ module TSOS {
             }
         }
 
+        // Consider active processes that have a state of running or waiting.
         public shellPs(args) {
             for (var i=0; i < residentQueue.length; i++) {
                 var obj:TSOS.ProcessControlBlock = residentQueue[i];
@@ -426,7 +426,7 @@ module TSOS {
                     _StdOut.putText("Active processes are PID: " + obj.getPID());
                     _Console.advanceLine();
                 }
-                else {
+                else if (obj.getState() == "terminated" && readyQueue.isEmpty()) {
                     _StdOut.putText("There are currently no active processes.");
                     break;
                 }
