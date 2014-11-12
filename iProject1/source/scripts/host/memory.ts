@@ -83,17 +83,14 @@ module TSOS {
         public getBase() {
             if(residentQueue.length == 0) {
                 this.base = 0;
-               // alert("base: " + this.base);
                 return this.base;
             }
-            else if(residentQueue.length == 1) {  //TODO && (residentQueue[0].getState() != "running" || residentQueue[0].getState() != "waiting")) {
+            else if(residentQueue.length == 1) {
                 this.base = 256;
-               // alert("base: " + this.base);
                 return this.base;
             }
             else if (residentQueue.length == 2) {
                 this.base = 512;
-              //  alert("base: " + this.base);
                 return this.base;
             }
             else {
@@ -111,7 +108,7 @@ module TSOS {
                 return -1;
         }
 
-        // Clear the memory and resetting the resident queue.
+        // Clears the memory and resetting the resident queue.
         public clearMem() {
             _StdOut.putText("Memory cleared! Processes has been terminated!");
             for (var i = residentQueue.length - 1; i >= 0; i--) {
