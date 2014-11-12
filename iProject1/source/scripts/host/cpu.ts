@@ -126,11 +126,8 @@ module TSOS {
                 this.sysCall();
             }
             else {
-                //_StdOut.putText("The input contained an invalid op code");
-               // alert("opcode: " + opcode + "PC: " + _CPU.PC);
-                _KernelInterruptQueue.enqueue(new Interrupt(invalidOpCode, 3));
-               // _Console.advanceLine();
-                //return;
+                // Displays the bsod screen.
+                _Console.ifError();
             }
         }
 
