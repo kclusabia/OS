@@ -385,6 +385,7 @@ module TSOS {
 
         public shellRun(args) {
             if(residentQueue[args].getState() == "new") {
+              //  residentQueue[args].setState(3);
                 readyQueue.enqueue(residentQueue[args]);
                 _KernelInterruptQueue.enqueue(new Interrupt(newProcess, 5));
             }
@@ -392,7 +393,9 @@ module TSOS {
 
         public shellRunAll() {
             for (var i=0; i < residentQueue.length; i++) {
+               // residentQueue[args].setState(3);
                 readyQueue.enqueue(residentQueue[i]);
+                Shell.updateRes();
             }
             _KernelInterruptQueue.enqueue(new Interrupt(newProcess, 5));
         }
@@ -420,17 +423,21 @@ module TSOS {
 
         // Consider active processes that have a state of running or waiting.
         public shellPs(args) {
+            var check:boolean = true;
             for (var i=0; i < residentQueue.length; i++) {
                 var obj:TSOS.ProcessControlBlock = residentQueue[i];
                 if(obj.getState() == "running" || obj.getState() == "waiting") {
+                    check = false;
                     _StdOut.putText("Active processes are PID: " + obj.getPID());
                     _Console.advanceLine();
                 }
-                else if (obj.getState() == "terminated" && readyQueue.isEmpty()) {
-                    _StdOut.putText("There are currently no active processes.");
-                    break;
-                }
+//                else if (obj.getState() == "terminated" && readyQueue.isEmpty()) {
+//                    _StdOut.putText("There are currently no active processes.");
+//                    break;
+
             }
+            if (check == true)
+             _StdOut.putText("There are currently no active processes.");
         }
 
         public shellSetQuantum(args) {

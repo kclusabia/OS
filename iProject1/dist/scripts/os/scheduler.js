@@ -23,6 +23,7 @@ var TSOS;
             if (readyQueue.isEmpty() && process.getState() == "terminated") {
                 _CPU.init();
                 TSOS.Shell.updateRes();
+                // memoryMngr.updateMemory();
             }
             if (readyQueue.getSize() > 0) {
                 process = readyQueue.dequeue();
@@ -30,11 +31,13 @@ var TSOS;
                     this.init();
                     this.startProcess();
                     TSOS.Shell.updateRes();
+                    // memoryMngr.updateMemory();
                 } else {
                     process.setState(1); // sets the state to running
                     _CPU.beginProcess(process);
                     _Kernel.krnTrace("Processing PID " + process.getPID());
                     TSOS.Shell.updateRes();
+                    //memoryMngr.updateMemory();
                 }
             } else if (readyQueue.isEmpty() && (process.getState() != "terminated")) {
                 this.init();

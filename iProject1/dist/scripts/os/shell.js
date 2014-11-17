@@ -343,6 +343,7 @@ var TSOS;
 
         Shell.prototype.shellRun = function (args) {
             if (residentQueue[args].getState() == "new") {
+                //  residentQueue[args].setState(3);
                 readyQueue.enqueue(residentQueue[args]);
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(newProcess, 5));
             }
@@ -350,7 +351,9 @@ var TSOS;
 
         Shell.prototype.shellRunAll = function () {
             for (var i = 0; i < residentQueue.length; i++) {
+                // residentQueue[args].setState(3);
                 readyQueue.enqueue(residentQueue[i]);
+                Shell.updateRes();
             }
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(newProcess, 5));
         };
@@ -376,16 +379,20 @@ var TSOS;
 
         // Consider active processes that have a state of running or waiting.
         Shell.prototype.shellPs = function (args) {
+            var check = true;
             for (var i = 0; i < residentQueue.length; i++) {
                 var obj = residentQueue[i];
                 if (obj.getState() == "running" || obj.getState() == "waiting") {
+                    check = false;
                     _StdOut.putText("Active processes are PID: " + obj.getPID());
                     _Console.advanceLine();
-                } else if (obj.getState() == "terminated" && readyQueue.isEmpty()) {
-                    _StdOut.putText("There are currently no active processes.");
-                    break;
                 }
+                //                else if (obj.getState() == "terminated" && readyQueue.isEmpty()) {
+                //                    _StdOut.putText("There are currently no active processes.");
+                //                    break;
             }
+            if (check == true)
+                _StdOut.putText("There are currently no active processes.");
         };
 
         Shell.prototype.shellSetQuantum = function (args) {

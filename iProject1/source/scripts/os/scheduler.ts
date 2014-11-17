@@ -24,6 +24,7 @@ module TSOS {
             if(readyQueue.isEmpty() && process.getState() == "terminated") {
                 _CPU.init();
                 Shell.updateRes();
+               // memoryMngr.updateMemory();
             }
             if(readyQueue.getSize() > 0) {
                 process = readyQueue.dequeue();
@@ -31,12 +32,14 @@ module TSOS {
                     this.init();
                     this.startProcess();
                     Shell.updateRes();
+                   // memoryMngr.updateMemory();
                 }
                 else {
                     process.setState(1);            // sets the state to running
                     _CPU.beginProcess(process);
                     _Kernel.krnTrace("Processing PID " + process.getPID());
                     Shell.updateRes();
+                    //memoryMngr.updateMemory();
                 }
             }
             // Resets the clock cycle.
