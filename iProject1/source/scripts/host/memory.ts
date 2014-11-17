@@ -78,6 +78,7 @@ module TSOS {
         // Stores data in the specified index in memory.
         public storeData(index, data) {
             _MemoryArray[index] = data;
+            memoryMngr.updateMemory();
         }
 
         public getBase() {
