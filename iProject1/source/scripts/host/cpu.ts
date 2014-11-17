@@ -71,7 +71,7 @@ module TSOS {
 
         // The CPU block
         public showCPU() {
-            document.getElementById("PC").innerHTML = String(_CPU.PC);
+            document.getElementById("PC").innerHTML = String(_CPU.PC+process.getBase());
             document.getElementById("Acc").innerHTML = String(_CPU.Acc);
             document.getElementById("IR").innerHTML = String(_CPU.IR);
             document.getElementById("XReg").innerHTML = String(_CPU.XReg);
