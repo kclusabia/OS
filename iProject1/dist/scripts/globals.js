@@ -88,7 +88,7 @@ var quantum = 6;
 var clockCycle = 0;
 var scheduler;
 
-var _HardDrive = null;
+var fileSystem = null;
 
 var onDocumentLoad = function () {
     TSOS.Control.hostInit();

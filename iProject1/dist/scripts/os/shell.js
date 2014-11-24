@@ -72,11 +72,15 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
 
             // displays the quantum.
-            sc = new TSOS.ShellCommand(this.shellSetQuantum, "quantum", "<number> - Sets the quantum. Default quantum is 6");
+            sc = new TSOS.ShellCommand(this.shellSetQuantum, "quantum", "<number> - Sets the quantum. Default quantum is 6.");
             this.commandList[this.commandList.length] = sc;
 
             // clear memory
             sc = new TSOS.ShellCommand(this.shellClearMem, "clearmem", "- Clears the memory.");
+            this.commandList[this.commandList.length] = sc;
+
+            // clear memory
+            sc = new TSOS.ShellCommand(this.shellCreateFile, "create", "<filename> - Creates a file in disk.");
             this.commandList[this.commandList.length] = sc;
 
             // shutdown
@@ -343,16 +347,18 @@ var TSOS;
 
         Shell.prototype.shellRun = function (args) {
             if (residentQueue[args].getState() == "new") {
-                //  residentQueue[args].setState(3);
                 readyQueue.enqueue(residentQueue[args]);
+
+                // residentQueue(args).setState(3);
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(newProcess, 5));
             }
         };
 
         Shell.prototype.shellRunAll = function () {
             for (var i = 0; i < residentQueue.length; i++) {
-                // residentQueue[args].setState(3);
                 readyQueue.enqueue(residentQueue[i]);
+
+                //residentQueue(args).setState(3);
                 Shell.updateRes();
             }
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(newProcess, 5));
@@ -387,10 +393,8 @@ var TSOS;
                     _StdOut.putText("Active processes are PID: " + obj.getPID());
                     _Console.advanceLine();
                 }
-                //                else if (obj.getState() == "terminated" && readyQueue.isEmpty()) {
-                //                    _StdOut.putText("There are currently no active processes.");
-                //                    break;
             }
+
             if (check == true)
                 _StdOut.putText("There are currently no active processes.");
         };
@@ -407,6 +411,14 @@ var TSOS;
 
         Shell.prototype.shellClearMem = function (args) {
             memoryMngr.clearMemory();
+        };
+
+        Shell.prototype.shellCreateFile = function (args) {
+            // Filename does not exist, so create the file.
+            if (filesCreated.indexOf(args) == -1) {
+                _StdOut.putText("File created: " + filename);
+            } else
+                _StdOut.putText("Let's get it together. Providing a filename is needed.");
         };
 
         Shell.prototype.shellShutdown = function (args) {
