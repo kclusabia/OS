@@ -40,6 +40,9 @@ var TSOS;
             // Use the TypeScript cast to HTMLInputElement
             document.getElementById("btnStartOS").focus();
 
+            memoryMngr = new TSOS.MemoryManager();
+            fileSystem = new TSOS.HardDriveManager();
+
             // Check for our testing and enrichment core.
             if (typeof Glados === "function") {
                 _GLaDOS = new Glados();
@@ -88,8 +91,6 @@ var TSOS;
             // .. and call the OS Kernel Bootstrap routine.
             _Kernel = new TSOS.Kernel();
             _Kernel.krnBootstrap();
-
-            memoryMngr = new TSOS.MemoryManager();
         };
 
         Control.hostBtnHaltOS_click = function (btn) {

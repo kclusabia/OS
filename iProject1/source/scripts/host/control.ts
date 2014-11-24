@@ -45,6 +45,9 @@ module TSOS {
             // Use the TypeScript cast to HTMLInputElement
             (<HTMLInputElement> document.getElementById("btnStartOS")).focus();
 
+            memoryMngr = new MemoryManager();
+            fileSystem = new HardDriveManager();
+
             // Check for our testing and enrichment core.
             if (typeof Glados === "function") {
                 _GLaDOS = new Glados();
@@ -94,8 +97,6 @@ module TSOS {
             // .. and call the OS Kernel Bootstrap routine.
             _Kernel = new Kernel();
             _Kernel.krnBootstrap();
-
-            memoryMngr = new MemoryManager();
 
         }
 

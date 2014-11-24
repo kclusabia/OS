@@ -6,6 +6,7 @@ module TSOS {
 
         public base:number = 0;
         constructor() {
+           // fileSystem = new HardDriveManager();
         }
 
         // Creates the memory table consisting of an array.
