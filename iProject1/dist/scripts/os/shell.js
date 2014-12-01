@@ -79,10 +79,6 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellClearMem, "clearmem", "- Clears the memory.");
             this.commandList[this.commandList.length] = sc;
 
-            // clear memory
-            sc = new TSOS.ShellCommand(this.shellCreateFile, "create", "<filename> - Creates a file in disk.");
-            this.commandList[this.commandList.length] = sc;
-
             // shutdown
             sc = new TSOS.ShellCommand(this.shellShutdown, "shutdown", "- Shuts down the virtual OS but leaves the underlying hardware simulation running.");
             this.commandList[this.commandList.length] = sc;
@@ -107,8 +103,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellPrompt, "prompt", "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
 
-            // processes - list the running processes and their IDs
-            // kill <id> - kills the specified process id.
+            // create a file in the File System Driver
+            sc = new TSOS.ShellCommand(this.shellCreateFile, "create", "<filename> - Creates a file in disk.");
+            this.commandList[this.commandList.length] = sc;
+
             //
             // Display the initial prompt.
             this.putPrompt();
@@ -489,6 +487,10 @@ var TSOS;
             } else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
             }
+        };
+
+        Shell.prototype.shellCreateFile = function (args) {
+            fileSystem.create(args.toString());
         };
         return Shell;
     })();

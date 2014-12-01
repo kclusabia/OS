@@ -92,7 +92,7 @@ var quantum:number = 6;
 var clockCycle:number = 0;
 var scheduler: TSOS.Scheduler;
 
-var fileSystem:any[] = null;
+var fileSystem: TSOS.FileSystemDeviceDriver;
 
 var onDocumentLoad = function() {
 	TSOS.Control.hostInit();

@@ -113,12 +113,6 @@ module TSOS {
                 "- Clears the memory.");
             this.commandList[this.commandList.length] = sc;
 
-            // clear memory
-            sc = new ShellCommand(this.shellCreateFile,
-                "create",
-                "<filename> - Creates a file in disk.");
-            this.commandList[this.commandList.length] = sc;
-
             // shutdown
             sc = new ShellCommand(this.shellShutdown,
                                   "shutdown",
@@ -155,8 +149,11 @@ module TSOS {
                                   "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
 
-            // processes - list the running processes and their IDs
-            // kill <id> - kills the specified process id.
+            // create a file in the File System Driver
+            sc = new ShellCommand(this.shellCreateFile,
+                "create",
+                "<filename> - Creates a file in disk.");
+            this.commandList[this.commandList.length] = sc;
 
             //
             // Display the initial prompt.
@@ -534,6 +531,10 @@ module TSOS {
             } else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
             }
+        }
+
+        public shellCreateFile(args) {
+            fileSystem.create(args.toString());
         }
 
     }

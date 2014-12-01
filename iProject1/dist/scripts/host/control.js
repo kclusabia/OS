@@ -41,7 +41,7 @@ var TSOS;
             document.getElementById("btnStartOS").focus();
 
             memoryMngr = new TSOS.MemoryManager();
-            fileSystem = new TSOS.HardDriveManager();
+            fileSystem = new TSOS.FileSystemDeviceDriver();
 
             // Check for our testing and enrichment core.
             if (typeof Glados === "function") {

@@ -46,7 +46,7 @@ module TSOS {
             (<HTMLInputElement> document.getElementById("btnStartOS")).focus();
 
             memoryMngr = new MemoryManager();
-            fileSystem = new HardDriveManager();
+            fileSystem = new FileSystemDeviceDriver();
 
             // Check for our testing and enrichment core.
             if (typeof Glados === "function") {
