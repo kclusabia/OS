@@ -37,20 +37,30 @@
    <script type="text/javascript" src="dist/scripts/utils.js"></script>
    <!-- Uncomment this line below to enable Glados testing -->
    <!-- <script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script> -->
+
+
+    <!--date and time-->
+    <iframe id = "graphicClock" src="http://free.timeanddate.com/clock/i4by67ad/n3402/fn10/fs17/fc09f/tc000/ftb/bas2/bat1/bac09f/pa8/tt0/tw1/td1/th2/ta1/tb4"
+            frameborder="0" width="243" height="60" align="right"
+            style=""></iframe>
+
+    <!--status-->
+    <h3 id = "status" style= "margin-bottom:5px; color:dodgerblue; align:center;">Status: </h3>
 </head>
 
 <body onload="onDocumentLoad();">
 
 <div id="divMain" style="width:100%;">
 
-   <div id="divButtonBar" style="margin-top:10px; margin-left:70px">
+   <div id="divButtonBar">
+
       <input type="button"
              id = "btnStartOS"
              name="brnStartOS"
              class="normal_button"
              value="Start"
              tabindex="0"
-             onclick="TSOS.Control.hostBtnStartOS_click(this);">
+             onclick="TSOS.Control.hostBtnStartOS_click(this);" />
 
       <input type="button"
              id = "btnHaltOS"
@@ -59,7 +69,7 @@
              disabled="disabled"
              value="Stop"
              tabindex="1"
-             onclick="TSOS.Control.hostBtnHaltOS_click(this);">
+             onclick="TSOS.Control.hostBtnHaltOS_click(this);" />
 
       <input type="button"
              id = "btnReset"
@@ -68,26 +78,36 @@
              disabled="disabled"
              value="Reset"
              tabindex="2"
-             onclick="TSOS.Control.hostBtnReset_click(this);">
-   </div>
+             onclick="TSOS.Control.hostBtnReset_click(this);" />
+    </div>
+</div>
 
-     <!--date and time-->
-    <iframe id = "graphicClock" src="http://free.timeanddate.com/clock/i4by67ad/n3402/fn10/fs17/fc09f/tc000/ftb/bas2/bat1/bac09f/pa8/tt0/tw1/td1/th2/ta1/tb4"
-            frameborder="0" width="243" height="60" align="right"></iframe>
-
-    <!--status-->
-    <h3 id = "status" style= "margin-bottom:5px; color:dodgerblue; align:center;">Status: </h3>
-
-
-    <div id="divConsole" style="margin-top:4px; margin-left:0.01%; width:500px; height:500px; float:left;">
+<div id="divConsole" style="margin-top:30px; width:500px; height:auto; float:left;">
       <canvas id="display"
               width="475px"
               height="500px"
               tabindex="3">
       </canvas>
-   </div>
+        <div>
+            <p>Ready Queue</p>
+            <table id="ReadyQueue">
+                <th>PC</th>
+                <th>PID</th>
+                <th>Base</th>
+                <th>Limit</th>
+                <th>XReg</th>
+                <th>YReg</th>
+                <th>ZFlag</th>
+                <th>State</th>
+            </table>
+        </div>
+</div>
 
-    <div id="divLog" style="margin-left:-0.9%; margin-top:1px; float:left;">
+
+
+<div id="divLog" style="margin-left:-0.9%; margin-top:1px; float:left;">
+
+    <div>
         <label>
             Host Log
             <br>
@@ -99,78 +119,66 @@
         </label>
     </div>
 
-    <div class="memory-label" style="float:left;">
-        <label>Memory</label>
+    <div id="divUserProgramInput" style="">
+        <label>
+            User Program Input
+            <br>
+            <textarea name="taProgramInput"
+                      id  ="taProgramInput"
+                      rows="8"
+                      cols="45"
+                    ></textarea>
+        </label>
     </div>
+</div>
 
-    <div id="divMemory" style="height:400px; width:440; border:1px; overflow-y: scroll; margin-top: 30px; margin-bottom: 2%">
-        <table id="memoryTable" style="border:2px solid; height:395px; width:375px; margin-right:30px;">
+
+<div class="memory-label" style="float:left; height: auto;">
+    <center><p>Memory</p></center>
+
+    <div id="divMemory" style="width: 390px; overflow: scroll; height: 500px; border: transparent">
+        <table id="memoryTable" style=" border: transparent">
         </table>
     </div>
 
-   <div id="divUserProgramInput" style="margin-right:15%; margin-top:-45px; float:left;">
-      <label>
-         User Program Input
-         <br>
-         <textarea name="taProgramInput"
-                   id  ="taProgramInput"
-                   rows="8"
-                   cols="45"
-         ></textarea>
-      </label>
-   </div>
+    <div>
+
+        <center><p>CPU</p></center>
+    </div>
 
     <div>
-    <label style="margin-bottom: 15%;">
-        CPU
-    </label>
-                                                         <!--margin left acts differently in safari and chrome.-->
-    <table id="CPU" border="1" style="width:20%; float: left; margin-top: -5%; margin-left: 410%;
-           margin-bottom:4% ">
+        <table id="CPU" align="center">
             <th>PC</th>
             <th>ACC</th>
             <th>IR</th>
             <th>XReg</th>
             <th>YReg</th>
             <th>ZFlag</th>
-        </tr>
+            </tr>
 
-        <tr>
-            <td id="PC">0</td>
-            <td id="Acc">0</td>
-            <td id="IR">0</td>
-            <td id="XReg">0</td>
-            <td id="YReg">0</td>
-            <td id="ZFlag">0</td>
-        </tr>
-    </table>
-        </div>
-
-    <div style="float: left;">
-        <p>
-            Ready Queue
-        </p>
-
-        <table id="ReadyQueue" border="1">
+            <tr>
+                <td id="PC">0</td>
+                <td id="Acc">0</td>
+                <td id="IR">0</td>
+                <td id="XReg">0</td>
+                <td id="YReg">0</td>
+                <td id="ZFlag">0</td>
+            </tr>
         </table>
     </div>
 
+</div>
 
-<div class="fileSystem-label" style="margin-top: 15%; margin-left: 20%;">
+
+<div class="fileSystem-label">
     <label>File System</label>
+
+    <div id="divFileSystem" style="max-width: 1180px; height: 400px; overflow:scroll;">
+        <table id="fileSystemTable">
+        </table>
+    </div>
 </div>
 
-<div id="divFileSystem" style="height:400px; width:1180px; border:1px; overflow-y: scroll; margin-top:1%; margin-bottom: 2%">
-    <table id="fileSystemTable" style="border:2px solid; height:600px; width:1140px; margin-top:1%; margin-right:30px;">
-    </table>
-</div>
-
-</div>
-
-
-
-
-</div>
 
 <p class="footerText" style="clear:both;">
    <br>

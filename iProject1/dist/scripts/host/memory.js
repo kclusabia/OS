@@ -6,7 +6,6 @@ var TSOS;
     var Memory = (function () {
         function Memory() {
             this.base = 0;
-            // fileSystem = new HardDriveManager();
         }
         // Creates the memory table consisting of an array.
         Memory.prototype.newTable = function () {
