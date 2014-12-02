@@ -155,6 +155,21 @@ module TSOS {
                 "<filename> - Creates a file in disk.");
             this.commandList[this.commandList.length] = sc;
 
+            sc = new ShellCommand(this.shellFormat,
+                "format",
+                " - Formats the disk.");
+            this.commandList[this.commandList.length] = sc;
+
+            sc = new ShellCommand(this.shellReadFile,
+                "read",
+                "<filename> - Reads the file in disk.");
+            this.commandList[this.commandList.length] = sc;
+
+            sc = new ShellCommand(this.shellWriteFile,
+                "write",
+                "<string> - Writes the file in disk.");
+            this.commandList[this.commandList.length] = sc;
+
             //
             // Display the initial prompt.
             this.putPrompt();
@@ -535,6 +550,19 @@ module TSOS {
 
         public shellCreateFile(args) {
             fileSystem.create(args.toString());
+        }
+
+        public shellFormat() {
+            fileSystem.format();
+        }
+
+        public shellReadFile() {
+            //TODO
+        }
+
+        public shellWriteFile(args) {
+//            alert(args[0]+", "+args[1]);
+            fileSystem.write(args[0],args[1]);
         }
 
     }

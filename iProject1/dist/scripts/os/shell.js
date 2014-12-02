@@ -107,6 +107,15 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellCreateFile, "create", "<filename> - Creates a file in disk.");
             this.commandList[this.commandList.length] = sc;
 
+            sc = new TSOS.ShellCommand(this.shellFormat, "format", " - Formats the disk.");
+            this.commandList[this.commandList.length] = sc;
+
+            sc = new TSOS.ShellCommand(this.shellReadFile, "read", "<filename> - Reads the file in disk.");
+            this.commandList[this.commandList.length] = sc;
+
+            sc = new TSOS.ShellCommand(this.shellWriteFile, "write", "<string> - Writes the file in disk.");
+            this.commandList[this.commandList.length] = sc;
+
             //
             // Display the initial prompt.
             this.putPrompt();
@@ -491,6 +500,19 @@ var TSOS;
 
         Shell.prototype.shellCreateFile = function (args) {
             fileSystem.create(args.toString());
+        };
+
+        Shell.prototype.shellFormat = function () {
+            fileSystem.format();
+        };
+
+        Shell.prototype.shellReadFile = function () {
+            //TODO
+        };
+
+        Shell.prototype.shellWriteFile = function (args) {
+            //            alert(args[0]+", "+args[1]);
+            fileSystem.write(args[0], args[1]);
         };
         return Shell;
     })();

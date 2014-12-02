@@ -9,8 +9,6 @@ module TSOS {
         public metaDataSize:number = 64;
 
         constructor() {
-            this.createFileSystem();
-            this.createMBR();
         }
 
         public printData():string {
@@ -25,6 +23,12 @@ module TSOS {
             var mbr = this.createKey(0,0,0);
             localStorage.setItem(mbr,"1---mbr");
             this.updateFileSystem();
+        }
+
+        public format() {
+            this.createFileSystem();
+            this.createMBR();
+            _StdOut.putText("Formatting...done!");
         }
 
         public createFileSystem() {
@@ -82,12 +86,108 @@ module TSOS {
             return String(t) + String(s) + String(b);
         }
 
-        public getMetaIndex() {
-            var t = 0;
+        public getAvailMetaDir():string {
+            for (var t = 0; t < 1; t++) {
+                for(var s = 0; s < this.sectorSize; s++) {
+                    for (var b = 0; b < this.blockSize; b++) {
+                        var key = this.createKey(t,s,b);
+                        var metadata = localStorage.getItem(key);
+                        if(metadata.substring(0,1) == 0) {
+                            return key;
+                        }
+                    }
+                }
+            }
         }
 
-        public create(args) {
-            //TODO
+        public getAvailMetaData():string {
+            for (var t = 1; t < 4; t++) {
+                for (var s = 0; s < this.sectorSize; s++) {
+                    for (var b = 0; b < this.blockSize; b++) {
+                        var key = this.createKey(t, s, b);
+                        var metadata = localStorage.getItem(key);
+                        if(metadata.substring(0,1) == 0) {
+                            return key;
+                        }
+                    }
+                }
+            }
+        }
+
+        public create(filename1:string) {
+            var metaKey = this.getAvailMetaDir();
+            var metaIndex = this.getAvailMetaData();
+
+            var filename = this.convertToHex(filename1);
+            var pad = this.addZeros("1"+ metaIndex + filename, this.metaDataSize)
+            localStorage.setItem(metaKey, pad);
+            this.updateFileSystem();
+            _StdOut.putText("Created the file called: " + this.convertToString(filename));
+
+            /////
+        }
+
+        public write(file,contents) {
+
+
+            var t = 0;
+            var readKey = "";
+            var pad;
+
+            for(var s = 0; s<this.sectorSize;s++) {
+                for (var b = 0; b < this.blockSize; b++) {
+                    var newKey = this.createKey(t,s,b);
+                    var metadata = localStorage.getItem(newKey);
+                    var haha = metadata.slice(0,1);
+                    var f = metadata.slice(4,this.metaDataSize);
+                    var hexString = this.convertToHex(file);
+                     pad = this.addZeros(hexString, (this.metaDataSize-4));
+                    if(haha == "1" &&  (pad == f)){
+                        readKey = metadata.slice(1, 4);
+                        break;
+                    }
+                }
+            }
+
+            localStorage.setItem(readKey,"1---"+this.addZeros(this.convertToHex(contents), (this.metaDataSize-4)));
+            this.updateFileSystem();
+//            var contents:string = "";
+//            contents = this.convertToHex(str);
+//            var dataKey = this.getAvailMetaDir();
+//            localStorage.setItem(dataKey, contents);
+//            this.updateFileSystem();
+//            _StdOut.putText("Done writing!");
+        }
+
+        public convertToHex(stringName):string {
+            var str:string = "";
+            for(var i=0; i<stringName.length; i++) {
+                str += stringName.charCodeAt(i).toString(16);
+            }
+            return str;
+        }
+
+        public convertToString(hexValue:string):string {
+            var hex:string = "";
+            for(var i=0; i<hexValue.length; i++) {
+                var a = hexValue.charAt(i);
+                var b = hexValue.charAt(i+1);
+                hex += String.fromCharCode(parseInt((a+b),16)).toString();
+                i++;
+            }
+            return hex;
+        }
+
+        public addZeros(name:string, length:number) {
+            var str = "";
+            if(name.length < length) {
+                var len = name.length;
+                for(var i=len; i<length; i++) {
+                    str +=   "0";
+                }
+            }
+            name +=str;
+            return name ;
         }
 
         }
