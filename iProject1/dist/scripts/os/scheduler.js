@@ -6,7 +6,6 @@ var TSOS;
     var Scheduler = (function () {
         function Scheduler() {
             this.schedulerType = "";
-            this.schedulers = ["RoundRobin", "FCFS", "NonPreemptive"];
             // this.schedulerType = schedulers[0];
         }
         Scheduler.prototype.init = function () {
@@ -14,16 +13,11 @@ var TSOS;
             _CPU.showCPU();
         };
 
-        Scheduler.prototype.getScheduler = function (index) {
-            this.schedulerType = this.schedulers[index];
-        };
-
         // Gets the next process and executes it.
         Scheduler.prototype.startProcess = function () {
             if (readyQueue.isEmpty() && process.getState() == "terminated") {
                 _CPU.init();
                 TSOS.Shell.updateRes();
-                // memoryMngr.updateMemory();
             }
             if (readyQueue.getSize() > 0) {
                 process = readyQueue.dequeue();
@@ -31,13 +25,11 @@ var TSOS;
                     this.init();
                     this.startProcess();
                     TSOS.Shell.updateRes();
-                    // memoryMngr.updateMemory();
                 } else {
                     process.setState(1); // sets the state to running
                     _CPU.beginProcess(process);
                     _Kernel.krnTrace("Processing PID " + process.getPID());
                     TSOS.Shell.updateRes();
-                    //memoryMngr.updateMemory();
                 }
             } else if (readyQueue.isEmpty() && (process.getState() != "terminated")) {
                 this.init();

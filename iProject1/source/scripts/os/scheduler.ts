@@ -4,7 +4,6 @@
 module TSOS {
     export class Scheduler {
         public schedulerType:string = "";
-        public schedulers:string[] = ["RoundRobin", "FCFS", "NonPreemptive"];
 
         constructor() {
            // this.schedulerType = schedulers[0];
@@ -15,16 +14,11 @@ module TSOS {
             _CPU.showCPU();
         }
 
-        public getScheduler(index:number) {
-            this.schedulerType = this.schedulers[index];
-        }
-
         // Gets the next process and executes it.
         public startProcess() {
             if(readyQueue.isEmpty() && process.getState() == "terminated") {
                 _CPU.init();
                 Shell.updateRes();
-               // memoryMngr.updateMemory();
             }
             if(readyQueue.getSize() > 0) {
                 process = readyQueue.dequeue();
@@ -32,14 +26,12 @@ module TSOS {
                     this.init();
                     this.startProcess();
                     Shell.updateRes();
-                   // memoryMngr.updateMemory();
                 }
                 else {
                     process.setState(1);            // sets the state to running
                     _CPU.beginProcess(process);
                     _Kernel.krnTrace("Processing PID " + process.getPID());
                     Shell.updateRes();
-                    //memoryMngr.updateMemory();
                 }
             }
             // Resets the clock cycle.

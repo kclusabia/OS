@@ -20,7 +20,10 @@ var TSOS;
 
         FileSystemDeviceDriver.prototype.createMBR = function () {
             var mbr = this.createKey(0, 0, 0);
-            localStorage.setItem(mbr, "1---mbr");
+            var str = "Shit";
+            var mbrData = "";
+            mbrData = "1---" + this.addZeros(this.convertToHex(str), (this.metaDataSize - 4));
+            localStorage.setItem(mbr, mbrData);
             this.updateFileSystem();
         };
 
@@ -128,17 +131,17 @@ var TSOS;
         FileSystemDeviceDriver.prototype.write = function (file, contents) {
             var t = 0;
             var readKey = "";
-            var pad;
+            var paddedFN;
 
             for (var s = 0; s < this.sectorSize; s++) {
                 for (var b = 0; b < this.blockSize; b++) {
                     var newKey = this.createKey(t, s, b);
                     var metadata = localStorage.getItem(newKey);
-                    var haha = metadata.slice(0, 1);
-                    var f = metadata.slice(4, this.metaDataSize);
+                    var metaindex = metadata.slice(0, 1);
+                    var fn = metadata.slice(4, this.metaDataSize);
                     var hexString = this.convertToHex(file);
-                    pad = this.addZeros(hexString, (this.metaDataSize - 4));
-                    if (haha == "1" && (pad == f)) {
+                    paddedFN = this.addZeros(hexString, (this.metaDataSize - 4));
+                    if (metaindex == "1" && (paddedFN == fn)) {
                         readKey = metadata.slice(1, 4);
                         break;
                     }
@@ -147,12 +150,111 @@ var TSOS;
 
             localStorage.setItem(readKey, "1---" + this.addZeros(this.convertToHex(contents), (this.metaDataSize - 4)));
             this.updateFileSystem();
-            //            var contents:string = "";
-            //            contents = this.convertToHex(str);
-            //            var dataKey = this.getAvailMetaDir();
-            //            localStorage.setItem(dataKey, contents);
-            //            this.updateFileSystem();
-            //            _StdOut.putText("Done writing!");
+        };
+
+        FileSystemDeviceDriver.prototype.read = function (file) {
+            var t = 0;
+            var tData = 1;
+            var readKey = "";
+            var paddedFN;
+            var contents = "";
+
+            for (var s = 0; s < this.sectorSize; s++) {
+                for (var b = 0; b < this.blockSize; b++) {
+                    // goes through the directory
+                    var newKey = this.createKey(t, s, b);
+                    var metadata = localStorage.getItem(newKey);
+
+                    // 1 if in use
+                    var metaindex = metadata.slice(0, 1);
+
+                    var fn = metadata.slice(4, this.metaDataSize);
+                    var hexString = this.convertToHex(file);
+                    paddedFN = this.addZeros(hexString, (this.metaDataSize - 4));
+                    if (metaindex == "1" && (paddedFN == fn)) {
+                        readKey = metadata.slice(1, 4);
+                    }
+                }
+            }
+            for (var s = 0; s < this.sectorSize; s++) {
+                for (var b = 0; b < this.blockSize; b++) {
+                    // data TSB
+                    var newKey1 = this.createKey(tData, s, b);
+                    var metadata1 = localStorage.getItem(newKey1);
+                    var metaindex1 = metadata1.substring(0, 1);
+                    if (metaindex1 == "1" && (readKey == newKey1)) {
+                        contents = metadata1.substring(4, this.metaDataSize);
+                        var contents1 = this.convertToString(contents);
+                    }
+                }
+            }
+            this.updateFileSystem();
+            _StdOut.putText("File contains: " + contents1);
+        };
+
+        FileSystemDeviceDriver.prototype.delete = function (file) {
+            var t = 0;
+            var tData = 1;
+            var readKey = "";
+            var paddedFN;
+            var contents = "";
+            var str = "";
+
+            for (var s = 0; s < this.sectorSize; s++) {
+                for (var b = 0; b < this.blockSize; b++) {
+                    // goes through the directory
+                    var newKey = this.createKey(t, s, b);
+                    var metadata = localStorage.getItem(newKey);
+
+                    // 1 if in use
+                    var metaindex = metadata.slice(0, 1);
+
+                    var fn = metadata.slice(4, this.metaDataSize);
+                    var hexString = this.convertToHex(file);
+                    paddedFN = this.addZeros(hexString, (this.metaDataSize - 4));
+                    if (metaindex == "1" && (paddedFN == fn)) {
+                        readKey = metadata.slice(1, 4);
+                    }
+                }
+            }
+            for (var s = 0; s < this.sectorSize; s++) {
+                for (var b = 0; b < this.blockSize; b++) {
+                    // data TSB
+                    var newKey1 = this.createKey(tData, s, b);
+                    var metadata1 = localStorage.getItem(newKey1);
+                    var metaindex1 = metadata1.substring(0, 1);
+                    if (metaindex1 == "1" && (readKey == newKey1)) {
+                        localStorage.setItem(newKey1, "0000" + this.addZeros(str, this.metaDataSize - 4));
+                    }
+                }
+            }
+            this.updateFileSystem();
+        };
+
+        FileSystemDeviceDriver.prototype.filesOnDisk = function () {
+            var t = 0;
+            var files = new Array();
+
+            for (var s = 0; s < this.sectorSize; s++) {
+                for (var b = 1; b < this.blockSize; b++) {
+                    var newKey = this.createKey(t, s, b);
+                    var metadata = localStorage.getItem(newKey);
+                    var metaindex = metadata.slice(0, 1);
+                    var fn = metadata.slice(4, this.metaDataSize);
+                    var stringFilename = this.convertToString(fn);
+
+                    //  paddedFN = this.addZeros(stringFilename, (this.metaDataSize - 4));
+                    if (metaindex == "1") {
+                        files.push(stringFilename);
+                        //                        break;
+                    }
+                }
+            }
+            for (var i = 0; i < files.length; i++) {
+                _StdOut.putText("File " + [i] + ": " + files[i]);
+                _Console.advanceLine();
+            }
+            this.updateFileSystem();
         };
 
         FileSystemDeviceDriver.prototype.convertToHex = function (stringName) {

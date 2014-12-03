@@ -170,6 +170,26 @@ module TSOS {
                 "<string> - Writes the file in disk.");
             this.commandList[this.commandList.length] = sc;
 
+            sc = new ShellCommand(this.shellDeleteFile,
+                "delete",
+                "<filename> - Deletes the file in disk.");
+            this.commandList[this.commandList.length] = sc;
+
+            sc = new ShellCommand(this.shellOnDisk,
+                "ls",
+                " - Deletes the file in disk.");
+            this.commandList[this.commandList.length] = sc;
+
+            sc = new ShellCommand(this.shellSetSchedule,
+                "setschedule",
+                "<scheduler> - Sets a scheduler.");
+            this.commandList[this.commandList.length] = sc;
+
+            sc = new ShellCommand(this.shellGetSchedule,
+                "getschedule",
+                " - Gets the current scheduler.");
+            this.commandList[this.commandList.length] = sc;
+
             //
             // Display the initial prompt.
             this.putPrompt();
@@ -556,14 +576,31 @@ module TSOS {
             fileSystem.format();
         }
 
-        public shellReadFile() {
-            //TODO
+        public shellReadFile(args) {
+            fileSystem.read(args.toString());
         }
 
         public shellWriteFile(args) {
-//            alert(args[0]+", "+args[1]);
             fileSystem.write(args[0],args[1]);
         }
 
+        public shellDeleteFile(args) {
+            fileSystem.delete(args.toString());
+        }
+
+        public shellOnDisk() {
+            fileSystem.filesOnDisk();
+        }
+
+        public shellSetSchedule(args) {
+            if (args.toString() == "rr" || args.toString() == "fcfs" || args.toString() == "priority") {
+                scheduler.schedulerType = args.toString();
+                _StdOut.putText("Current scheduler is: " + scheduler.schedulerType);
+            }
+        }
+
+        public shellGetSchedule() {
+            _StdOut.putText("Current scheduler is: " + scheduler.schedulerType);
+        }
     }
 }

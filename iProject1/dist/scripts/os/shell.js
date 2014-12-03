@@ -116,6 +116,18 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellWriteFile, "write", "<string> - Writes the file in disk.");
             this.commandList[this.commandList.length] = sc;
 
+            sc = new TSOS.ShellCommand(this.shellDeleteFile, "delete", "<filename> - Deletes the file in disk.");
+            this.commandList[this.commandList.length] = sc;
+
+            sc = new TSOS.ShellCommand(this.shellOnDisk, "ls", " - Deletes the file in disk.");
+            this.commandList[this.commandList.length] = sc;
+
+            sc = new TSOS.ShellCommand(this.shellSetSchedule, "setschedule", "<scheduler> - Sets a scheduler.");
+            this.commandList[this.commandList.length] = sc;
+
+            sc = new TSOS.ShellCommand(this.shellGetSchedule, "getschedule", " - Gets the current scheduler.");
+            this.commandList[this.commandList.length] = sc;
+
             //
             // Display the initial prompt.
             this.putPrompt();
@@ -506,13 +518,31 @@ var TSOS;
             fileSystem.format();
         };
 
-        Shell.prototype.shellReadFile = function () {
-            //TODO
+        Shell.prototype.shellReadFile = function (args) {
+            fileSystem.read(args.toString());
         };
 
         Shell.prototype.shellWriteFile = function (args) {
-            //            alert(args[0]+", "+args[1]);
             fileSystem.write(args[0], args[1]);
+        };
+
+        Shell.prototype.shellDeleteFile = function (args) {
+            fileSystem.delete(args.toString());
+        };
+
+        Shell.prototype.shellOnDisk = function () {
+            fileSystem.filesOnDisk();
+        };
+
+        Shell.prototype.shellSetSchedule = function (args) {
+            if (args.toString() == "rr" || args.toString() == "fcfs" || args.toString() == "priority") {
+                scheduler.schedulerType = args.toString();
+                _StdOut.putText("Current scheduler is: " + scheduler.schedulerType);
+            }
+        };
+
+        Shell.prototype.shellGetSchedule = function () {
+            _StdOut.putText("Current scheduler is: " + scheduler.schedulerType);
         };
         return Shell;
     })();
