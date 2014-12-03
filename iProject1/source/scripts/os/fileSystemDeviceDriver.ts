@@ -89,6 +89,10 @@ module TSOS {
             return String(t) + String(s) + String(b);
         }
 
+        /**
+         * Gets the free directory block to create files in disk.
+         * @returns {string}
+         */
         public getAvailMetaDir():string {
             for (var t = 0; t < 1; t++) {
                 for (var s = 0; s < this.sectorSize; s++) {
@@ -103,6 +107,10 @@ module TSOS {
             }
         }
 
+        /**
+         * Gets the free data block, so contents can be written in.
+         * @returns {string}
+         */
         public getAvailMetaData():string {
             for (var t = 1; t < 4; t++) {
                 for (var s = 0; s < this.sectorSize; s++) {
@@ -118,8 +126,24 @@ module TSOS {
         }
 
         public create(filename1:string) {
+            var filenames: string [] = new Array();
             var metaKey = this.getAvailMetaDir();
             var metaIndex = this.getAvailMetaData();
+
+            if(metaKey == "077") {
+                _StdOut.putText("Disk has reached its capacity. Try again later.");
+                return;
+            }
+            //TODO make filenames unique
+//            for(var i=0; i<filenames.length-1; i++) {
+//                if(filename1 == filenames[i]) {
+//                    alert("same");
+//                    _StdOut.putText("Filename already exist. Be unique. Make a new one.");
+//                    break;
+//                }
+//                  filenames.push(filename1);
+//                   // break;
+//                }
 
             var filename = this.convertToHex(filename1);
             var pad = this.addZeros("1" + metaIndex + filename, this.metaDataSize)
@@ -134,6 +158,9 @@ module TSOS {
             var t = 0;
             var readKey = "";
             var paddedFN;
+            var paddedContents;
+            var firstBlock = "";
+            var remString= "";
 
             for (var s = 0; s < this.sectorSize; s++) {
                 for (var b = 0; b < this.blockSize; b++) {
@@ -143,14 +170,25 @@ module TSOS {
                     var fn = metadata.slice(4, this.metaDataSize);
                     var hexString = this.convertToHex(file);
                     paddedFN = this.addZeros(hexString, (this.metaDataSize - 4));
+
+                    // checking if filename is the same as filename passed
                     if (metaindex == "1" && (paddedFN == fn)) {
                         readKey = metadata.slice(1, 4);
                         break;
                     }
                 }
             }
-
-            localStorage.setItem(readKey, "1---" + this.addZeros(this.convertToHex(contents), (this.metaDataSize - 4)));
+            // TODO dealing with contents that are > 60 bytes.
+            var contentsInHex = this.convertToHex(contents);
+//            if(contentsInHex.length > this.metaDataSize-4) {
+//
+//                // get the first set of string that can fit in first avail data block.
+//                firstBlock = contentsInHex.substring(0, (this.metaDataSize-4));
+//
+//            }
+            paddedContents = this.addZeros(contentsInHex, (this.metaDataSize - 4));
+            localStorage.setItem(readKey, "1---" + paddedContents);
+            _StdOut.putText("Contents were written on the file.");
             this.updateFileSystem();
         }
 
@@ -227,6 +265,7 @@ module TSOS {
                     var metaindex1 = metadata1.substring(0, 1);         // 1 if in use
                     if (metaindex1 == "1" && (readKey == newKey1)) {
                         localStorage.setItem(newKey1, "0000" + this.addZeros(str, this.metaDataSize-4));
+                        _StdOut.putText("File was deleted successfully!");
                     }
                   }
                 }
