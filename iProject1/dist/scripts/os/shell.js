@@ -538,7 +538,8 @@ var TSOS;
             if (args.toString() == "rr" || args.toString() == "fcfs" || args.toString() == "priority") {
                 scheduler.schedulerType = args.toString();
                 _StdOut.putText("Current scheduler is: " + scheduler.schedulerType);
-            }
+            } else
+                _StdOut.putText("Don't make up your own scheduler please.");
         };
 
         Shell.prototype.shellGetSchedule = function () {
