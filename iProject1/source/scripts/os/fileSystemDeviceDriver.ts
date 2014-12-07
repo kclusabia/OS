@@ -7,6 +7,7 @@ module TSOS {
         public sectorSize:number;
         public blockSize:number;
         public metaDataSize:number;
+        public dataSize:number;
 
         constructor() {
             super(this.aa, this.bb);
@@ -17,6 +18,7 @@ module TSOS {
             this.sectorSize = 8;
             this.blockSize = 8;
             this.metaDataSize = 64;
+            this.dataSize = 60;
     }
 
         public bb() {
@@ -104,13 +106,17 @@ module TSOS {
          * Gets the free directory block to create files in disk.
          * @returns {string}
          */
-        public getAvailMetaDir():string {
+        public getAvailMetaDir(file):string {
             for (var t = 0; t < 1; t++) {
                 for (var s = 0; s < this.sectorSize; s++) {
                     for (var b = 0; b < this.blockSize; b++) {
                         var key = this.createKey(t, s, b);
                         var metadata = sessionStorage.getItem(key);
-                        if (metadata.substring(0, 1) == "0") {
+                        var meta = metadata.slice(0,1);
+                        var data = metadata.slice(4,metadata.length);
+                        if((file == data)){
+                            return "-1";
+                        }else if (meta == "0") {
                             return key;
                         }
                     }
@@ -136,31 +142,25 @@ module TSOS {
             }
         }
 
-        public create(filename1:string) {
-            var filenames: string [] = new Array();
-            var metaKey = this.getAvailMetaDir();
+        public create(filename:string) {
+
+            var hex = this.convertToHex(filename);
+            var pad = this.addZeros(hex, this.dataSize);
+            var metaKey = this.getAvailMetaDir(pad);
+            if(metaKey == "-1"){
+                _StdOut.putText("File name already exist.");
+                return;
+            }
+
             var metaIndex = this.getAvailMetaData();
 
             if(metaKey == "07") {
                 _StdOut.putText("Disk has reached its capacity. Try again later.");
                 return;
             }
-            //TODO make filenames unique
-//            for(var i=0; i<filenames.length-1; i++) {
-//                if(filename1 == filenames[i]) {
-//                    alert("same");
-//                    _StdOut.putText("Filename already exist. Be unique. Make a new one.");
-//                    break;
-//                }
-//                  filenames.push(filename1);
-//                   // break;
-//                }
-
-            var filename = this.convertToHex(filename1);
-            var pad = this.addZeros("1" + metaIndex + filename, this.metaDataSize)
-            sessionStorage.setItem(metaKey, pad);
+            sessionStorage.setItem(metaKey, "1"+metaIndex+pad);
             this.updateFileSystem();
-            _StdOut.putText("Created the file called: " + this.convertToString(filename));
+            _StdOut.putText("Created the file called: " + filename);
 
             /////
         }
@@ -316,7 +316,7 @@ module TSOS {
         }
 
 
-        public convertToHex(stringName):string {
+        public convertToHex(stringName:string):string {
             var str:string = "";
             for(var i=0; i<stringName.length; i++) {
                 str += stringName.charCodeAt(i).toString(16);
@@ -345,6 +345,15 @@ module TSOS {
             }
             name +=str;
             return name ;
+        }
+
+        public addAllZeros(length:number) {
+            var str = "";
+
+            for(var i =0; i<length;i++){
+                str += "0";
+            }
+            return str;
         }
 
         }
