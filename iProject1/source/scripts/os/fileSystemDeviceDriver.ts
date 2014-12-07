@@ -2,13 +2,24 @@
  * Created by kara2 on 11/16/14.
  */
 module TSOS {
-    export class FileSystemDeviceDriver {
-        public trackSize:number = 4;
-        public sectorSize:number = 8;
-        public blockSize:number = 8;
-        public metaDataSize:number = 64;
+    export class FileSystemDeviceDriver extends DeviceDriver {
+        public trackSize:number;
+        public sectorSize:number;
+        public blockSize:number;
+        public metaDataSize:number;
 
         constructor() {
+            super(this.aa, this.bb);
+        }
+
+        public aa() {
+            this.trackSize = 4;
+            this.sectorSize = 8;
+            this.blockSize = 8;
+            this.metaDataSize = 64;
+    }
+
+        public bb() {
         }
 
         public printData():string {
@@ -24,7 +35,7 @@ module TSOS {
             var str = "Shit";
             var mbrData = "";
             mbrData = "1---" + this.addZeros(this.convertToHex(str), (this.metaDataSize - 4));
-            localStorage.setItem(mbr, mbrData);
+            sessionStorage.setItem(mbr, mbrData);
             this.updateFileSystem();
         }
 
@@ -44,9 +55,9 @@ module TSOS {
                         var key = this.createKey(t, s, b);
 
                         var _metaData = this.printData();
-                        localStorage.setItem(key, _metaData);
+                        sessionStorage.setItem(key, _metaData);
 
-                        var metaData = localStorage.getItem(key);
+                        var metaData = sessionStorage.getItem(key);
                         var meta = metaData.substring(0, 4);
                         var data = metaData.substring(4, this.metaDataSize);
                         fileSystemTable += "<tr><td>" + t + s + b;
@@ -70,7 +81,7 @@ module TSOS {
                         // TSB block acts as the key.
                         var key = this.createKey(t, s, b);
 
-                        var metaData = localStorage.getItem(key);
+                        var metaData = sessionStorage.getItem(key);
                         var meta = metaData.substring(0, 4);
                         var data = metaData.substring(4, this.metaDataSize);
                         fileSystemTable += "<tr><td>" + t + s + b;
@@ -98,8 +109,8 @@ module TSOS {
                 for (var s = 0; s < this.sectorSize; s++) {
                     for (var b = 0; b < this.blockSize; b++) {
                         var key = this.createKey(t, s, b);
-                        var metadata = localStorage.getItem(key);
-                        if (metadata.substring(0, 1) == 0) {
+                        var metadata = sessionStorage.getItem(key);
+                        if (metadata.substring(0, 1) == "0") {
                             return key;
                         }
                     }
@@ -116,8 +127,8 @@ module TSOS {
                 for (var s = 0; s < this.sectorSize; s++) {
                     for (var b = 0; b < this.blockSize; b++) {
                         var key = this.createKey(t, s, b);
-                        var metadata = localStorage.getItem(key);
-                        if (metadata.substring(0, 1) == 0) {
+                        var metadata = sessionStorage.getItem(key);
+                        if (metadata.substring(0, 1) == "0") {
                             return key;
                         }
                     }
@@ -130,7 +141,7 @@ module TSOS {
             var metaKey = this.getAvailMetaDir();
             var metaIndex = this.getAvailMetaData();
 
-            if(metaKey == "077") {
+            if(metaKey == "07") {
                 _StdOut.putText("Disk has reached its capacity. Try again later.");
                 return;
             }
@@ -147,7 +158,7 @@ module TSOS {
 
             var filename = this.convertToHex(filename1);
             var pad = this.addZeros("1" + metaIndex + filename, this.metaDataSize)
-            localStorage.setItem(metaKey, pad);
+            sessionStorage.setItem(metaKey, pad);
             this.updateFileSystem();
             _StdOut.putText("Created the file called: " + this.convertToString(filename));
 
@@ -162,10 +173,11 @@ module TSOS {
             var firstBlock = "";
             var remString= "";
 
+            //make this into a function; return -1 if file not found; or key
             for (var s = 0; s < this.sectorSize; s++) {
                 for (var b = 0; b < this.blockSize; b++) {
                     var newKey = this.createKey(t, s, b);
-                    var metadata = localStorage.getItem(newKey);
+                    var metadata = sessionStorage.getItem(newKey);
                     var metaindex = metadata.slice(0, 1);
                     var fn = metadata.slice(4, this.metaDataSize);
                     var hexString = this.convertToHex(file);
@@ -176,18 +188,24 @@ module TSOS {
                         readKey = metadata.slice(1, 4);
                         break;
                     }
+
                 }
             }
             // TODO dealing with contents that are > 60 bytes.
             var contentsInHex = this.convertToHex(contents);
-//            if(contentsInHex.length > this.metaDataSize-4) {
-//
-//                // get the first set of string that can fit in first avail data block.
-//                firstBlock = contentsInHex.substring(0, (this.metaDataSize-4));
-//
-//            }
-            paddedContents = this.addZeros(contentsInHex, (this.metaDataSize - 4));
-            localStorage.setItem(readKey, "1---" + paddedContents);
+            var blockSize:number = 60;
+            // count length of contentsInHex divide 60 = that
+            if(contentsInHex.length > blockSize) {
+                var begin = contentsInHex.substring(0, 1);
+                var last = contentsInHex.substring(blockSize, (blockSize+1));
+                // get the first set of string that can fit in first avail data block.
+                firstBlock = contentsInHex.substring(begin, last);
+                begin = last;
+                last = contentsInHex.substring(begin,blockSize+1);
+
+            }
+            paddedContents = this.addZeros(contentsInHex, (blockSize));
+            sessionStorage.setItem(readKey, "1---" + paddedContents);
             _StdOut.putText("Contents were written on the file.");
             this.updateFileSystem();
         }
@@ -203,7 +221,7 @@ module TSOS {
                 for (var b = 0; b < this.blockSize; b++) {
                     // goes through the directory
                     var newKey = this.createKey(t, s, b);
-                    var metadata = localStorage.getItem(newKey);
+                    var metadata = sessionStorage.getItem(newKey);
 
                     // 1 if in use
                     var metaindex = metadata.slice(0, 1);
@@ -220,7 +238,7 @@ module TSOS {
                 for (var b = 0; b < this.blockSize; b++) {
                     // data TSB
                     var newKey1 = this.createKey(tData, s, b);
-                    var metadata1 = localStorage.getItem(newKey1);
+                    var metadata1 = sessionStorage.getItem(newKey1);
                     var metaindex1 = metadata1.substring(0, 1);         // 1 if in use
                     if (metaindex1 == "1" && (readKey == newKey1)) {
                         contents = metadata1.substring(4, this.metaDataSize);
@@ -244,7 +262,7 @@ module TSOS {
                 for (var b = 0; b < this.blockSize; b++) {
                     // goes through the directory
                     var newKey = this.createKey(t, s, b);
-                    var metadata = localStorage.getItem(newKey);
+                    var metadata = sessionStorage.getItem(newKey);
 
                     // 1 if in use
                     var metaindex = metadata.slice(0, 1);
@@ -261,10 +279,10 @@ module TSOS {
                 for (var b = 0; b < this.blockSize; b++) {
                     // data TSB
                     var newKey1 = this.createKey(tData, s, b);
-                    var metadata1 = localStorage.getItem(newKey1);
+                    var metadata1 = sessionStorage.getItem(newKey1);
                     var metaindex1 = metadata1.substring(0, 1);         // 1 if in use
                     if (metaindex1 == "1" && (readKey == newKey1)) {
-                        localStorage.setItem(newKey1, "0000" + this.addZeros(str, this.metaDataSize-4));
+                        sessionStorage.setItem(newKey1, "0000" + this.addZeros(str, this.metaDataSize-4));
                         _StdOut.putText("File was deleted successfully!");
                     }
                   }
@@ -279,7 +297,7 @@ module TSOS {
             for (var s = 0; s < this.sectorSize; s++) {
                 for (var b = 1; b < this.blockSize; b++) {
                     var newKey = this.createKey(t, s, b);
-                    var metadata = localStorage.getItem(newKey);
+                    var metadata = sessionStorage.getItem(newKey);
                     var metaindex = metadata.slice(0, 1);
                     var fn = metadata.slice(4, this.metaDataSize);
                     var stringFilename = this.convertToString(fn);
