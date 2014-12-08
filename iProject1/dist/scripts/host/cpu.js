@@ -69,7 +69,7 @@ var TSOS;
 
         // The CPU block
         Cpu.prototype.showCPU = function () {
-            document.getElementById("PC").innerHTML = String(_CPU.PC + process.getBase());
+            document.getElementById("PC").innerHTML = String(_CPU.PC + process.getProcessBase());
             document.getElementById("Acc").innerHTML = String(_CPU.Acc);
             document.getElementById("IR").innerHTML = String(_CPU.IR);
             document.getElementById("XReg").innerHTML = String(_CPU.XReg);

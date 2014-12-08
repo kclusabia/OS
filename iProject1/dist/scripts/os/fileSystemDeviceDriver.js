@@ -283,21 +283,21 @@ var TSOS;
         FileSystemDeviceDriver.prototype.read = function (file) {
             var t1 = 0;
             var readKey;
-            var hexString;
             var out = false;
 
             for (var s = 0; s < this.sectorSize; s++) {
                 for (var b = 0; b < this.blockSize; b++) {
-                    // goes through the directory
                     var newKey = this.createKey(t1, s, b);
                     var metadata = sessionStorage.getItem(newKey);
                     var metaindex = metadata.slice(0, 1);
-                    var nextKey = metadata.slice(1, 4);
+                    var meta = metadata.slice(1, 4);
                     var fn = metadata.slice(4, metadata.length);
-                    hexString = this.convertToString(fn);
+                    var hexString = this.convertToHex(file);
+                    var paddedFN = this.addZeros(hexString, this.dataSize);
 
-                    if ((metaindex == "1") && (file == hexString)) {
-                        readKey = nextKey;
+                    // checking if filename is the same as filename passed
+                    if ((metaindex == "1") && (paddedFN == fn)) {
+                        readKey = meta;
                         out = true;
                         break;
                     }
@@ -331,21 +331,7 @@ var TSOS;
                     }
                 }
             }
-
-            //            for (var s = 0; s < this.sectorSize; s++) {
-            //                for (var b = 0; b < this.blockSize; b++) {
-            //                    // data TSB
-            //                    var newKey1 = this.createKey(t, s, b);
-            //                    var metadata1 = sessionStorage.getItem(newKey1);
-            //                    var metaindex1 = metadata1.substring(0, 1);         // 1 if in use
-            //                    if (metaindex1 == "1" && (readKey == newKey1)) {
-            //                        contents = metadata1.substring(4, metadata1.length);
-            //                        var contents1 = this.convertToString(contents);
-            //                    }
-            //                }
-            //            }
             this.updateFileSystem();
-            //            _StdOut.putText("File contains: " + contents1);
         };
 
         FileSystemDeviceDriver.prototype.delete = function (file) {
@@ -484,10 +470,10 @@ var TSOS;
         FileSystemDeviceDriver.prototype.loadFromDisk = function (processOnDisk, processOnMem) {
             alert("loading from the disk");
             var data;
-            var zeroData = this.fsu.formatData(this.metaDataSize);
+            var zeroData = this.addAllZeros(this.metaDataSize);
 
             //search for a filename
-            var filename = "swap" + processOnDisk.getPid();
+            var filename = "processfile" + processOnDisk.getPID();
             var fileHex = this.convertToHex(filename.toString());
             var padFile = this.addZeros(fileHex, this.dataSize);
 
@@ -498,19 +484,14 @@ var TSOS;
             data = this.getProgramContents(dataIndex);
             sessionStorage.setItem(dataIndex, zeroData);
 
-            processOnDisk.setBase(processOnMem.getBase());
-            processOnDisk.setLimit(processOnMem.getLimit());
-            processOnDisk.setBlock(processOnMem.getBlock());
-            TSOS.Shell.updateReadyQueue();
-
-            alert("Grabbed all hex: " + data.length + "\n" + data);
+            processOnDisk.setProcessBase(0);
+            processOnDisk.setProcessLimit(255);
+            TSOS.Shell.updateRes();
 
             //load current process into the mem
-            _MemoryManager.load(processOnDisk.getBase(), data.toString());
-            this.update();
-
-            //            alert("loading into block: "+((processOnMem.getBase())/(_BlockSize)));
-            _MemoryManager.update();
+            memoryMngr.loadWithoutSpaces(data.toString(), processOnDisk.getProcessBase());
+            this.updateFileSystem();
+            memoryMngr.updateMemory();
         };
 
         FileSystemDeviceDriver.prototype.getProgramContents = function (index) {
@@ -518,7 +499,7 @@ var TSOS;
             var key;
             var data;
             var nextKey;
-            var zeroData = this.fsu.formatData(this.metaDataSize);
+            var zeroData = this.addAllZeros(this.metaDataSize);
             var stepOut = false;
             var dataData;
             var changeString;
@@ -526,25 +507,22 @@ var TSOS;
             for (var t = index.charAt(0); t < this.trackSize; t++) {
                 for (var s = index.charAt(1); s < this.sectorSize; s++) {
                     for (var b = index.charAt(2); b < this.blockSize; b++) {
-                        key = this.createKey(index);
+                        key = this.createNewKey(index);
                         data = sessionStorage.getItem(key);
                         nextKey = data.slice(1, 4);
                         dataData = data.slice(4, data.length);
-                        if (nextKey == "###") {
+                        if (nextKey == "---") {
                             changeString = this.convertToString(dataData);
                             value += changeString;
                             sessionStorage.setItem(key, zeroData); //replace with zeros
-                            this.update();
-
-                            //                            alert("value is now: "+value.length+", key: "+key+", next: "+nextKey+"\nDeleting @: "+key);
+                            this.updateFileSystem();
                             stepOut = true;
                             break;
                         } else {
                             changeString = this.convertToString(dataData);
                             value += changeString;
                             sessionStorage.setItem(key, zeroData); //replace with zeros
-                            this.update();
-                            //                            alert("value is now: "+value.length+", key: "+key+", next: "+nextKey+"\nDeleting @: "+key);
+                            this.updateFileSystem();
                         }
                         index = nextKey;
                     }

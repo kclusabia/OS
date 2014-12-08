@@ -78,7 +78,7 @@ var memoryBounded = 17;
 var _MemoryArray: any[] = null;
 var _MemorySize: number = 768;
 var memory: TSOS.Memory;
-var memoryMngr : TSOS.MemoryManager;
+var memoryMngr: TSOS.MemoryManager;
 
 // Creating the pcb block.
 var pcb: TSOS.ProcessControlBlock;
@@ -91,6 +91,7 @@ var residentQueue: any[] = null;
 var quantum:number = 6;
 var clockCycle:number = 0;
 var scheduler: TSOS.Scheduler;
+var schedulerType:string;
 
 var fileSystem: TSOS.FileSystemDeviceDriver;
 

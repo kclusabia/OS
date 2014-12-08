@@ -87,6 +87,7 @@ var residentQueue = null;
 var quantum = 6;
 var clockCycle = 0;
 var scheduler;
+var schedulerType;
 
 var fileSystem;
 
