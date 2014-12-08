@@ -17,6 +17,7 @@ module TSOS {
         public xReg = 0;
         public yReg = 0;
         public zFlag = 0;
+        public location:string;
         public states:string[] = new Array("new", "running", "waiting", "ready", "terminated");
 
         constructor() {
@@ -55,15 +56,23 @@ module TSOS {
             this.state = this.states[index];
         }
 
+        public getLocation(){
+            return this.location;
+        }
+
+        public setLocation(location) {
+            this.location = location;
+        }
+
         public getState():string {
             return this.state;
         }
 
-        public getBase():number {
+        public getProcessBase():number {
             return this.base;
         }
 
-        public getLimit():number {
+        public getProcessLimit():number {
             return this.limit;
         }
 
@@ -115,6 +124,12 @@ module TSOS {
             this.zFlag = zflag;
         }
 
+        public setProcessBase(base) {
+            this.base = base;
+        }
 
+        public setProcessLimit(limit) {
+            this.limit = limit;
+        }
     }
 }

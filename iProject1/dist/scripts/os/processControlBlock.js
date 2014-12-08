@@ -51,15 +51,23 @@ var TSOS;
             this.state = this.states[index];
         };
 
+        ProcessControlBlock.prototype.getLocation = function () {
+            return this.location;
+        };
+
+        ProcessControlBlock.prototype.setLocation = function (location) {
+            this.location = location;
+        };
+
         ProcessControlBlock.prototype.getState = function () {
             return this.state;
         };
 
-        ProcessControlBlock.prototype.getBase = function () {
+        ProcessControlBlock.prototype.getProcessBase = function () {
             return this.base;
         };
 
-        ProcessControlBlock.prototype.getLimit = function () {
+        ProcessControlBlock.prototype.getProcessLimit = function () {
             return this.limit;
         };
 
@@ -109,6 +117,14 @@ var TSOS;
 
         ProcessControlBlock.prototype.setZFlag = function (zflag) {
             this.zFlag = zflag;
+        };
+
+        ProcessControlBlock.prototype.setProcessBase = function (base) {
+            this.base = base;
+        };
+
+        ProcessControlBlock.prototype.setProcessLimit = function (limit) {
+            this.limit = limit;
         };
         ProcessControlBlock.pid = -1;
         return ProcessControlBlock;
