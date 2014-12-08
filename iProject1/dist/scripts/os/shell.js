@@ -309,20 +309,38 @@ var TSOS;
                     return;
                 }
             }
-            if (residentQueue.length == 3) {
-                _StdOut.putText("Memory is full");
+
+            if (residentQueue.length >= 3) {
+                var program = input.replace(/\s/g, '');
+                program = program.trim();
+
+                //load in fs
+                // Creating a PCB block.
+                pcb = new TSOS.ProcessControlBlock();
+                pcb.newPCB(-1, -1, 0); // (base, limit, state)
+                pcb.setLocation("disk");
+
+                //residentQueue = new Array<ProcessControlBlock>();
+                residentQueue.push(pcb);
+                Shell.updateRes();
+
+                //now call roll-out
+                //make a new filename
+                alert(program + ", len" + program.length);
+                fileSystem.rollOut(program.toString());
             } else {
                 _StdOut.putText("You have loaded the program successfully.");
+                _Console.advanceLine();
 
                 // Creating a PCB block.
                 var base = memory.getBase();
                 var limit = memory.getLimit();
                 pcb = new TSOS.ProcessControlBlock();
                 pcb.newPCB(base, limit, 0); // (base, limit, state)
+                pcb.setLocation("memory");
 
                 //residentQueue = new Array<ProcessControlBlock>();
                 residentQueue.push(pcb);
-                _Console.advanceLine();
 
                 // Displays the current PID.
                 _StdOut.putText("Process ID: " + pcb.getPID());
@@ -344,19 +362,21 @@ var TSOS;
             tableView += "<th>YReg</th>";
             tableView += "<th>ZFlag</th>";
             tableView += "<th>State</th>";
+            tableView += "<th>Location</th>";
             for (var i = 0; i < residentQueue.length; i++) {
                 var s = residentQueue[i];
                 if (s.getState() != "new") {
                     tableView += "<tr>";
-                    var newPC = s.getPC() + s.getBase();
+                    var newPC = (s.getPC() + s.getProcessBase());
                     tableView += "<td>" + newPC.toString() + "</td>";
                     tableView += "<td>" + s.getPID().toString() + "</td>";
-                    tableView += "<td>" + s.getBase().toString() + "</td>";
-                    tableView += "<td>" + s.getLimit().toString() + "</td>";
+                    tableView += "<td>" + s.getProcessBase().toString() + "</td>";
+                    tableView += "<td>" + s.getProcessLimit().toString() + "</td>";
                     tableView += "<td>" + s.getXReg().toString() + "</td>";
                     tableView += "<td>" + s.getYReg().toString() + "</td>";
                     tableView += "<td>" + s.getZFlag().toString() + "</td>";
                     tableView += "<td>" + s.getState().toString() + "</td>";
+                    tableView += "<td>" + s.getLocation().toString() + "</td>";
                     tableView += "</tr>";
                 }
             }
@@ -375,9 +395,8 @@ var TSOS;
 
         Shell.prototype.shellRunAll = function () {
             for (var i = 0; i < residentQueue.length; i++) {
+                residentQueue[i].setState(3);
                 readyQueue.enqueue(residentQueue[i]);
-
-                //residentQueue(args).setState(3);
                 Shell.updateRes();
             }
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(newProcess, 5));
