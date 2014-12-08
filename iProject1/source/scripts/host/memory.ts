@@ -33,16 +33,31 @@ module TSOS {
 
         // Loads the program into the memory.
         public loadProgram(data, base) {
-            var input = data.replace(/^\s+|\s+$/g,''); 
+            var input = data.replace(/^\s+|\s+$/g,'');
             input = input.trim();
 
             var x = 0;
             var y = x+2;
-            for(var row = base; row < base + (input.length/2); row += 8) {
+            for(var row = base; row < base + (data.length/2); row += 8) {
                 for(var col = row; col <= row + 7; col++) {
-                    _MemoryArray[col] = input.substring(x,y);
+                    _MemoryArray[col] = data.substring(x,y);
                     x = y+1;
                     y = y+3;
+                }
+            }
+            this.updateMem();
+        }
+
+        // Loads the program into the memory.
+        public loadWithoutSpaces(data, base) {
+
+            var x = 0;
+            var y = 2;
+            for(var row = base; row < base + (data.length/2); row += 8) {
+                for(var col = row; col <= row + 7; col++) {
+                    _MemoryArray[col] = data.substring(x,y);
+                    x = y;
+                    y += 2;
                 }
             }
             this.updateMem();
@@ -98,6 +113,19 @@ module TSOS {
                 this.base = -1;
                 return this.base;
             }
+
+
+//            if(residentQueue.length >= 3){
+//                return -1;
+//            }else {
+//
+//                for (var base = 0; base <= (256 * 2); base += 256) {
+//                    var address = _MemoryArray.readMem(base);
+//                    if (address == "00") {
+//                        return base;
+//                    }
+//                }
+//            }
         }
 
         public getLimit():number {
@@ -119,6 +147,7 @@ module TSOS {
             Shell.updateRes();
             return this.newTable();
         }
+
 
 
 
