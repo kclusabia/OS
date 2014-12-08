@@ -11,16 +11,20 @@ var TSOS;
         }
         // Reads the data from the specified address, denoted as the index.
         MemoryManager.prototype.readMemory = function (index) {
-            return memory.readMem(parseInt(index + process.getBase()));
+            return memory.readMem(parseInt(index + process.getProcessBase()));
         };
 
         MemoryManager.prototype.loadMemory = function (data1, base) {
             memory.loadProgram(data1, base);
         };
 
+        MemoryManager.prototype.loadWithoutSpaces = function (data1, base) {
+            memory.loadWithoutSpaces(data1, base);
+        };
+
         // Stores the data into the specified address, denoted by the index.
         MemoryManager.prototype.storeData = function (index, data) {
-            return memory.storeData(parseInt(index + process.getBase()), data);
+            return memory.storeData(parseInt(index + process.getProcessBase()), data);
         };
 
         MemoryManager.prototype.updateMemory = function () {
