@@ -23,7 +23,7 @@ var TSOS;
             _Console = new TSOS.Console(); // The command line interface / console I/O device.
             readyQueue = new TSOS.Queue();
             residentQueue = new Array();
-            scheduler = new TSOS.Scheduler();
+            scheduler = new TSOS.Scheduler("fcfs");
 
             // Initialize the console.
             _Console.init();
@@ -88,12 +88,9 @@ var TSOS;
                 var interrupt = _KernelInterruptQueue.dequeue();
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
                 // Context switch is called when quantum had expired.
-            } else if (clockCycle >= quantum) {
-                this.krnInterruptHandler(contextSwitch, 0);
-                return;
-            } else if (_CPU.isExecuting) {
+            } else if (_CPU.isExecuting && (schedulerType == "fcfs")) {
                 _CPU.cycle();
-                clockCycle++;
+                TSOS.Shell.updateRes();
             } else {
                 this.krnTrace("Idle");
             }
@@ -134,8 +131,9 @@ var TSOS;
                     _CPU.showCPU();
                     process.setState(4); // set state to terminated
                     TSOS.Shell.updateRes();
+                    _CPU.init();
                     _Kernel.krnTrace("Terminating PID: " + process.getPID());
-                    scheduler.startProcess();
+                    this.determinsScheduling();
                     break;
 
                 case murdered:
@@ -145,7 +143,7 @@ var TSOS;
                     break;
 
                 case newProcess:
-                    scheduler.startProcess();
+                    this.determinsScheduling();
                     break;
 
                 case contextSwitch:
@@ -210,7 +208,7 @@ var TSOS;
                     _CPU.init();
                     scheduler.init();
                     scheduler.startProcess();
-
+                    break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }
@@ -261,6 +259,25 @@ var TSOS;
 
             // TODO: Display error on console, perhaps in some sort of colored screen. (Perhaps blue?)
             this.krnShutdown();
+        };
+
+        Kernel.prototype.loadFromDisk = function () {
+            process.setLocation("memory");
+
+            //            var swapProcess:TSOS.ProcessControlBlock = residentQueue[0];
+            //                swapProcess.setLocation("deleted");
+            //                Shell.updateRes();
+            fileSystem.loadFromDisk(process, 0);
+            process.setState(1);
+            _CPU.beginProcess(process);
+
+            residentQueue.splice(0, 1); //make sure you delete to keep the order right!
+        };
+
+        Kernel.prototype.determinsScheduling = function () {
+            if (schedulerType == "fcfs") {
+                scheduler.fcfs();
+            }
         };
         return Kernel;
     })();

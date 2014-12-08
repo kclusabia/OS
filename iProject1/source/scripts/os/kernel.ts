@@ -25,7 +25,7 @@ module TSOS {
             _Console = new Console();          // The command line interface / console I/O device.
             readyQueue = new Queue();
             residentQueue = new Array();
-            scheduler = new Scheduler();
+            scheduler = new Scheduler("fcfs");
 
             // Initialize the console.
             _Console.init();
@@ -91,23 +91,10 @@ module TSOS {
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
 
             // Context switch is called when quantum had expired.
-            } else if (clockCycle >= quantum) { // If there are no interrupts then run one CPU cycle if there is anything being processed. {
-               this.krnInterruptHandler(contextSwitch, 0);
-                return;
-            }
-            else if(_CPU.isExecuting) {
+            }else if(_CPU.isExecuting && (schedulerType == "fcfs")){
                 _CPU.cycle();
-                clockCycle++;
+                Shell.updateRes();
             }
-//            else if (readyQueue.getSize() > 0) {
-//                //_KernelInterruptQueue.enqueue(new Interrupt(contextSwitch, 5));
-//                process = readyQueue.dequeue();
-//                _CPU.isExecuting = true;
-//                _CPU.PC = process.getBase();
-//                process.setState(1);
-//                Shell.updateRes();
-//                _CPU.showCPU();
-//            }
             else {                      // If there are no interrupts and there is nothing being executed then just be idle. {
                 this.krnTrace("Idle");
             }
@@ -151,8 +138,9 @@ module TSOS {
                     _CPU.showCPU();
                     process.setState(4);        // set state to terminated
                     Shell.updateRes();
+                    _CPU.init();
                     _Kernel.krnTrace("Terminating PID: " + process.getPID());
-                    scheduler.startProcess();
+                    this.determinsScheduling();
                     break;
 
                 // Killing a program.
@@ -164,7 +152,7 @@ module TSOS {
 
                 // Begins executing the next program in ready queue.
                 case newProcess:
-                    scheduler.startProcess();
+                    this.determinsScheduling();
                     break;
 
                 case contextSwitch:
@@ -186,7 +174,6 @@ module TSOS {
                         process.setState(2);            // set state to waiting
                         readyQueue.enqueue(process);
                         _CPU.showCPU();
-
                         // scheduler.contextSwitch()
                         process = readyQueue.dequeue();
                         if (process.getState() == "terminated") {
@@ -231,7 +218,7 @@ module TSOS {
                     _CPU.init();
                     scheduler.init();
                     scheduler.startProcess();
-
+                    break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }
@@ -285,5 +272,46 @@ module TSOS {
             // TODO: Display error on console, perhaps in some sort of colored screen. (Perhaps blue?)
             this.krnShutdown();
         }
+
+
+        public loadFromDisk(){
+
+            process.setLocation("memory");
+//            var swapProcess:TSOS.ProcessControlBlock = residentQueue[0];
+//                swapProcess.setLocation("deleted");
+//                Shell.updateRes();
+
+            fileSystem.loadFromDisk(process,0);
+            process.setState(1);
+            _CPU.beginProcess(process);
+
+            residentQueue.splice(0,1);//make sure you delete to keep the order right!
+        }
+
+
+        public determinsScheduling(){
+            if(schedulerType == "fcfs"){
+                scheduler.fcfs();
+            }
+        }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
