@@ -3,10 +3,9 @@
  */
 module TSOS {
     export class Scheduler {
-        public schedulerType:string = "";
 
-        constructor() {
-           // this.schedulerType = schedulers[0];
+        constructor(newScheduler) {
+            schedulerType = newScheduler;
         }
 
         public init() {
@@ -69,7 +68,39 @@ module TSOS {
             _CPU.showCPU();
         }
 
+
+        /**
+         * FCFS Scheduling
+         */
+        public fcfs(){
+
+            if(readyQueue.getSize() > 0){
+                process = readyQueue.dequeue();
+
+                //if terminated, get the next process
+                if(process.getState() == "terminated"){
+                    this.fcfs();
+                }
+
+                if (process.getLocation() == "disk") {
+                    _Kernel.loadFromDisk();
+                }
+
+                if(process.getLocation() == "memory"){
+                    process.setState(1);
+                    _CPU.beginProcess(process);
+                    _Kernel.krnTrace("\nPROCESSING PID: "+process.getPID()+"\n");
+                    Shell.updateRes();
+                }
+
+            }else if ((process.getState() != "terminated") && readyQueue.isEmpty()) {
+//                residentQueue.splice(0,residentQueue.length); // clear resident Queue as well!
+                return;
+            }
+        }
     }
+
+
 }
 
 

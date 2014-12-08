@@ -4,9 +4,8 @@
 var TSOS;
 (function (TSOS) {
     var Scheduler = (function () {
-        function Scheduler() {
-            this.schedulerType = "";
-            // this.schedulerType = schedulers[0];
+        function Scheduler(newScheduler) {
+            schedulerType = newScheduler;
         }
         Scheduler.prototype.init = function () {
             clockCycle = 0;
@@ -62,6 +61,34 @@ var TSOS;
             process.setState(2); // waiting state
             readyQueue.enqueue(process);
             _CPU.showCPU();
+        };
+
+        /**
+        * FCFS Scheduling
+        */
+        Scheduler.prototype.fcfs = function () {
+            if (readyQueue.getSize() > 0) {
+                process = readyQueue.dequeue();
+
+                //if terminated, get the next process
+                if (process.getState() == "terminated") {
+                    this.fcfs();
+                }
+
+                if (process.getLocation() == "disk") {
+                    _Kernel.loadFromDisk();
+                }
+
+                if (process.getLocation() == "memory") {
+                    process.setState(1);
+                    _CPU.beginProcess(process);
+                    _Kernel.krnTrace("\nPROCESSING PID: " + process.getPID() + "\n");
+                    TSOS.Shell.updateRes();
+                }
+            } else if ((process.getState() != "terminated") && readyQueue.isEmpty()) {
+                //                residentQueue.splice(0,residentQueue.length); // clear resident Queue as well!
+                return;
+            }
         };
         return Scheduler;
     })();
