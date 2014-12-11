@@ -8,43 +8,58 @@ module TSOS {
         public blockSize:number;
         public metaDataSize:number;
         public dataSize:number;
+        public isFormatted:boolean;
 
         constructor() {
             super(this.aa, this.bb);
         }
 
+        /**
+         * Implementing it like the device driver
+         */
         public aa() {
             this.trackSize = 4;
             this.sectorSize = 8;
             this.blockSize = 8;
             this.metaDataSize = 64;
             this.dataSize = 60;
+            this.isFormatted = false;
     }
 
         public bb() {
         }
 
-        public printData():string {
-            var dataFile = "";
-            for (var bytes = 0; bytes < this.metaDataSize; bytes++) {
-                dataFile += "0";
+        public toPrint():string {
+            var zeros = "";
+            for (var i = 0; i < this.metaDataSize; i++) {
+                zeros += "0";
             }
-            return dataFile;
+            return zeros;
         }
 
         public createMBR() {
             var mbr = this.createKey(0, 0, 0);
-            var str = "Shit";
+            var str = "Infinite OS";
             var mbrData = "";
             mbrData = "1---" + this.addZeros(this.convertToHex(str), (this.metaDataSize - 4));
             sessionStorage.setItem(mbr, mbrData);
             this.updateFileSystem();
         }
 
+        public printMBR() {
+            var mbr = this.createKey(0, 0, 0);
+            var str = "Infinite OS";
+            var mbrData = "1---" + this.addZeros(this.convertToHex(str), (this.metaDataSize - 4));
+            _StdOut.putText(mbrData);
+            alert(mbrData);
+        }
+
+        // Also checks if the file system was formatted or not.
         public format() {
             this.createFileSystem();
             this.createMBR();
             _StdOut.putText("Formatting...done!");
+            this.isFormatted = true;
         }
 
         public createFileSystem() {
@@ -56,16 +71,14 @@ module TSOS {
                         // TSB block acts as the key.
                         var key = this.createKey(t, s, b);
 
-                        var _metaData = this.printData();
+                        var _metaData = this.toPrint();
                         sessionStorage.setItem(key, _metaData);
 
                         var metaData = sessionStorage.getItem(key);
                         var meta = metaData.substring(0, 4);
                         var data = metaData.substring(4, this.metaDataSize);
                         fileSystemTable += "<tr><td>" + t + s + b;
-
                         fileSystemTable += "<td>" + meta + "<td>" + data;
-
                         fileSystemTable += "</td></tr>";
                     }
                 }
@@ -75,20 +88,16 @@ module TSOS {
 
         public updateFileSystem() {
             var fileSystemTable = "<table>";
-
             for (var t = 0; t < this.trackSize; t++) {
                 for (var s = 0; s < this.sectorSize; s++) {
                     for (var b = 0; b < this.blockSize; b++) {
                         // TSB block acts as the key.
                         var key = this.createKey(t, s, b);
-
                         var metaData = sessionStorage.getItem(key);
                         var meta = metaData.substring(0, 4);
                         var data = metaData.substring(4, this.metaDataSize);
                         fileSystemTable += "<tr><td>" + t + s + b;
-
                         fileSystemTable += "<td>" + meta + "<td>" + data;
-
                         fileSystemTable += "</td></tr>";
 
                     }
@@ -141,84 +150,105 @@ module TSOS {
             }
         }
 
-        public create(filename:string) {
+        // Checks if the file system was formatted or not
+        public isFormatted():boolean{
+            return this.isFormatted;
+        }
 
+        public create(filename:string) {
             var hex = this.convertToHex(filename);
             var pad = this.addZeros(hex, this.dataSize);
             var metaKey = this.getAvailMetaDir(pad);
             var zero = this.addAllZeros(this.dataSize);
             if(metaKey == "-1"){
-                _StdOut.putText("File name already exist.");
+                _StdOut.putText("File name already exist: "+filename);
                 return;
             }
-
             var metaIndex = this.getAvailMetaData();
-
-            if(metaKey == "07") {
-                _StdOut.putText("Disk has reached its capacity. Try again later.");
-                return;
-            }
-            sessionStorage.setItem(metaKey, "1"+metaIndex+pad);//create the file
-            sessionStorage.setItem(metaIndex,"1---"+zero);//mark taken
+            sessionStorage.setItem(metaKey, "1"+metaIndex+pad);         //create the file with the address of its contents
+            sessionStorage.setItem(metaIndex,"1---"+zero);              //no more chaining of contents
             this.updateFileSystem();
-            _StdOut.putText("Created the file called: " + filename);
-
-            /////
+            var processFile = "processfile";
+            var hidden = filename.slice(0,11);                  // (0, 11) represents the string processfile
+            if(hidden != processFile){
+                _StdOut.putText("Created the file called: " + filename);
+            }
+            this.updateFileSystem();
         }
 
-        public write(file, contents) {
+        public createNewKey(key){
+            var t = key.charAt(0);
+            var s = key.charAt(1);
+            var b = key.charAt(2);
+            return this.createKey(t,s,b);
+        }
+
+        /**
+         * Cannot have a duplicated filename.
+         * @param filename
+         * @returns {string}
+         */
+        public getDuplicate(filename:string){
             var t = 0;
-            var readKey = "";
-            var paddedFN;
-            var paddedContents;
-            var firstBlock = "";
-
-            //make this into a function; return -1 if file not found; or key
-            for (var s = 0; s < this.sectorSize; s++) {
+            var key;
+            for(var s = 0; s<this.sectorSize;s++) {
                 for (var b = 0; b < this.blockSize; b++) {
-                    var newKey = this.createKey(t, s, b);
-                    var metadata = sessionStorage.getItem(newKey);
-                    var metaindex = metadata.slice(0, 1);
-                    var fn = metadata.slice(4, this.metaDataSize);
-                    var hexString = this.convertToHex(file);
-                    paddedFN = this.addZeros(hexString, (this.metaDataSize - 4));
-
-                    // checking if filename is the same as filename passed
-                    if (metaindex == "1" && (paddedFN == fn)) {
-                        readKey = metadata.slice(1, 4);
-                        break;
+                    key = this.createKey(t,s,b);
+                    var data:string = sessionStorage.getItem(key);
+                    var meta = data.slice(0,1);
+                    var hexData:string = data.slice(4,this.metaDataSize);
+                    if((filename == hexData) && (meta == "1")){
+                        //found duplicate and in use...
+                        return key;
                     }
                 }
             }
-            var contentsInHex = this.convertToHex(contents);
-            paddedContents = this.addZeros(contentsInHex, (this.dataSize));
-
-            if(paddedContents.length < this.dataSize) {
-                sessionStorage.setItem(readKey, "1---" + paddedContents);
-                _StdOut.putText("Contents were written on the file.");
-            }else{
-                //call a method that does > 60 bytes
-                this.writeMoreBlocks(readKey,contentsInHex);
-                _StdOut.putText("Contents were written on the file.");
-            }
-            this.updateFileSystem();
+            return "-1";
         }
 
-        public writeMoreBlocks(startKey,paddedContents){
+        public write(file, contents) {
+            var fileInHex = this.convertToHex(file.toString());
+            var hexFilePadded = this.addZeros(fileInHex, this.dataSize);
+            var key = this.getDuplicate(hexFilePadded);
+
+            if(key == "-1"){
+                _StdOut.putText("File cannot be found.");
+                return;
+            }
+            var data = sessionStorage.getItem(key);
+            var indexDir = data.slice(1, 4);
+            var dataInHex;
+            dataInHex = this.convertToHex(contents.toString());
+            if (dataInHex.length > (this.dataSize)) {
+                this.putInMoreBlocks(indexDir, dataInHex);
+                this.updateFileSystem();
+            }
+            else {
+                var paddedHex = this.addZeros(dataInHex, this.dataSize);
+                sessionStorage.setItem(indexDir, "1---" + paddedHex);
+                _StdOut.putText("Contents were written on file.");
+                this.updateFileSystem();
+            }
+        }
+
+        /**
+         * If contents is > 60 bytes, they remaining contents gets put in the next block.
+         * @param startKey
+         * @param paddedContents
+         */
+        public putInMoreBlocks(startKey,paddedContents:string){
 
             var howMany:number = Math.ceil((paddedContents.length) / (this.dataSize));
             var totalAddresses = new Array();
-            //get more keys starting
             totalAddresses = this.getTotalAddresses(startKey,(howMany-1));
 
-            var begin:number = 0;
-            var end:number = this.dataSize;
+            var first:number = 0;
+            var last:number = this.dataSize;
             var data:string = "";
 
-            //now load "60" bytes chunk in each address
             for(var i = 0; i < totalAddresses.length;i++) {
 
-                data = paddedContents.slice(begin, end);
+                data = paddedContents.slice(first, last);
                 var key = this.createNewKey(totalAddresses[i]);
 
                 if (i + 1 < totalAddresses.length) {
@@ -229,25 +259,18 @@ module TSOS {
                     sessionStorage.setItem(key, "1---" + pad);
                 }
 
-                if(end == paddedContents.length){
+                if(last == paddedContents.length){
                     break;
                 }
 
-                if ((end + this.dataSize) > (paddedContents.length)) {
-                    begin = end;
-                    end = (paddedContents.length);
+                if ((last + this.dataSize) > (paddedContents.length)) {
+                    first = last;
+                    last = (paddedContents.length);
                 } else {
-                    begin = end;
-                    end = (end + this.dataSize);
+                    first = last;
+                    last = (last + this.dataSize);
                 }
             }
-        }
-
-        public createNewKey(key){
-            var t = key.charAt(0);
-            var s = key.charAt(1);
-            var b = key.charAt(2);
-            return this.createKey(t,s,b);
         }
 
         public getTotalAddresses(startKey, end){
@@ -263,13 +286,13 @@ module TSOS {
                         var data = sessionStorage.getItem(key);
                         var meta = data.slice(0, 1);
 
-                        if((key == "377") && (addressArray.length < (end+1))){
-                            _StdOut.putText("Not enough space sorry!");
+                        if((key == "377") && (addressArray.length < (end))){
+                            _StdOut.putText("File System is full.");
                             return;
                         }
                         if (meta == "0") {
                             addressArray.push(key);
-                            if(addressArray.length == (end+1)){
+                            if(addressArray.length == (end)){
                                 done = true;
                                 break;
                             }
@@ -286,106 +309,119 @@ module TSOS {
             return addressArray;
         }
 
-        public read(file:string) {
-            var t1 = 0;
-            var readKey;
-            var out:boolean = false;
+        public getFileDir(filename){
 
-            for (var s = 0; s < this.sectorSize; s++) {
-                for (var b = 0; b < this.blockSize; b++) {
-
-                    var newKey = this.createKey(t1, s, b);
-                    var metadata = sessionStorage.getItem(newKey);
-                    var metaindex = metadata.slice(0, 1);
-                    var meta = metadata.slice(1,4);
-                    var fn = metadata.slice(4, metadata.length);
-                    var hexString = this.convertToHex(file);
-                    var paddedFN = this.addZeros(hexString, this.dataSize);
-
-                    // checking if filename is the same as filename passed
-                    if ((metaindex == "1") && (paddedFN == fn)) {
-                        readKey = meta;
-                        out = true;
-                        break;
-                    }
-                }
-                if(out){
-                    break;
-                }
-            }
-
-            if(readKey == "---"){
-                //no chain
-            }else{
-                //has a chain
-                var print;
-                for (var t = readKey.charAt(0); t < this.trackSize; t++) {
-                    for (var s = readKey.charAt(1); s < this.sectorSize; s++) {
-                        for (var b = readKey.charAt(2); b < this.blockSize; b++) {
-
-                            var key = this.createKey(t, s, b);
-                            var data = sessionStorage.getItem(key);
-                            var nextKey = data.slice(1, 4);
-                            if (nextKey == "---") {
-                                print = data.slice(4, data.length);
-                                _StdOut.putText(this.convertToString(print.toString()));
-                                return;
-                            } else {
-                                print = data.slice(4, data.length);
-                                _StdOut.putText(this.convertToString(print.toString()));
-                            }
-                            key = nextKey;
+            for (var t = 0; t < 1; t++) {
+                for (var s = 0; s < this.sectorSize; s++) {
+                    for (var b = 0; b < this.blockSize; b++) {
+                        var key = this.createKey(t, s, b);
+                        var metadata = sessionStorage.getItem(key);
+                        var meta = metadata.slice(0,1);
+                        var nextMeta= metadata.slice(1,4);
+                        var data = metadata.slice(4,metadata.length);
+                        if((filename == data) && meta == "1"){
+                            return nextMeta;
                         }
                     }
                 }
             }
+        }
+
+        public read(file:string) {
+
+            var filename = this.convertToHex(file.toString());
+            var padName = this.addZeros(filename,this.dataSize);
+            var wholeData = this.getFileDir(padName);
+
+            if(wholeData == "-1"){
+                _StdOut.putText("File cannot be found");
+                return;
+            }
+            if(wholeData == "---"){
+                var a = sessionStorage.getItem(wholeData);
+                _StdOut.putText(this.convertToString(a.slice(4,a.length).toString()));
+            }
+            else{
+                this.indexWithContents(wholeData);
+            }
             this.updateFileSystem();
         }
 
-        public delete(file:string) {
-            var t = 0;
-            var tData = 1;
-            var readKey = "";
-            var paddedFN;
-            var contents = "";
+        public indexWithContents(index){
             var str = "";
-
-            for (var s = 0; s < this.sectorSize; s++) {
-                for (var b = 0; b < this.blockSize; b++) {
-                    // goes through the directory
-                    var newKey = this.createKey(t, s, b);
-                    var metadata = sessionStorage.getItem(newKey);
-
-                    // 1 if in use
-                    var metaindex = metadata.slice(0, 1);
-
-                    var fn = metadata.slice(4, this.metaDataSize);
-                    var hexString = this.convertToHex(file);
-                    paddedFN = this.addZeros(hexString, (this.metaDataSize - 4));
-                    if (metaindex == "1" && (paddedFN == fn)) {
-                        readKey = metadata.slice(1, 4);
+            var data1;
+            var stringData:string;
+            for (var t = index.charAt(0); t < this.trackSize; t++) {
+                for (var s = index.charAt(1); s < this.sectorSize; s++) {
+                    for (var b = index.charAt(2); b < this.blockSize; b++) {
+                        var key = this.createKey(t, s, b);
+                        var data = sessionStorage.getItem(key);
+                        var DirKey = data.slice(1, 4);
+                        if (DirKey == "---") {
+                            data1 = data.slice(4, data.length);
+                           // str += data1;
+                            stringData = this.convertToString(data1.toString());
+                            _StdOut.putText(stringData);
+                            _Console.advanceLine();
+                            return;
+                        } else {
+                            data1 = data.slice(4, data.length);
+                          //  str += data1;
+                            stringData = this.convertToString(data1.toString());
+                            _StdOut.putText(stringData);
+                        }
+                        index = DirKey;
                     }
                 }
             }
-            for (var s = 0; s < this.sectorSize; s++) {
-                for (var b = 0; b < this.blockSize; b++) {
-                    // data TSB
-                    var newKey1 = this.createKey(tData, s, b);
-                    var metadata1 = sessionStorage.getItem(newKey1);
-                    var metaindex1 = metadata1.substring(0, 1);         // 1 if in use
-                    if (metaindex1 == "1" && (readKey == newKey1)) {
-                        sessionStorage.setItem(newKey1, "0000" + this.addZeros(str, this.metaDataSize-4));
-                        _StdOut.putText("File was deleted successfully!");
-                    }
-                  }
+        }
+
+        public deleteFile(file:string) {
+            var t = 0;
+            var empty = this.addAllZeros(this.metaDataSize);
+            var contents = this.convertToHex(file);
+            var paddedFN = this.addZeros(contents,this.dataSize);
+            var readKey =  this.getNextAddress(paddedFN);
+            if(readKey != "-1"){
+                //found the file-name now delete its contents.
+                var filecontents = sessionStorage.getItem(readKey);
+                var meta = filecontents.slice(1,4);
+                if(meta == "---"){ // was meta == "---"
+                    _StdOut.putText("Deleted file: "+file);
+                }else{
+                    this.deleteAllContents(readKey,empty);
                 }
+                sessionStorage.setItem(readKey,empty);
+            }else{
+                _StdOut.putText("cannot find the file: "+file);
+            }
             this.updateFileSystem();
         }
 
+        public deleteAllContents(startKey,empty){
+            for (var t = startKey.charAt(0); t < this.trackSize; t++) {
+                for (var s = startKey.charAt(1); s < this.sectorSize; s++) {
+                    for (var b = startKey.charAt(2); b < this.blockSize; b++) {
+                        var key = this.createKey(t, s, b);
+                        var data = sessionStorage.getItem(key);
+                        var DirKey = data.slice(1, 4);
+                        if (DirKey == "---") {
+                            sessionStorage.setItem(key,empty);
+                            return;
+                        } else {
+                            sessionStorage.setItem(key,empty);
+                        }
+                        key = DirKey;
+                        startKey = DirKey;
+                    }
+                }
+            }
+        }
+
+        // Called for ls command
         public filesOnDisk() {
             var t = 0;
             var files: string [] = new Array();
-
             for (var s = 0; s < this.sectorSize; s++) {
                 for (var b = 1; b < this.blockSize; b++) {
                     var newKey = this.createKey(t, s, b);
@@ -395,7 +431,7 @@ module TSOS {
                     var stringFilename = this.convertToString(fn);
                   //  paddedFN = this.addZeros(stringFilename, (this.metaDataSize - 4));
                     if (metaindex == "1") {
-                        files.push(stringFilename);
+                        files.push(stringFilename);         // If there is a content, push the filename in array.
 //                        break;
                     }
                 }
@@ -406,7 +442,6 @@ module TSOS {
             }
             this.updateFileSystem();
         }
-
 
         public convertToHex(stringName:string):string {
             var str:string = "";
@@ -425,6 +460,202 @@ module TSOS {
                 i++;
             }
             return hex;
+        }
+
+        /**
+         * Rolls the process out of memory
+         * @param program
+         * @param contents
+         */
+        public rollOut(program,contents){
+            var newFile = "processfile"+program.getPID();
+            this.create(newFile);
+            this.write(newFile,contents);
+        }
+
+        // Chaining occurs
+        public getNextAddress(filename){
+            var key;
+            var t = 0;
+            var allZero = this.addAllZeros(this.metaDataSize);
+            for(var s = 0; s<this.sectorSize;s++) {
+                for (var b = 0; b < this.blockSize; b++) {
+                    key = this.createKey(t,s,b);
+                    var metaData:string = sessionStorage.getItem(key);
+                    var notAvail = metaData.slice(0,1);
+                    var addr = metaData.slice(1,4);
+                    var hexData:string = metaData.slice(4,metaData.length);
+                    if((filename == hexData) && (notAvail == "1")){
+                        alert("found filename at: "+ key +" returning meta: "+ addr);
+                        sessionStorage.setItem(key,allZero);
+                        return addr;
+                    }
+                }
+            }
+            return "-1";
+        }
+
+        public loadFromDisk(processOnDisk, newBase){
+            var zeroData = this.addAllZeros(this.metaDataSize);
+            var filename = "processfile"+processOnDisk.getPID();
+            var fileHex = this.convertToHex(filename.toString());
+            var padFile = this.addZeros(fileHex,this.dataSize);
+            var dataIndex = this.getNextAddress(padFile);
+            var data = this.getProgramContents(dataIndex);
+
+            sessionStorage.setItem(dataIndex,zeroData);
+            processOnDisk.setProcessBase(newBase);
+            processOnDisk.setProcessLimit((newBase+255));
+            Shell.updateRes();
+            memoryMngr.loadWithoutSpaces(data.toString(),processOnDisk.getProcessBase());
+            this.updateFileSystem();
+            memoryMngr.updateMemory();
+        }
+
+        public getProgramContents(index){
+            var value = "";
+            var key;
+            var data :string;
+            var nextKey;
+            var zeroData = this.addAllZeros(this.metaDataSize);
+            var toLeave:boolean = false;
+            var dataData;
+            var changeString;
+            for (var t:number = index.charAt(0); t < this.trackSize; t++) {
+                for (var s:number = index.charAt(1); s < this.sectorSize; s++) {
+                    for (var b:number = index.charAt(2); b < this.blockSize; b++) {
+
+                        key = this.createNewKey(index);
+                        data = sessionStorage.getItem(key);
+                        nextKey = data.slice(1, 4);
+                        dataData = data.slice(4,data.length);
+                        if (nextKey == "---") {
+                            changeString = this.convertToString(dataData);
+                            value += changeString;
+                            sessionStorage.setItem(key, zeroData);//replace with zeros
+                            this.updateFileSystem();
+                            toLeave = true;
+                            break;
+                        } else {
+                            changeString = this.convertToString(dataData);
+                            value += changeString;
+                            sessionStorage.setItem(key, zeroData);
+                            this.updateFileSystem();
+                        }
+                        index = nextKey;
+                    }
+                    if(toLeave){
+                        break;
+                    }
+                }
+                if(toLeave){
+                    break;
+                }
+            }
+            if(toLeave){
+                return value;
+            }
+        }
+
+        public rollIn(currentp, nextp){
+            var currentContents : string;
+            var allData:string;
+            var allZero = this.addAllZeros(this.metaDataSize);
+            var fileOnDisk = "processfile"+currentp.getPID();
+            var contentsInHex = this.convertToHex(fileOnDisk.toString());
+            var paddedContents = this.addZeros(contentsInHex,this.dataSize);
+            var index = this.addZeroContents(paddedContents);
+                allData = this.getProgramContents(index);
+            sessionStorage.setItem(index,allZero);              // Going from disk to memory, so delete the file in disk
+            currentp.setProcessBase(nextp.getProcessBase());
+            currentp.setProcessLimit(nextp.getProcessLimit());
+            currentp.setState(1);
+            currentp.setLocation("memory");
+            Shell.updateRes();
+            if(nextp.getState() == "terminated"){
+                nextp.setLocation("black-hole");
+            }
+            else {
+                fileOnDisk = "processfile"+nextp.getPID();
+                currentContents = memory.getWholeBlock(nextp.getProcessBase());
+                nextp.setLocation("disk");
+                nextp.setState(2);//waiting
+                this.create(fileOnDisk);
+                this.write(fileOnDisk,currentContents);
+            }
+            Shell.updateRes();
+            memoryMngr.loadWithoutSpaces(allData.toString(), currentp.getProcessBase());
+            this.updateFileSystem();
+        }
+
+        public getAllContents(ind){
+            var key;
+            var data1;
+            var nextKey;
+            var contentsInHex;
+            var str:string = "";
+            var data:string = "";
+            var toLeave:boolean = false;
+            var allZeros = this.addAllZeros(this.metaDataSize);
+            for (var t:number = ind.charAt(0); t < this.trackSize; t++) {
+                for (var s:number = ind.charAt(1); s < this.sectorSize; s++) {
+                    for (var b:number = ind.charAt(2); b < this.blockSize; b++) {
+                        key = this.createNewKey(ind);
+                        data = sessionStorage.getItem(key);
+                        nextKey = data.slice(1, 4);
+                        data1 = data.slice(4,data.length);
+                        if (nextKey == "---") {
+                            contentsInHex = this.convertToString(data1);
+                            str += contentsInHex;
+                            sessionStorage.setItem(key, allZeros);
+                            this.updateFileSystem();
+                            toLeave = true;
+                            break;
+                        } else {
+                            contentsInHex = this.convertToString(data1);
+                            str += contentsInHex;
+                            sessionStorage.setItem(key, allZeros);
+                            this.updateFileSystem();
+                        }
+                        key = nextKey;
+                        ind = nextKey;
+                    }
+                    if(toLeave){
+                        break;
+                    }
+                }
+                if(toLeave){
+                    break;
+                }
+            }
+            if(toLeave){
+                return str;
+            }
+        }
+
+        /**
+         * Used for deleting files, and changing everything to 0.
+         * @param filename
+         * @returns {string}
+         */
+        public addZeroContents(filename:string){
+            var track = 0;
+            var key;
+            var allZero = this.addAllZeros(this.metaDataSize);
+            for(var sect = 0; sect<this.sectorSize;sect++) {
+                for (var block = 0; block < this.blockSize; block++) {
+                    key = this.createKey(track,sect,block);
+                    var metadata1:string = sessionStorage.getItem(key);
+                    var ifInUse = metadata1.slice(0,1);
+                    var meta = metadata1.slice(1,4);
+                    var dataInHex:string = metadata1.slice(4,metadata1.length);
+                    if((filename == dataInHex) && (ifInUse == "1")){
+                        sessionStorage.setItem(key,allZero);
+                        return meta;
+                    }
+                }
+            }
+            return "-1";
         }
 
         public addZeros(name:string, length:number) {
@@ -447,119 +678,5 @@ module TSOS {
             }
             return str;
         }
-
-        //writing to disk
-        public rollOut(program){
-            var newFile = "processfile"+pcb.getPID();
-            this.create(newFile);
-            this.write(newFile,program);
-        }
-
-        public getNextAddress(filename){
-            var t = 0;
-            var key;
-            var zero = this.addAllZeros(this.metaDataSize);
-            for(var s = 0; s<this.sectorSize;s++) {
-                for (var b = 0; b < this.blockSize; b++) {
-                    key = this.createKey(t,s,b);
-                    var data:string = sessionStorage.getItem(key);
-                    var inUse = data.slice(0,1);
-                    var meta = data.slice(1,4);
-                    var hexData:string = data.slice(4,data.length);
-                    if((filename == hexData) && (inUse == "1")){
-                        //found what we are looking for...
-                        sessionStorage.setItem(key,zero);//delete the contents
-                        return meta;
-                    }
-                }
-            }
-        }
-
-        public loadFromDisk(processOnDisk, processOnMem){
-
-            alert("loading from the disk");
-            var data: string;
-            var zeroData = this.addAllZeros(this.metaDataSize);
-
-            //search for a filename
-            var filename = "processfile"+processOnDisk.getPID();
-            var fileHex = this.convertToHex(filename.toString());
-            var padFile = this.addZeros(fileHex,this.dataSize);
-
-            var dataIndex = this.getNextAddress(padFile); //don't forget to replace with zeros
-
-            //get the data of the file
-            //grab everything in hex!!!!
-            data = this.getProgramContents(dataIndex);
-            sessionStorage.setItem(dataIndex,zeroData);
-
-            processOnDisk.setProcessBase(0);
-            processOnDisk.setProcessLimit(255);
-            Shell.updateRes();
-
-            //load current process into the mem
-            memoryMngr.loadWithoutSpaces(data.toString(),processOnDisk.getProcessBase());
-            this.updateFileSystem();
-            memoryMngr.updateMemory();
-        }
-
-
-        public getProgramContents(index){
-
-            var value = "";
-            var key;
-            var data :string;
-            var nextKey;
-            var zeroData = this.addAllZeros(this.metaDataSize);
-            var stepOut:boolean = false;
-            var dataData;
-            var changeString;
-
-            for (var t:number = index.charAt(0); t < this.trackSize; t++) {
-                for (var s:number = index.charAt(1); s < this.sectorSize; s++) {
-                    for (var b:number = index.charAt(2); b < this.blockSize; b++) {
-
-                        key = this.createNewKey(index);
-                        data = sessionStorage.getItem(key);
-                        nextKey = data.slice(1, 4);
-                        dataData = data.slice(4,data.length);
-                        if (nextKey == "---") {
-                            changeString = this.convertToString(dataData);
-                            value += changeString;
-                            sessionStorage.setItem(key, zeroData);//replace with zeros
-                            this.updateFileSystem();
-                            stepOut = true;
-                            break;
-                        } else {
-                            changeString = this.convertToString(dataData);
-                            value += changeString;
-                            sessionStorage.setItem(key, zeroData);//replace with zeros
-                            this.updateFileSystem();
-                        }
-                        index = nextKey;
-                    }
-                    if(stepOut){
-                        break;
-                    }
-                }
-                if(stepOut){
-                    break;
-                }
-            }
-            if(stepOut){
-                return value;
-            }
-        }
    }
 }
-
-
-
-
-
-
-
-
-
-
-

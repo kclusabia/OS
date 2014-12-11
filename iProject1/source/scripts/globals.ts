@@ -87,6 +87,7 @@ var process:TSOS.ProcessControlBlock;
 // Creating the queues.
 var readyQueue: TSOS.Queue;
 var residentQueue: any[] = null;
+var garbageQueue: any[] = null;
 
 var quantum:number = 6;
 var clockCycle:number = 0;

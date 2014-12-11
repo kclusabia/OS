@@ -50,11 +50,13 @@ var TSOS;
 
         // Loads the program into the memory.
         Memory.prototype.loadWithoutSpaces = function (data, base) {
+            var input = data.replace(/^\s+|\s+$/g, '');
+            input = data.trim();
             var x = 0;
             var y = 2;
-            for (var row = base; row < base + (data.length / 2); row += 8) {
+            for (var row = base; row < base + (input.length / 2); row += 8) {
                 for (var col = row; col <= row + 7; col++) {
-                    _MemoryArray[col] = data.substring(x, y);
+                    _MemoryArray[col] = input.substring(x, y);
                     x = y;
                     y += 2;
                 }
@@ -108,17 +110,6 @@ var TSOS;
                 this.base = -1;
                 return this.base;
             }
-            //            if(residentQueue.length >= 3){
-            //                return -1;
-            //            }else {
-            //
-            //                for (var base = 0; base <= (256 * 2); base += 256) {
-            //                    var address = _MemoryArray.readMem(base);
-            //                    if (address == "00") {
-            //                        return base;
-            //                    }
-            //                }
-            //            }
         };
 
         Memory.prototype.getLimit = function () {
@@ -138,6 +129,20 @@ var TSOS;
             }
             TSOS.Shell.updateRes();
             return this.newTable();
+        };
+
+        Memory.prototype.getWholeBlock = function (base) {
+            var first = "";
+            var second;
+            for (var i = 0; i < (base + 256); i++) {
+                second = _MemoryArray[i];
+                if (second.length == 1) {
+                    first += "0" + second;
+                } else {
+                    first += second;
+                }
+            }
+            return first;
         };
         return Memory;
     })();

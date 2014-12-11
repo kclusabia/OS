@@ -83,6 +83,7 @@ var process;
 // Creating the queues.
 var readyQueue;
 var residentQueue = null;
+var garbageQueue = null;
 
 var quantum = 6;
 var clockCycle = 0;

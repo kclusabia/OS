@@ -18,19 +18,21 @@ module TSOS {
         public yReg = 0;
         public zFlag = 0;
         public location:string;
+        public priority:number;
         public states:string[] = new Array("new", "running", "waiting", "ready", "terminated");
 
         constructor() {
          }
 
         // Creating a PCB block.
-        public newPCB(base:number, limit:number, state:number):void {
+        public newPCB(base:number, limit:number, state:number, newPriority:number):void {
             this.incrementPID();
             this.pid1 = ProcessControlBlock.pid;
             this.pc = 0;
             this.base = base;                                   //this.base = (limit.toString(16).toUpperCase()) + 1
             this.limit = limit;     // this.limit = this.base + this.size;
             this.state = this.states[state];
+            this.priority = newPriority;
         }
 
         // Updates the PCB block.
@@ -52,8 +54,16 @@ module TSOS {
             return this.pid1;
         }
 
+        public getPriority():number{
+            return this.priority;
+        }
+
         public setState(index:number):void {
             this.state = this.states[index];
+        }
+
+        public setPriority(newPriority:number){
+            this.priority = newPriority;
         }
 
         public getLocation(){

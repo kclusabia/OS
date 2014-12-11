@@ -50,7 +50,7 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
 
             // load
-            sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Checks if the input consisted of hex digits.");
+            sc = new TSOS.ShellCommand(this.shellLoad, "load", "<string> - Checks if the input consisted of hex digits.");
             this.commandList[this.commandList.length] = sc;
 
             // run
@@ -119,7 +119,7 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellDeleteFile, "delete", "<filename> - Deletes the file in disk.");
             this.commandList[this.commandList.length] = sc;
 
-            sc = new TSOS.ShellCommand(this.shellOnDisk, "ls", " - Deletes the file in disk.");
+            sc = new TSOS.ShellCommand(this.shellOnDisk, "ls", " - Returns the files on disk.");
             this.commandList[this.commandList.length] = sc;
 
             sc = new TSOS.ShellCommand(this.shellSetSchedule, "setschedule", "<scheduler> - Sets a scheduler.");
@@ -298,7 +298,9 @@ var TSOS;
         };
 
         Shell.prototype.shellLoad = function (args) {
-            var input = document.getElementById("taProgramInput").value;
+            var priority = args[0];
+            var hex = document.getElementById("taProgramInput").value;
+            var input = hex.replace(/\s/g, '');
 
             for (var i = 0; i < input.length; i++) {
                 var ascii = input.charCodeAt(i);
@@ -310,24 +312,27 @@ var TSOS;
                 }
             }
 
+            // Sets a default priority when priority scheduling is not called.
+            var priority = args[0];
+            if (priority == undefined || priority < 0) {
+                priority = 5;
+            }
+
             if (residentQueue.length >= 3) {
-                var program = input.replace(/\s/g, '');
-                program = program.trim();
+                if (fileSystem.isFormatted) {
+                    pcb = new TSOS.ProcessControlBlock();
+                    pcb.newPCB(-1, -1, 0, priority);
+                    pcb.setLocation("disk");
 
-                //load in fs
-                // Creating a PCB block.
-                pcb = new TSOS.ProcessControlBlock();
-                pcb.newPCB(-1, -1, 0); // (base, limit, state)
-                pcb.setLocation("disk");
+                    residentQueue.push(pcb);
+                    garbageQueue.push(pcb);
 
-                //residentQueue = new Array<ProcessControlBlock>();
-                residentQueue.push(pcb);
-                Shell.updateRes();
-
-                //now call roll-out
-                //make a new filename
-                alert(program + ", len" + program.length);
-                fileSystem.rollOut(program.toString());
+                    Shell.updateRes();
+                    fileSystem.rollOut(pcb, input.toString());
+                    _StdOut.putText("Process ID: " + pcb.getPID());
+                } else {
+                    _StdOut.putText("Please format first...");
+                }
             } else {
                 _StdOut.putText("You have loaded the program successfully.");
                 _Console.advanceLine();
@@ -336,15 +341,16 @@ var TSOS;
                 var base = memory.getBase();
                 var limit = memory.getLimit();
                 pcb = new TSOS.ProcessControlBlock();
-                pcb.newPCB(base, limit, 0); // (base, limit, state)
+                pcb.newPCB(base, limit, 0, priority); // (base, limit, state)
                 pcb.setLocation("memory");
 
                 //residentQueue = new Array<ProcessControlBlock>();
                 residentQueue.push(pcb);
+                garbageQueue.push(pcb);
 
                 // Displays the current PID.
                 _StdOut.putText("Process ID: " + pcb.getPID());
-                memoryMngr.loadMemory(input.toString(), base);
+                memoryMngr.loadWithoutSpaces(input.toString(), base);
 
                 // _Console.advanceLine();
                 Shell.updateRes();
@@ -355,23 +361,27 @@ var TSOS;
         Shell.updateRes = function () {
             var tableView = "<table>";
             tableView += "<th>PC</th>";
+            tableView += "<th>Priority</th>";
             tableView += "<th>PID</th>";
             tableView += "<th>Base</th>";
             tableView += "<th>Limit</th>";
+            tableView += "<th>IR</th>";
             tableView += "<th>XReg</th>";
             tableView += "<th>YReg</th>";
             tableView += "<th>ZFlag</th>";
             tableView += "<th>State</th>";
             tableView += "<th>Location</th>";
-            for (var i = 0; i < residentQueue.length; i++) {
-                var s = residentQueue[i];
+            for (var i = 0; i < garbageQueue.length; i++) {
+                var s = garbageQueue[i];
                 if (s.getState() != "new") {
                     tableView += "<tr>";
                     var newPC = (s.getPC() + s.getProcessBase());
                     tableView += "<td>" + newPC.toString() + "</td>";
+                    tableView += "<td>" + s.getPriority() + "</td>";
                     tableView += "<td>" + s.getPID().toString() + "</td>";
                     tableView += "<td>" + s.getProcessBase().toString() + "</td>";
                     tableView += "<td>" + s.getProcessLimit().toString() + "</td>";
+                    tableView += "<td>" + s.getIR() + "</td>";
                     tableView += "<td>" + s.getXReg().toString() + "</td>";
                     tableView += "<td>" + s.getYReg().toString() + "</td>";
                     tableView += "<td>" + s.getZFlag().toString() + "</td>";
@@ -387,16 +397,32 @@ var TSOS;
         Shell.prototype.shellRun = function (args) {
             if (residentQueue[args].getState() == "new") {
                 readyQueue.enqueue(residentQueue[args]);
-
-                // residentQueue(args).setState(3);
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(newProcess, 5));
             }
         };
 
         Shell.prototype.shellRunAll = function () {
+            if (schedulerType == "priority") {
+                for (var a = 0; a < residentQueue.length; a++) {
+                    for (var b = 1; b < residentQueue.length - a; b++) {
+                        var firstPriority = residentQueue[b - 1].getPriority();
+                        var secondPriority = residentQueue[b].getPriority();
+                        if (firstPriority > secondPriority) {
+                            var current = residentQueue[b - 1];
+                            residentQueue[b - 1] = residentQueue[b];
+                            residentQueue[b] = current;
+
+                            garbageQueue[b - 1] = garbageQueue[b];
+                            garbageQueue[b] = current;
+                        }
+                    }
+                }
+            }
+
             for (var i = 0; i < residentQueue.length; i++) {
-                residentQueue[i].setState(3);
-                readyQueue.enqueue(residentQueue[i]);
+                var s = TSOS.ProcessControlBlock = residentQueue[i];
+                s.setState(3);
+                readyQueue.enqueue(s);
                 Shell.updateRes();
             }
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(newProcess, 5));
@@ -449,14 +475,6 @@ var TSOS;
 
         Shell.prototype.shellClearMem = function (args) {
             memoryMngr.clearMemory();
-        };
-
-        Shell.prototype.shellCreateFile = function (args) {
-            // Filename does not exist, so create the file.
-            if (filesCreated.indexOf(args) == -1) {
-                _StdOut.putText("File created: " + filename);
-            } else
-                _StdOut.putText("Let's get it together. Providing a filename is needed.");
         };
 
         Shell.prototype.shellShutdown = function (args) {
@@ -530,7 +548,11 @@ var TSOS;
         };
 
         Shell.prototype.shellCreateFile = function (args) {
-            fileSystem.create(args.toString());
+            if (fileSystem.isFormatted) {
+                fileSystem.create(args.toString());
+            } else {
+                _StdOut.putText("please format first...");
+            }
         };
 
         Shell.prototype.shellFormat = function () {
@@ -538,31 +560,88 @@ var TSOS;
         };
 
         Shell.prototype.shellReadFile = function (args) {
-            fileSystem.read(args.toString());
+            if (fileSystem.isFormatted) {
+                fileSystem.read(args.toString());
+            } else {
+                _StdOut.putText("please format first...");
+            }
         };
 
         Shell.prototype.shellWriteFile = function (args) {
-            fileSystem.write(args[0], args[1]);
+            if (args.length < 2) {
+                _StdOut.putText("Write nothing?");
+                return;
+            }
+
+            if (fileSystem.isFormatted) {
+                var filename = args[0];
+                var firstArg = args[1];
+                var lastArg = args[args.length - 1];
+                var firstChar = firstArg.charAt(0);
+                var lastChar = lastArg.charAt(lastArg.length - 1);
+                var firstAscii = firstChar.charCodeAt(0);
+                var lastAscii = lastChar.charCodeAt(lastChar.length - 1);
+                var load = "";
+
+                if (args.length == 2) {
+                    if ((firstChar == lastChar) && (firstAscii == 34) && (lastAscii == 34)) {
+                        load += args[1].slice(1, (args[1].length - 1));
+                        fileSystem.write(filename, load);
+                        return;
+                    } else {
+                        _StdOut.putText("File Contents must be between: \" \"");
+                    }
+                }
+
+                if (args.length > 2) {
+                    if ((firstChar == lastChar) && (firstAscii == 34) && (lastAscii == 34)) {
+                        load += args[1].slice(1, args[1].args) + " ";
+                        load += " ";
+                        for (var i = 2; i < args.length; i++) {
+                            if ((i + 1) == args.length) {
+                                load += lastArg.slice(0, args[i].length - 1);
+                                break;
+                            }
+                            load += args[i];
+                            load += " ";
+                        }
+                        fileSystem.write(filename, load);
+                    } else {
+                        _StdOut.putText("File Contents must be between: \" \"");
+                    }
+                }
+            } else {
+                _StdOut.putText("Please format first...");
+            }
         };
 
         Shell.prototype.shellDeleteFile = function (args) {
-            fileSystem.delete(args.toString());
+            if (fileSystem.isFormatted) {
+                fileSystem.deleteFile(args.toString());
+            } else {
+                _StdOut.putText("Please format first...");
+            }
         };
 
+        // LS command
         Shell.prototype.shellOnDisk = function () {
-            fileSystem.filesOnDisk();
+            if (fileSystem.isFormatted) {
+                fileSystem.filesOnDisk();
+            } else {
+                _StdOut.putText("Please format first...");
+            }
         };
 
         Shell.prototype.shellSetSchedule = function (args) {
             if (args.toString() == "rr" || args.toString() == "fcfs" || args.toString() == "priority") {
-                scheduler.schedulerType = args.toString();
-                _StdOut.putText("Current scheduler is: " + scheduler.schedulerType);
+                schedulerType = args.toString();
+                _StdOut.putText("Current scheduler is: " + schedulerType);
             } else
                 _StdOut.putText("Don't make up your own scheduler please.");
         };
 
         Shell.prototype.shellGetSchedule = function () {
-            _StdOut.putText("Current scheduler is: " + scheduler.schedulerType);
+            _StdOut.putText("Current scheduler is: " + schedulerType);
         };
         return Shell;
     })();

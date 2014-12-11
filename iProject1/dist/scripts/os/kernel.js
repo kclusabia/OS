@@ -23,7 +23,8 @@ var TSOS;
             _Console = new TSOS.Console(); // The command line interface / console I/O device.
             readyQueue = new TSOS.Queue();
             residentQueue = new Array();
-            scheduler = new TSOS.Scheduler("fcfs");
+            garbageQueue = new Array();
+            scheduler = new TSOS.Scheduler("rr");
 
             // Initialize the console.
             _Console.init();
@@ -37,7 +38,6 @@ var TSOS;
             _krnKeyboardDriver = new TSOS.DeviceDriverKeyboard(); // Construct it.
             _krnKeyboardDriver.driverEntry(); // Call the driverEntry() initialization routine.
             this.krnTrace(_krnKeyboardDriver.status);
-
             this.krnTrace("Loading the File System Driver.");
             fileSystem = new TSOS.FileSystemDeviceDriver(); // Construct it.
             fileSystem.aa(); // Call the driverEntry() initialization routine.
@@ -86,13 +86,23 @@ var TSOS;
                 // Process the first interrupt on the interrupt queue.
                 // TODO: Implement a priority queue based on the IRQ number/id to enforce interrupt priority.
                 var interrupt = _KernelInterruptQueue.dequeue();
+                _Mode = 0;
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
-                // Context switch is called when quantum had expired.
-            } else if (_CPU.isExecuting && (schedulerType == "fcfs")) {
+            } else if (_CPU.isExecuting && (schedulerType == "fcfs" || schedulerType == "priority")) {
                 _CPU.cycle();
                 TSOS.Shell.updateRes();
+            } else if (_CPU.isExecuting && (schedulerType == "rr")) {
+                if (clockCycle >= quantum) {
+                    clockCycle = 0;
+                    this.krnInterruptHandler(contextSwitch, 0);
+                } else {
+                    _CPU.cycle();
+                    clockCycle++;
+                    TSOS.Shell.updateRes();
+                }
             } else {
                 this.krnTrace("Idle");
+                _Mode = 1;
             }
         };
 
@@ -132,6 +142,7 @@ var TSOS;
                     process.setState(4); // set state to terminated
                     TSOS.Shell.updateRes();
                     _CPU.init();
+                    clockCycle = 0;
                     _Kernel.krnTrace("Terminating PID: " + process.getPID());
                     this.determinsScheduling();
                     break;
@@ -139,7 +150,7 @@ var TSOS;
                 case murdered:
                     _Kernel.krnTrace("Murdered PID " + params.getPID());
                     TSOS.Shell.updateRes();
-                    scheduler.startProcess();
+                    this.determinsScheduling();
                     break;
 
                 case newProcess:
@@ -147,36 +158,7 @@ var TSOS;
                     break;
 
                 case contextSwitch:
-                    // scheduler.init();
-                    clockCycle = 0;
-                    _CPU.showCPU();
-
-                    // scheduler.contextSwitch()
-                    if (readyQueue.isEmpty() && process.getState() == "terminated") {
-                        _CPU.init();
-                    } else {
-                        process.setPC(_CPU.PC);
-                        process.setAcc(_CPU.Acc);
-                        process.setIR(_CPU.IR);
-                        process.setXReg(_CPU.XReg);
-                        process.setYReg(_CPU.YReg);
-                        process.setZFlag(_CPU.ZFlag);
-                        process.setState(2); // set state to waiting
-                        readyQueue.enqueue(process);
-                        _CPU.showCPU();
-
-                        // scheduler.contextSwitch()
-                        process = readyQueue.dequeue();
-                        if (process.getState() == "terminated") {
-                            scheduler.init();
-                            scheduler.startProcess();
-                        }
-                        _Kernel.krnTrace(" Context switched. Processing PID: " + process.getPID());
-                        process.setState(1); // set state to running.
-                        _CPU.beginProcess(process);
-                        _Kernel.krnTrace("Processing PID: " + process.getPID());
-                        TSOS.Shell.updateRes();
-                    }
+                    this.contextSwitch();
                     break;
 
                 case sysCall:
@@ -207,7 +189,7 @@ var TSOS;
                 case memoryBounded:
                     _CPU.init();
                     scheduler.init();
-                    scheduler.startProcess();
+                    this.determinsScheduling();
                     break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
@@ -261,22 +243,105 @@ var TSOS;
             this.krnShutdown();
         };
 
-        Kernel.prototype.loadFromDisk = function () {
-            process.setLocation("memory");
-
-            //            var swapProcess:TSOS.ProcessControlBlock = residentQueue[0];
-            //                swapProcess.setLocation("deleted");
-            //                Shell.updateRes();
-            fileSystem.loadFromDisk(process, 0);
-            process.setState(1);
-            _CPU.beginProcess(process);
-
-            residentQueue.splice(0, 1); //make sure you delete to keep the order right!
-        };
-
+        //        public loadFromDisk(){
+        //
+        //
+        //
+        //            Shell.updateRes();
+        //            fileSystem.loadFromDisk(process,0);
+        //            process.setState(1);
+        //            _CPU.beginProcess(process);
+        ////            residentQueue.splice(0,1);//make sure you delete to keep the order right!
+        //        }
         Kernel.prototype.determinsScheduling = function () {
             if (schedulerType == "fcfs") {
                 scheduler.fcfs();
+            }
+            if (schedulerType == "rr") {
+                scheduler.rr();
+            }
+            if (schedulerType == "priority") {
+                scheduler.priority();
+            }
+        };
+
+        Kernel.prototype.getNextAvailableBlock = function () {
+            var index = residentQueue.indexOf(process);
+            index = (index - 3);
+            if (index < 0) {
+                var residentIndex = residentQueue.indexOf(process);
+                index = (residentQueue.length - 3) + Math.abs(residentIndex);
+            }
+            return residentQueue[index];
+        };
+
+        /**
+        * context switch
+        */
+        Kernel.prototype.contextSwitchRR = function () {
+            var nextProcess = this.getNextAvailableBlock();
+            fileSystem.rollIn(process, nextProcess);
+            _Kernel.krnTrace("\nCONTEXT SWITCH TO PID: " + process.getPID() + "\n");
+            TSOS.Shell.updateRes();
+            _CPU.beginProcess(process);
+            _Kernel.krnTrace("\nPROCESSING PID: " + process.getPID() + "\n");
+        };
+
+        Kernel.prototype.contextSwitchFCFS = function () {
+            process.setLocation("memory");
+            for (var i = 0; i < residentQueue.length; i++) {
+                var p = residentQueue[i];
+                if (p.getLocation() == "memory" && p.getState() == "terminated") {
+                    p.setLocation("black-hole");
+                    break;
+                }
+            }
+            fileSystem.loadFromDisk(process, 0);
+            _Kernel.krnTrace("\nCONTEXT SWITCH TO PID: " + process.getPID() + "\n");
+            _CPU.beginProcess(process);
+            _Kernel.krnTrace("\nPROCESSING PID: " + process.getPID() + "\n");
+            TSOS.Shell.updateRes();
+        };
+        Kernel.prototype.contextSwitchPriority = function () {
+            for (var i = 0; i < residentQueue.length; i++) {
+                var program = residentQueue[i];
+                if (program.getLocation() == "memory" && program.getState() == "terminated") {
+                    program.setLocation("black-hole");
+                    break;
+                }
+            }
+            fileSystem.loadFromDisk(process, 0);
+            _Kernel.krnTrace("\nCONTEXT SWITCH TO PID: " + process.getPID() + "\n");
+            TSOS.Shell.updateRes();
+            _CPU.beginProcess(process);
+            _Kernel.krnTrace("\nPROCESSING PID: " + process.getPID() + "\n");
+        };
+
+        /**
+        * context switch
+        */
+        Kernel.prototype.contextSwitch = function () {
+            if (readyQueue.isEmpty() && process.getState() == "terminated") {
+                _CPU.init();
+            } else {
+                process.setPC(_CPU.PC);
+                process.setAcc(_CPU.Acc);
+                process.setIR(_CPU.IR);
+                process.setXReg(_CPU.XReg);
+                process.setYReg(_CPU.YReg);
+                process.setZFlag(_CPU.ZFlag);
+                process.setState(2);
+                readyQueue.enqueue(process);
+                process = readyQueue.dequeue();
+                if (process.getLocation() == "disk") {
+                    this.contextSwitchRR();
+                    return;
+                }
+                _Kernel.krnTrace("\nCONTEXT SWITCH TO PID: " + process.getPID() + "\n");
+                process.setState(1);
+                TSOS.Shell.updateRes();
+                _CPU.beginProcess(process);
+                _Kernel.krnTrace("\nPROCESSING PID: " + process.getPID() + "\n");
             }
         };
         return Kernel;

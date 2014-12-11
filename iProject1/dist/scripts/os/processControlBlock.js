@@ -19,13 +19,14 @@ var TSOS;
             this.states = new Array("new", "running", "waiting", "ready", "terminated");
         }
         // Creating a PCB block.
-        ProcessControlBlock.prototype.newPCB = function (base, limit, state) {
+        ProcessControlBlock.prototype.newPCB = function (base, limit, state, newPriority) {
             this.incrementPID();
             this.pid1 = ProcessControlBlock.pid;
             this.pc = 0;
             this.base = base; //this.base = (limit.toString(16).toUpperCase()) + 1
             this.limit = limit; // this.limit = this.base + this.size;
             this.state = this.states[state];
+            this.priority = newPriority;
         };
 
         // Updates the PCB block.
@@ -47,8 +48,16 @@ var TSOS;
             return this.pid1;
         };
 
+        ProcessControlBlock.prototype.getPriority = function () {
+            return this.priority;
+        };
+
         ProcessControlBlock.prototype.setState = function (index) {
             this.state = this.states[index];
+        };
+
+        ProcessControlBlock.prototype.setPriority = function (newPriority) {
+            this.priority = newPriority;
         };
 
         ProcessControlBlock.prototype.getLocation = function () {

@@ -127,7 +127,8 @@ module TSOS {
             }
             else {
                 // Displays the bsod screen.
-                _Console.ifError();
+                _StdOut.putText("Invalid Op Code, pid: "+process.getPID());
+//                _Console.ifError();
             }
         }
 
