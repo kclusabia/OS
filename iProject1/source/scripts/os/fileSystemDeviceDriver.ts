@@ -338,15 +338,21 @@ module TSOS {
                 return;
             }
             if(wholeData == "---"){
+                // If there is no chaining, meaning contents is <= 60 bytes.
                 var a = sessionStorage.getItem(wholeData);
                 _StdOut.putText(this.convertToString(a.slice(4,a.length).toString()));
             }
             else{
+                // If contents is > 60 bytes
                 this.indexWithContents(wholeData);
             }
             this.updateFileSystem();
         }
 
+        /**
+         * Gets all the address where the contents are written
+         * @param index
+         */
         public indexWithContents(index){
             var str = "";
             var data1;
@@ -393,7 +399,7 @@ module TSOS {
                 }
                 sessionStorage.setItem(readKey,empty);
             }else{
-                _StdOut.putText("cannot find the file: "+file);
+                _StdOut.putText("Cannot find the file: "+file);
             }
             this.updateFileSystem();
         }
