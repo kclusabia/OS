@@ -187,6 +187,7 @@ var TSOS;
         * @param filename
         * @returns {string}
         */
+        //TODO
         FileSystemDeviceDriver.prototype.getDuplicate = function (filename) {
             var t = 0;
             var key;
@@ -216,8 +217,7 @@ var TSOS;
             }
             var data = sessionStorage.getItem(key);
             var indexDir = data.slice(1, 4);
-            var dataInHex;
-            dataInHex = this.convertToHex(contents.toString());
+            var dataInHex = this.convertToHex(contents.toString());
             if (dataInHex.length > (this.dataSize)) {
                 this.putInMoreBlocks(indexDir, dataInHex);
                 this.updateFileSystem();
@@ -406,7 +406,6 @@ var TSOS;
                         } else {
                             sessionStorage.setItem(key, empty);
                         }
-                        key = DirKey;
                         startKey = DirKey;
                     }
                 }
@@ -474,7 +473,6 @@ var TSOS;
                     var addr = metaData.slice(1, 4);
                     var hexData = metaData.slice(4, metaData.length);
                     if ((filename == hexData) && (notAvail == "1")) {
-                        alert("found filename at: " + key + " returning meta: " + addr);
                         sessionStorage.setItem(key, allZero);
                         return addr;
                     }
@@ -564,8 +562,10 @@ var TSOS;
             } else {
                 fileOnDisk = "processfile" + nextp.getPID();
                 currentContents = memory.getWholeBlock(nextp.getProcessBase());
-                nextp.setLocation("disk");
                 nextp.setState(2); //waiting
+                nextp.setLocation("disk");
+                nextp.setProcessBase(-1);
+                nextp.setProcessLimit(-1);
                 this.create(fileOnDisk);
                 this.write(fileOnDisk, currentContents);
             }

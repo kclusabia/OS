@@ -144,6 +144,13 @@ var TSOS;
                     _CPU.init();
                     clockCycle = 0;
                     _Kernel.krnTrace("Terminating PID: " + process.getPID());
+                    if (readyQueue.isEmpty()) {
+                        for (var i = residentQueue.length - 1; i >= 0; i--) {
+                            var obj = residentQueue[i];
+                            residentQueue.splice(i, 1);
+                        }
+                        memory.clearMem();
+                    }
                     this.determinsScheduling();
                     break;
 
@@ -153,10 +160,13 @@ var TSOS;
                     this.determinsScheduling();
                     break;
 
-                case newProcess:
+                case endProcess:
+                    _CPU.init();
+                    break;
+                case startProcess:
+                    clockCycle = 0;
                     this.determinsScheduling();
                     break;
-
                 case contextSwitch:
                     this.contextSwitch();
                     break;
@@ -337,6 +347,10 @@ var TSOS;
                 process.setState(2);
                 readyQueue.enqueue(process);
                 process = readyQueue.dequeue();
+                if (process.getState() == "terminated") {
+                    // Goes to the next process and follow that scheduler.
+                    this.determinsScheduling();
+                }
                 if (process.getLocation() == "disk") {
                     this.contextSwitchRR();
                     return;

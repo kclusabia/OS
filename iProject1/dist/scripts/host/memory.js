@@ -122,7 +122,6 @@ var TSOS;
 
         // Clears the memory and resetting the resident queue.
         Memory.prototype.clearMem = function () {
-            _StdOut.putText("Memory cleared! Processes has been terminated!");
             for (var i = residentQueue.length - 1; i >= 0; i--) {
                 var obj = residentQueue[i];
                 residentQueue.splice(i, 1);

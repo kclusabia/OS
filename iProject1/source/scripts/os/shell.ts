@@ -455,7 +455,7 @@ module TSOS {
         public shellRun(args) {
             if(residentQueue[args].getState() == "new") {
                 readyQueue.enqueue(residentQueue[args]);
-                _KernelInterruptQueue.enqueue(new Interrupt(newProcess, 5));
+                _KernelInterruptQueue.enqueue(new Interrupt(startProcess, 5));
             }
         }
 
@@ -485,37 +485,48 @@ module TSOS {
                 readyQueue.enqueue(s);
                 Shell.updateRes();
             }
-            _KernelInterruptQueue.enqueue(new Interrupt(newProcess, 5));
+            _KernelInterruptQueue.enqueue(new Interrupt(startProcess, 5));
         }
 
         public shellKill(args) {
-
             var killThisBitch:number = args[0];
 
-            if (killThisBitch == process.getPID() && readyQueue.getSize() >= 0) {
+            if (killThisBitch == process.getPID() && readyQueue.getSize() > 0) {
                 process.setState(4);            // set state to terminated
                 Shell.updateRes();
-                _StdOut.putText("PID " + args + " was murdered.");
-                scheduler.init();
-                _Kernel.krnInterruptHandler(newProcess, args);
+                _StdOut.putText("PID " + killThisBitch + " was murdered.");
+                _Kernel.krnTrace("Murdered pid: "+process.getPID());
+                _Kernel.krnInterruptHandler(startProcess, process);
+                return;
+            }
+            if (killThisBitch == process.getPID() && readyQueue.isEmpty()) {
+                process.setState(4);            // set state to terminated
+                Shell.updateRes();
+                _StdOut.putText("PID " + killThisBitch + " was murdered.");
+                _Kernel.krnTrace("Murdered pid: "+process.getPID());
+                _Kernel.krnInterruptHandler(endProcess, process);
+                return;
             }
 
             // Can kill a process even though it is waiting.
             for (var i = 0; i < residentQueue.length; i++) {
                 var obj:TSOS.ProcessControlBlock = residentQueue[i];
                 if (killThisBitch == obj.getPID()) {
-
                     if(obj.getLocation() == "disk"){
                         obj.setState(4);
                         var fileOnDisk = "processfile"+obj.getPID();
                         fileSystem.deleteFile(fileOnDisk);
                         Shell.updateRes();
-                        _StdOut.putText("Process " + args + " was murdered.");
+                        _StdOut.putText("Process " + killThisBitch + " was murdered.");
+                        _Kernel.krnTrace("Murdered pid: "+process.getPID());
+                        return;
                     }
                     if(obj.getLocation() == "memory") {
                         obj.setState(4);
                         Shell.updateRes();
-                        _StdOut.putText("Process " + args + " was murdered.");
+                        _StdOut.putText("Process " + killThisBitch + " was murdered.");
+                        _Kernel.krnTrace("Murdered pid: "+process.getPID());
+                        return;
                     }
                 }
             }
@@ -532,7 +543,6 @@ module TSOS {
                     _Console.advanceLine();
                 }
             }
-
             if (check == true)
              _StdOut.putText("There are currently no active processes.");
         }

@@ -397,7 +397,7 @@ var TSOS;
         Shell.prototype.shellRun = function (args) {
             if (residentQueue[args].getState() == "new") {
                 readyQueue.enqueue(residentQueue[args]);
-                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(newProcess, 5));
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(startProcess, 5));
             }
         };
 
@@ -425,18 +425,27 @@ var TSOS;
                 readyQueue.enqueue(s);
                 Shell.updateRes();
             }
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(newProcess, 5));
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(startProcess, 5));
         };
 
         Shell.prototype.shellKill = function (args) {
             var killThisBitch = args[0];
 
-            if (killThisBitch == process.getPID() && readyQueue.getSize() >= 0) {
+            if (killThisBitch == process.getPID() && readyQueue.getSize() > 0) {
                 process.setState(4); // set state to terminated
                 Shell.updateRes();
-                _StdOut.putText("PID " + args + " was murdered.");
-                scheduler.init();
-                _Kernel.krnInterruptHandler(newProcess, args);
+                _StdOut.putText("PID " + killThisBitch + " was murdered.");
+                _Kernel.krnTrace("Murdered pid: " + process.getPID());
+                _Kernel.krnInterruptHandler(startProcess, process);
+                return;
+            }
+            if (killThisBitch == process.getPID() && readyQueue.isEmpty()) {
+                process.setState(4); // set state to terminated
+                Shell.updateRes();
+                _StdOut.putText("PID " + killThisBitch + " was murdered.");
+                _Kernel.krnTrace("Murdered pid: " + process.getPID());
+                _Kernel.krnInterruptHandler(endProcess, process);
+                return;
             }
 
             for (var i = 0; i < residentQueue.length; i++) {
@@ -447,12 +456,16 @@ var TSOS;
                         var fileOnDisk = "processfile" + obj.getPID();
                         fileSystem.deleteFile(fileOnDisk);
                         Shell.updateRes();
-                        _StdOut.putText("Process " + args + " was murdered.");
+                        _StdOut.putText("Process " + killThisBitch + " was murdered.");
+                        _Kernel.krnTrace("Murdered pid: " + process.getPID());
+                        return;
                     }
                     if (obj.getLocation() == "memory") {
                         obj.setState(4);
                         Shell.updateRes();
-                        _StdOut.putText("Process " + args + " was murdered.");
+                        _StdOut.putText("Process " + killThisBitch + " was murdered.");
+                        _Kernel.krnTrace("Murdered pid: " + process.getPID());
+                        return;
                     }
                 }
             }
@@ -469,7 +482,6 @@ var TSOS;
                     _Console.advanceLine();
                 }
             }
-
             if (check == true)
                 _StdOut.putText("There are currently no active processes.");
         };
