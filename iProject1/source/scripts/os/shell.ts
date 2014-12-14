@@ -489,18 +489,30 @@ module TSOS {
         }
 
         public shellKill(args) {
-            if (args == process.getPID() && process.getState() == "running") {
+
+            var killThisBitch:number = args[0];
+
+            if (killThisBitch == process.getPID() && readyQueue.getSize() >= 0) {
                 process.setState(4);            // set state to terminated
                 Shell.updateRes();
                 _StdOut.putText("PID " + args + " was murdered.");
                 scheduler.init();
                 _Kernel.krnInterruptHandler(newProcess, args);
             }
-            else {
-                // Can kill a process even though it is waiting.
-                for (var i = 0; i < residentQueue.length; i++) {
-                    var obj:TSOS.ProcessControlBlock = residentQueue[i];
-                    if (args == obj.getPID()) {
+
+            // Can kill a process even though it is waiting.
+            for (var i = 0; i < residentQueue.length; i++) {
+                var obj:TSOS.ProcessControlBlock = residentQueue[i];
+                if (killThisBitch == obj.getPID()) {
+
+                    if(obj.getLocation() == "disk"){
+                        obj.setState(4);
+                        var fileOnDisk = "processfile"+obj.getPID();
+                        fileSystem.deleteFile(fileOnDisk);
+                        Shell.updateRes();
+                        _StdOut.putText("Process " + args + " was murdered.");
+                    }
+                    if(obj.getLocation() == "memory") {
                         obj.setState(4);
                         Shell.updateRes();
                         _StdOut.putText("Process " + args + " was murdered.");
