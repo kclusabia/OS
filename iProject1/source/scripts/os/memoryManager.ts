@@ -14,10 +14,19 @@ module TSOS {
 
         // Reads the data from the specified address, denoted as the index.
         public readMemory(index) {
-                return memory.readMem(parseInt(index + process.getProcessBase()));
+
+            if(process.getProcessBase() + index >= process.getProcessLimit+index ||
+                process.getProcessBase() + index < process.getProcessBase) {
+                _Console.ifError();
+            }
+            return memory.readMem(parseInt(index + process.getProcessBase()));
         }
 
         public loadMemory(data1, base) {
+            if(process.getProcessBase() + index >= process.getProcessLimit+index ||
+                process.getProcessBase() + index < process.getProcessBase) {
+                _Console.ifError();
+            }
             memory.loadProgram(data1, base);
         }
 

@@ -11,10 +11,16 @@ var TSOS;
         }
         // Reads the data from the specified address, denoted as the index.
         MemoryManager.prototype.readMemory = function (index) {
+            if (process.getProcessBase() + index >= process.getProcessLimit + index || process.getProcessBase() + index < process.getProcessBase) {
+                _Console.ifError();
+            }
             return memory.readMem(parseInt(index + process.getProcessBase()));
         };
 
         MemoryManager.prototype.loadMemory = function (data1, base) {
+            if (process.getProcessBase() + index >= process.getProcessLimit + index || process.getProcessBase() + index < process.getProcessBase) {
+                _Console.ifError();
+            }
             memory.loadProgram(data1, base);
         };
 
