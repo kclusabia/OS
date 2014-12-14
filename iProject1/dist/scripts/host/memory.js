@@ -134,7 +134,7 @@ var TSOS;
         Memory.prototype.getWholeBlock = function (base) {
             var first = "";
             var second;
-            for (var i = 0; i < (base + 256); i++) {
+            for (var i = base; i < (base + 256); i++) {
                 second = _MemoryArray[i];
                 if (second.length == 1) {
                     first += "0" + second;
