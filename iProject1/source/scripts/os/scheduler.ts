@@ -58,19 +58,16 @@ module TSOS {
                 if(process.getState() == "terminated"){
                     this.rr();
                 }
-
-                if (process.getLocation() == "disk") {
+                if (process.getLocation() == "disk" && process.getState() != "terminated") {
                     _Kernel.contextSwitchRR();
                     return;
                 }
-
-                if(process.getLocation() == "memory"){
+                if(process.getLocation() == "memory" && process.getState() != "terminated"){
                     process.setState(1);
                     _CPU.beginProcess(process);
                     _Kernel.krnTrace("\nPROCESSING PID: "+process.getPID()+"\n");
                     Shell.updateRes();
                 }
-
             }else if ((process.getState() != "terminated") && readyQueue.isEmpty()) {
                 return;
             }
