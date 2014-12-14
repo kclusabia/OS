@@ -280,13 +280,17 @@ module TSOS {
 
 
         public getNextAvailableBlock(){
-            var index:number = residentQueue.indexOf(process);
-                index =  (index - 3);
-            if(index < 0){
-                var residentIndex:number = residentQueue.indexOf(process);
-                index = (residentQueue.length-3) + Math.abs(residentIndex);
+            var spot:number = residentQueue.indexOf(process);
+            var next:TSOS.ProcessControlBlock = residentQueue[spot];
+            while(next.getLocation() != "memory"){
+                spot++;
+                if(spot >= residentQueue.length){
+                    spot = 0;
+                }
+                next = residentQueue[spot];
             }
-            return residentQueue[index];
+            next = residentQueue[spot];
+            return next;
         }
 
         /**

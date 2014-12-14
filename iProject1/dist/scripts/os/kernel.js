@@ -266,13 +266,17 @@ var TSOS;
         };
 
         Kernel.prototype.getNextAvailableBlock = function () {
-            var index = residentQueue.indexOf(process);
-            index = (index - 3);
-            if (index < 0) {
-                var residentIndex = residentQueue.indexOf(process);
-                index = (residentQueue.length - 3) + Math.abs(residentIndex);
+            var spot = residentQueue.indexOf(process);
+            var next = residentQueue[spot];
+            while (next.getLocation() != "memory") {
+                spot++;
+                if (spot >= residentQueue.length) {
+                    spot = 0;
+                }
+                next = residentQueue[spot];
             }
-            return residentQueue[index];
+            next = residentQueue[spot];
+            return next;
         };
 
         /**
