@@ -54,11 +54,11 @@ var TSOS;
                 if (process.getState() == "terminated") {
                     this.rr();
                 }
-                if (process.getLocation() == "disk" && process.getState() != "terminated") {
+                if (process.getLocation() == "disk") {
                     _Kernel.contextSwitchRR();
                     return;
                 }
-                if (process.getLocation() == "memory" && process.getState() != "terminated") {
+                if (process.getLocation() == "memory") {
                     process.setState(1);
                     _CPU.beginProcess(process);
                     _Kernel.krnTrace("\nPROCESSING PID: " + process.getPID() + "\n");
