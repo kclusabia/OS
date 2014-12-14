@@ -239,8 +239,8 @@ module TSOS {
         public putInMoreBlocks(startKey,paddedContents:string){
 
             var howMany:number = Math.ceil((paddedContents.length) / (this.dataSize));
-            var totalAddresses = new Array();
-            totalAddresses = this.getTotalAddresses(startKey,(howMany-1));
+            var st = this.createNewKey(startKey);
+            var totalAddresses = this.getTotalAddresses(st,(howMany-1));
 
             var first:number = 0;
             var last:number = this.dataSize;
@@ -254,12 +254,11 @@ module TSOS {
                 if (i + 1 < totalAddresses.length) {
                     var nextKey = this.createNewKey(totalAddresses[i + 1]);
                     sessionStorage.setItem(key, "1"+nextKey + data);
+                    this.updateFileSystem();
                 } else {
                     var pad = this.addZeros(data,this.dataSize);
                     sessionStorage.setItem(key, "1---" + pad);
-                }
-
-                if(last == paddedContents.length){
+                    this.updateFileSystem();
                     break;
                 }
 
@@ -365,14 +364,12 @@ module TSOS {
                         var DirKey = data.slice(1, 4);
                         if (DirKey == "---") {
                             data1 = data.slice(4, data.length);
-                           // str += data1;
                             stringData = this.convertToString(data1.toString());
                             _StdOut.putText(stringData);
                             _Console.advanceLine();
                             return;
                         } else {
                             data1 = data.slice(4, data.length);
-                          //  str += data1;
                             stringData = this.convertToString(data1.toString());
                             _StdOut.putText(stringData);
                         }
@@ -427,26 +424,19 @@ module TSOS {
         // Called for ls command
         public filesOnDisk() {
             var t = 0;
-            var files: string [] = new Array();
             for (var s = 0; s < this.sectorSize; s++) {
-                for (var b = 1; b < this.blockSize; b++) {
+                for (var b = 0; b < this.blockSize; b++) {
                     var newKey = this.createKey(t, s, b);
                     var metadata = sessionStorage.getItem(newKey);
                     var metaindex = metadata.slice(0, 1);
-                    var fn = metadata.slice(4, this.metaDataSize);
+                    var fn = metadata.slice(4, metadata.length);
                     var stringFilename = this.convertToString(fn);
-                  //  paddedFN = this.addZeros(stringFilename, (this.metaDataSize - 4));
                     if (metaindex == "1") {
-                        files.push(stringFilename);         // If there is a content, push the filename in array.
-//                        break;
+                        _StdOut.putText(newKey+": "+stringFilename);
+                        _Console.advanceLine();
                     }
                 }
             }
-            for(var i=0; i<files.length; i++) {
-                _StdOut.putText("File "+ [i] + ": " + files[i]);
-                _Console.advanceLine();
-            }
-            this.updateFileSystem();
         }
 
         public convertToHex(stringName:string):string {

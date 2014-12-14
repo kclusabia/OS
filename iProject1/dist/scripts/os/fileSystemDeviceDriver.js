@@ -29,7 +29,6 @@ var TSOS;
         FileSystemDeviceDriver.prototype.bb = function () {
         };
 
-        //TODO DONE
         FileSystemDeviceDriver.prototype.toPrint = function () {
             var zeros = "";
             for (var i = 0; i < this.metaDataSize; i++) {
@@ -47,7 +46,6 @@ var TSOS;
             this.updateFileSystem();
         };
 
-        //TODO need or no?
         FileSystemDeviceDriver.prototype.printMBR = function () {
             var mbr = this.createKey(0, 0, 0);
             var str = "Infinite OS";
@@ -90,13 +88,11 @@ var TSOS;
 
         FileSystemDeviceDriver.prototype.updateFileSystem = function () {
             var fileSystemTable = "<table>";
-
             for (var t = 0; t < this.trackSize; t++) {
                 for (var s = 0; s < this.sectorSize; s++) {
                     for (var b = 0; b < this.blockSize; b++) {
                         // TSB block acts as the key.
                         var key = this.createKey(t, s, b);
-
                         var metaData = sessionStorage.getItem(key);
                         var meta = metaData.substring(0, 4);
                         var data = metaData.substring(4, this.metaDataSize);
@@ -194,7 +190,6 @@ var TSOS;
         FileSystemDeviceDriver.prototype.getDuplicate = function (filename) {
             var t = 0;
             var key;
-
             for (var s = 0; s < this.sectorSize; s++) {
                 for (var b = 0; b < this.blockSize; b++) {
                     key = this.createKey(t, s, b);
@@ -219,13 +214,10 @@ var TSOS;
                 _StdOut.putText("File cannot be found.");
                 return;
             }
-
             var data = sessionStorage.getItem(key);
             var indexDir = data.slice(1, 4);
             var dataInHex;
-
             dataInHex = this.convertToHex(contents.toString());
-
             if (dataInHex.length > (this.dataSize)) {
                 this.putInMoreBlocks(indexDir, dataInHex);
                 this.updateFileSystem();
@@ -237,7 +229,6 @@ var TSOS;
             }
         };
 
-        //TODO DONE??  putMoreBlocks
         /**
         * If contents is > 60 bytes, they remaining contents gets put in the next block.
         * @param startKey
@@ -245,8 +236,8 @@ var TSOS;
         */
         FileSystemDeviceDriver.prototype.putInMoreBlocks = function (startKey, paddedContents) {
             var howMany = Math.ceil((paddedContents.length) / (this.dataSize));
-            var totalAddresses = new Array();
-            totalAddresses = this.getTotalAddresses(startKey, (howMany - 1));
+            var st = this.createNewKey(startKey);
+            var totalAddresses = this.getTotalAddresses(st, (howMany - 1));
 
             var first = 0;
             var last = this.dataSize;
@@ -259,12 +250,11 @@ var TSOS;
                 if (i + 1 < totalAddresses.length) {
                     var nextKey = this.createNewKey(totalAddresses[i + 1]);
                     sessionStorage.setItem(key, "1" + nextKey + data);
+                    this.updateFileSystem();
                 } else {
                     var pad = this.addZeros(data, this.dataSize);
                     sessionStorage.setItem(key, "1---" + pad);
-                }
-
-                if (last == paddedContents.length) {
+                    this.updateFileSystem();
                     break;
                 }
 
@@ -340,15 +330,20 @@ var TSOS;
                 return;
             }
             if (wholeData == "---") {
+                // If there is no chaining, meaning contents is <= 60 bytes.
                 var a = sessionStorage.getItem(wholeData);
                 _StdOut.putText(this.convertToString(a.slice(4, a.length).toString()));
             } else {
+                // If contents is > 60 bytes
                 this.indexWithContents(wholeData);
             }
             this.updateFileSystem();
         };
 
-        //TODO startPrinting DONE
+        /**
+        * Gets all the address where the contents are written
+        * @param index
+        */
         FileSystemDeviceDriver.prototype.indexWithContents = function (index) {
             var str = "";
             var data1;
@@ -361,16 +356,12 @@ var TSOS;
                         var DirKey = data.slice(1, 4);
                         if (DirKey == "---") {
                             data1 = data.slice(4, data.length);
-
-                            // str += data1;
                             stringData = this.convertToString(data1.toString());
                             _StdOut.putText(stringData);
                             _Console.advanceLine();
                             return;
                         } else {
                             data1 = data.slice(4, data.length);
-
-                            //  str += data1;
                             stringData = this.convertToString(data1.toString());
                             _StdOut.putText(stringData);
                         }
@@ -397,12 +388,11 @@ var TSOS;
                 }
                 sessionStorage.setItem(readKey, empty);
             } else {
-                _StdOut.putText("cannot find the file: " + file);
+                _StdOut.putText("Cannot find the file: " + file);
             }
             this.updateFileSystem();
         };
 
-        //TODo Done startDeleting
         FileSystemDeviceDriver.prototype.deleteAllContents = function (startKey, empty) {
             for (var t = startKey.charAt(0); t < this.trackSize; t++) {
                 for (var s = startKey.charAt(1); s < this.sectorSize; s++) {
@@ -410,7 +400,6 @@ var TSOS;
                         var key = this.createKey(t, s, b);
                         var data = sessionStorage.getItem(key);
                         var DirKey = data.slice(1, 4);
-
                         if (DirKey == "---") {
                             sessionStorage.setItem(key, empty);
                             return;
@@ -427,28 +416,19 @@ var TSOS;
         // Called for ls command
         FileSystemDeviceDriver.prototype.filesOnDisk = function () {
             var t = 0;
-            var files = new Array();
-
             for (var s = 0; s < this.sectorSize; s++) {
-                for (var b = 1; b < this.blockSize; b++) {
+                for (var b = 0; b < this.blockSize; b++) {
                     var newKey = this.createKey(t, s, b);
                     var metadata = sessionStorage.getItem(newKey);
                     var metaindex = metadata.slice(0, 1);
-                    var fn = metadata.slice(4, this.metaDataSize);
+                    var fn = metadata.slice(4, metadata.length);
                     var stringFilename = this.convertToString(fn);
-
-                    //  paddedFN = this.addZeros(stringFilename, (this.metaDataSize - 4));
                     if (metaindex == "1") {
-                        files.push(stringFilename); // If there is a content, push the filename in array.
-                        //                        break;
+                        _StdOut.putText(newKey + ": " + stringFilename);
+                        _Console.advanceLine();
                     }
                 }
             }
-            for (var i = 0; i < files.length; i++) {
-                _StdOut.putText("File " + [i] + ": " + files[i]);
-                _Console.advanceLine();
-            }
-            this.updateFileSystem();
         };
 
         FileSystemDeviceDriver.prototype.convertToHex = function (stringName) {
@@ -481,7 +461,6 @@ var TSOS;
             this.write(newFile, contents);
         };
 
-        //TODO getFileContents DONE
         // Chaining occurs
         FileSystemDeviceDriver.prototype.getNextAddress = function (filename) {
             var key;
@@ -565,7 +544,6 @@ var TSOS;
             }
         };
 
-        //TODO DONE
         FileSystemDeviceDriver.prototype.rollIn = function (currentp, nextp) {
             var currentContents;
             var allData;
@@ -596,7 +574,6 @@ var TSOS;
             this.updateFileSystem();
         };
 
-        //TODO grabAllHex DONE
         FileSystemDeviceDriver.prototype.getAllContents = function (ind) {
             var key;
             var data1;
