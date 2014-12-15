@@ -14,6 +14,8 @@ var TSOS;
             if (process.getProcessBase() + index >= process.getProcessLimit + index || process.getProcessBase() + index < process.getProcessBase) {
                 _Console.ifError();
             }
+
+            //            return memory.readMem(parseInt(index + process.getProcessBase()));
             return memory.readMem(parseInt(index + process.getProcessBase()));
         };
 
