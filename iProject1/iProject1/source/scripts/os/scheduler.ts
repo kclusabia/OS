@@ -23,7 +23,6 @@ module TSOS {
 
                 //if terminated, get the next process
                 if(process.getState() == "terminated"){
-                    alert("hi");
                     process.setLocation("black-hole");
                     this.fcfs();
                 }

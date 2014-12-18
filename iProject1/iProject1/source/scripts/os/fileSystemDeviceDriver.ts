@@ -1,74 +1,72 @@
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
 /**
-* Created by kara2 on 11/16/14.
-*/
-var TSOS;
-(function (TSOS) {
-    var FileSystemDeviceDriver = (function (_super) {
-        __extends(FileSystemDeviceDriver, _super);
-        function FileSystemDeviceDriver() {
-            _super.call(this, this.aa, this.bb);
+ * Created by kara2 on 11/16/14.
+ */
+module TSOS {
+    export class FileSystemDeviceDriver extends DeviceDriver {
+        public trackSize:number;
+        public sectorSize:number;
+        public blockSize:number;
+        public metaDataSize:number;
+        public dataSize:number;
+        public isFormatted:boolean;
+
+        constructor() {
+            super(this.aa, this.bb);
         }
+
         /**
-        * Implementing it like the device driver
-        */
-        FileSystemDeviceDriver.prototype.aa = function () {
+         * Implementing it like the device driver
+         */
+        public aa() {
             this.trackSize = 4;
             this.sectorSize = 8;
             this.blockSize = 8;
             this.metaDataSize = 64;
             this.dataSize = 60;
             this.isFormatted = false;
-        };
+    }
 
-        FileSystemDeviceDriver.prototype.bb = function () {
-        };
+        public bb() {
+        }
 
-        FileSystemDeviceDriver.prototype.toPrint = function () {
+        public toPrint():string {
             var zeros = "";
             for (var i = 0; i < this.metaDataSize; i++) {
                 zeros += "0";
             }
             return zeros;
-        };
+        }
 
-        FileSystemDeviceDriver.prototype.createMBR = function () {
+        public createMBR() {
             var mbr = this.createKey(0, 0, 0);
             var str = "Infinite OS";
             var mbrData = "";
             mbrData = "1---" + this.addZeros(this.convertToHex(str), (this.metaDataSize - 4));
             sessionStorage.setItem(mbr, mbrData);
             this.updateFileSystem();
-        };
+        }
 
-        FileSystemDeviceDriver.prototype.printMBR = function () {
+        public printMBR() {
             var mbr = this.createKey(0, 0, 0);
             var str = "Infinite OS";
             var mbrData = "1---" + this.addZeros(this.convertToHex(str), (this.metaDataSize - 4));
             _StdOut.putText(mbrData);
             alert(mbrData);
-        };
+        }
 
         // Also checks if the file system was formatted or not.
-        FileSystemDeviceDriver.prototype.format = function () {
+        public format() {
             this.createFileSystem();
             this.createMBR();
             _StdOut.putText("Formatting...done!");
             this.isFormatted = true;
-        };
+        }
 
-        FileSystemDeviceDriver.prototype.createFileSystem = function () {
+        public createFileSystem() {
             var fileSystemTable = "<table>";
-
             for (var t = 0; t < this.trackSize; t++) {
                 for (var s = 0; s < this.sectorSize; s++) {
                     for (var b = 0; b < this.blockSize; b++) {
-                        // TSB block acts as the key.
                         var key = this.createKey(t, s, b);
 
                         var _metaData = this.toPrint();
@@ -84,14 +82,13 @@ var TSOS;
                 }
             }
             document.getElementById("fileSystemTable").innerHTML = fileSystemTable + "</table>";
-        };
+        }
 
-        FileSystemDeviceDriver.prototype.updateFileSystem = function () {
+        public updateFileSystem() {
             var fileSystemTable = "<table>";
             for (var t = 0; t < this.trackSize; t++) {
                 for (var s = 0; s < this.sectorSize; s++) {
                     for (var b = 0; b < this.blockSize; b++) {
-                        // TSB block acts as the key.
                         var key = this.createKey(t, s, b);
                         var metaData = sessionStorage.getItem(key);
                         var meta = metaData.substring(0, 4);
@@ -99,43 +96,44 @@ var TSOS;
                         fileSystemTable += "<tr><td>" + t + s + b;
                         fileSystemTable += "<td>" + meta + "<td>" + data;
                         fileSystemTable += "</td></tr>";
+
                     }
                 }
             }
             document.getElementById("fileSystemTable").innerHTML = fileSystemTable + "</table>";
-        };
+        }
 
-        FileSystemDeviceDriver.prototype.createKey = function (t, s, b) {
+        public createKey(t, s, b) {
             return String(t) + String(s) + String(b);
-        };
+        }
 
         /**
-        * Gets the free directory block to create files in disk.
-        * @returns {string}
-        */
-        FileSystemDeviceDriver.prototype.getAvailMetaDir = function (file) {
+         * Gets the free directory block to create files in disk.
+         * @returns {string}
+         */
+        public getAvailMetaDir(file):string {
             for (var t = 0; t < 1; t++) {
                 for (var s = 0; s < this.sectorSize; s++) {
                     for (var b = 0; b < this.blockSize; b++) {
                         var key = this.createKey(t, s, b);
                         var metadata = sessionStorage.getItem(key);
-                        var meta = metadata.slice(0, 1);
-                        var data = metadata.slice(4, metadata.length);
-                        if ((file == data)) {
+                        var meta = metadata.slice(0,1);
+                        var data = metadata.slice(4,metadata.length);
+                        if((file == data)){
                             return "-1";
-                        } else if (meta == "0") {
+                        }else if (meta == "0") {
                             return key;
                         }
                     }
                 }
             }
-        };
+        }
 
         /**
-        * Gets the free data block, so contents can be written in.
-        * @returns {string}
-        */
-        FileSystemDeviceDriver.prototype.getAvailMetaData = function () {
+         * Gets the free data block, so contents can be written in.
+         * @returns {string}
+         */
+        public getAvailMetaData():string {
             for (var t = 1; t < 4; t++) {
                 for (var s = 0; s < this.sectorSize; s++) {
                     for (var b = 0; b < this.blockSize; b++) {
@@ -147,117 +145,119 @@ var TSOS;
                     }
                 }
             }
-        };
+        }
 
         // Checks if the file system was formatted or not
-        FileSystemDeviceDriver.prototype.isFormatted = function () {
+        public isFormatted():boolean{
             return this.isFormatted;
-        };
+        }
 
-        FileSystemDeviceDriver.prototype.create = function (filename) {
+        public create(filename:string) {
             var hex = this.convertToHex(filename);
             var pad = this.addZeros(hex, this.dataSize);
             var metaKey = this.getAvailMetaDir(pad);
             var zero = this.addAllZeros(this.dataSize);
-            if (metaKey == "-1") {
-                _StdOut.putText("File name already exist: " + filename);
+            if(metaKey == "-1"){
+                _StdOut.putText("File name already exist: "+filename);
                 return;
             }
             var metaIndex = this.getAvailMetaData();
-            sessionStorage.setItem(metaKey, "1" + metaIndex + pad); //create the file with the address of its contents
-            sessionStorage.setItem(metaIndex, "1---" + zero); //no more chaining of contents
+            sessionStorage.setItem(metaKey, "1"+metaIndex+pad);         //create the file with the address of its contents
+            sessionStorage.setItem(metaIndex,"1---"+zero);              //no more chaining of contents
             this.updateFileSystem();
             var processFile = "processfile";
-            var hidden = filename.slice(0, 11);
-            if (hidden != processFile) {
+            var hidden = filename.slice(0,11);                  // (0, 11) represents the string processfile
+            if(hidden != processFile){
                 _StdOut.putText("Created the file called: " + filename);
             }
             this.updateFileSystem();
-        };
+        }
 
-        FileSystemDeviceDriver.prototype.createNewKey = function (key) {
+        public createNewKey(key){
             var t = key.charAt(0);
             var s = key.charAt(1);
             var b = key.charAt(2);
-            return this.createKey(t, s, b);
-        };
+            return this.createKey(t,s,b);
+        }
 
         /**
-        * Cannot have a duplicated filename.
-        * @param filename
-        * @returns {string}
-        */
+         * Cannot have a duplicated filename.
+         * @param filename
+         * @returns {string}
+         */
         //TODO
-        FileSystemDeviceDriver.prototype.getDuplicate = function (filename) {
+        public getDuplicate(filename:string){
             var t = 0;
             var key;
-            for (var s = 0; s < this.sectorSize; s++) {
+            for(var s = 0; s<this.sectorSize;s++) {
                 for (var b = 0; b < this.blockSize; b++) {
-                    key = this.createKey(t, s, b);
-                    var data = sessionStorage.getItem(key);
-                    var meta = data.slice(0, 1);
-                    var hexData = data.slice(4, this.metaDataSize);
-                    if ((filename == hexData) && (meta == "1")) {
+                    key = this.createKey(t,s,b);
+                    var data:string = sessionStorage.getItem(key);
+                    var meta = data.slice(0,1);
+                    var hexData:string = data.slice(4,this.metaDataSize);
+                    if((filename == hexData) && (meta == "1")){
                         //found duplicate and in use...
                         return key;
                     }
                 }
             }
             return "-1";
-        };
+        }
 
-        FileSystemDeviceDriver.prototype.write = function (file, contents) {
+        public write(file, contents) {
             var fileInHex = this.convertToHex(file.toString());
             var hexFilePadded = this.addZeros(fileInHex, this.dataSize);
             var key = this.getDuplicate(hexFilePadded);
 
-            if (key == "-1") {
+            if(key == "-1"){
                 _StdOut.putText("File cannot be found.");
                 return;
             }
             var data = sessionStorage.getItem(key);
             var indexDir = data.slice(1, 4);
+            var len = contents.length;
             var dataInHex = this.convertToHex(contents.toString());
+            var len1 = dataInHex.length;
             if (dataInHex.length > (this.dataSize)) {
                 this.putInMoreBlocks(indexDir, dataInHex);
                 this.updateFileSystem();
-            } else {
+            }
+            else {
                 var paddedHex = this.addZeros(dataInHex, this.dataSize);
                 sessionStorage.setItem(indexDir, "1---" + paddedHex);
                 _StdOut.putText("Contents were written on file.");
                 this.updateFileSystem();
             }
-        };
+        }
 
         /**
-        * If contents is > 60 bytes, they remaining contents gets put in the next block.
-        * @param startKey
-        * @param paddedContents
-        */
-        FileSystemDeviceDriver.prototype.putInMoreBlocks = function (startKey, paddedContents) {
-            var howMany = Math.ceil((paddedContents.length) / (this.dataSize));
+         * If contents is > 60 bytes, they remaining contents gets put in the next block.
+         * @param startKey
+         * @param paddedContents
+         */
+        public putInMoreBlocks(startKey,paddedContents:string){
+            var howMany:number = Math.ceil((paddedContents.length) / (this.dataSize));
             var st = this.createNewKey(startKey);
-            var totalAddresses = this.getTotalAddresses(st, (howMany - 1));
-
-            var first = 0;
-            var last = this.dataSize;
-            var data = "";
-
-            for (var i = 0; i < totalAddresses.length; i++) {
+            var totalAddresses = this.getTotalAddresses(st,(howMany-1));
+            var first:number = 0;
+            var last:number = this.dataSize;
+            var data:string = "";
+            for(var i = 0; i < totalAddresses.length;i++) {
                 data = paddedContents.slice(first, last);
                 var key = this.createNewKey(totalAddresses[i]);
-
                 if (i + 1 < totalAddresses.length) {
                     var nextKey = this.createNewKey(totalAddresses[i + 1]);
-                    sessionStorage.setItem(key, "1" + nextKey + data);
+                    sessionStorage.setItem(key, "1"+nextKey + data);
                     this.updateFileSystem();
                 } else {
-                    var pad = this.addZeros(data, this.dataSize);
+                    var pad = this.addZeros(data,this.dataSize);
                     sessionStorage.setItem(key, "1---" + pad);
                     this.updateFileSystem();
                     break;
                 }
-
+                if(last == paddedContents.length){
+                    break;
+                }
                 if ((last + this.dataSize) > (paddedContents.length)) {
                     first = last;
                     last = (paddedContents.length);
@@ -266,88 +266,89 @@ var TSOS;
                     last = (last + this.dataSize);
                 }
             }
-        };
+        }
 
-        FileSystemDeviceDriver.prototype.getTotalAddresses = function (startKey, end) {
+        public getTotalAddresses(startKey, end){
             var addressArray = new Array();
-            var done = false;
+            var done:boolean = false;
             addressArray.push(startKey);
-
-            for (var t = 1; t < this.trackSize; t++) {
+            for(var t = 1; t<this.trackSize; t++) {
                 for (var s = 0; s < this.sectorSize; s++) {
                     for (var b = 0; b < this.blockSize; b++) {
                         var key = this.createKey(t, s, b);
                         var data = sessionStorage.getItem(key);
                         var meta = data.slice(0, 1);
-
-                        if ((key == "377") && (addressArray.length < (end))) {
+                        if((key == "377") && (addressArray.length < (end))){
                             _StdOut.putText("File System is full.");
                             return;
                         }
                         if (meta == "0") {
                             addressArray.push(key);
-                            if (addressArray.length == (end)) {
+                            if(addressArray.length == (end)){
                                 done = true;
                                 break;
                             }
                         }
                     }
-                    if (done) {
+                    if(done){
                         break;
                     }
                 }
-                if (done) {
+                if(done){
                     break;
                 }
             }
             return addressArray;
-        };
+        }
 
-        FileSystemDeviceDriver.prototype.getFileDir = function (filename) {
+        public getFileDir(filename){
+
             for (var t = 0; t < 1; t++) {
                 for (var s = 0; s < this.sectorSize; s++) {
                     for (var b = 0; b < this.blockSize; b++) {
                         var key = this.createKey(t, s, b);
                         var metadata = sessionStorage.getItem(key);
-                        var meta = metadata.slice(0, 1);
-                        var nextMeta = metadata.slice(1, 4);
-                        var data = metadata.slice(4, metadata.length);
-                        if ((filename == data) && meta == "1") {
+                        var meta = metadata.slice(0,1);
+                        var nextMeta= metadata.slice(1,4);
+                        var data = metadata.slice(4,metadata.length);
+                        if((filename == data) && meta == "1"){
                             return nextMeta;
                         }
                     }
                 }
             }
-        };
+        }
 
-        FileSystemDeviceDriver.prototype.read = function (file) {
+        public read(file:string) {
+
             var filename = this.convertToHex(file.toString());
-            var padName = this.addZeros(filename, this.dataSize);
+            var padName = this.addZeros(filename,this.dataSize);
             var wholeData = this.getFileDir(padName);
 
-            if (wholeData == "-1") {
+            if(wholeData == "-1"){
                 _StdOut.putText("File cannot be found");
                 return;
             }
-            if (wholeData == "---") {
+            if(wholeData == "---"){
                 // If there is no chaining, meaning contents is <= 60 bytes.
                 var a = sessionStorage.getItem(wholeData);
-                _StdOut.putText(this.convertToString(a.slice(4, a.length).toString()));
-            } else {
+                _StdOut.putText(this.convertToString(a.slice(4,a.length).toString()));
+            }
+            else{
                 // If contents is > 60 bytes
                 this.indexWithContents(wholeData);
             }
             this.updateFileSystem();
-        };
+        }
 
         /**
-        * Gets all the address where the contents are written
-        * @param index
-        */
-        FileSystemDeviceDriver.prototype.indexWithContents = function (index) {
+         * Gets all the address where the contents are written
+         * @param index
+         */
+        public indexWithContents(index){
             var str = "";
             var data1;
-            var stringData;
+            var stringData:string;
             for (var t = index.charAt(0); t < this.trackSize; t++) {
                 for (var s = index.charAt(1); s < this.sectorSize; s++) {
                     for (var b = index.charAt(2); b < this.blockSize; b++) {
@@ -369,31 +370,31 @@ var TSOS;
                     }
                 }
             }
-        };
+        }
 
-        FileSystemDeviceDriver.prototype.deleteFile = function (file) {
+        public deleteFile(file:string) {
             var t = 0;
             var empty = this.addAllZeros(this.metaDataSize);
             var contents = this.convertToHex(file);
-            var paddedFN = this.addZeros(contents, this.dataSize);
-            var readKey = this.getNextAddress(paddedFN);
-            if (readKey != "-1") {
+            var paddedFN = this.addZeros(contents,this.dataSize);
+            var readKey =  this.getNextAddress(paddedFN);
+            if(readKey != "-1"){
                 //found the file-name now delete its contents.
                 var filecontents = sessionStorage.getItem(readKey);
-                var meta = filecontents.slice(1, 4);
-                if (meta == "---") {
-                    _StdOut.putText("Deleted file: " + file);
-                } else {
-                    this.deleteAllContents(readKey, empty);
+                var meta = filecontents.slice(1,4);
+                if(meta == "---"){ // was meta == "---"
+                    _StdOut.putText("Deleted file: "+file);
+                }else{
+                    this.deleteAllContents(readKey,empty);
                 }
-                sessionStorage.setItem(readKey, empty);
-            } else {
-                _StdOut.putText("Cannot find the file: " + file);
+                sessionStorage.setItem(readKey,empty);
+            }else{
+                _StdOut.putText("Cannot find the file: "+file);
             }
             this.updateFileSystem();
-        };
+        }
 
-        FileSystemDeviceDriver.prototype.deleteAllContents = function (startKey, empty) {
+        public deleteAllContents(startKey,empty){
             for (var t = startKey.charAt(0); t < this.trackSize; t++) {
                 for (var s = startKey.charAt(1); s < this.sectorSize; s++) {
                     for (var b = startKey.charAt(2); b < this.blockSize; b++) {
@@ -401,19 +402,19 @@ var TSOS;
                         var data = sessionStorage.getItem(key);
                         var DirKey = data.slice(1, 4);
                         if (DirKey == "---") {
-                            sessionStorage.setItem(key, empty);
+                            sessionStorage.setItem(key,empty);
                             return;
                         } else {
-                            sessionStorage.setItem(key, empty);
+                            sessionStorage.setItem(key,empty);
                         }
                         startKey = DirKey;
                     }
                 }
             }
-        };
+        }
 
         // Called for ls command
-        FileSystemDeviceDriver.prototype.filesOnDisk = function () {
+        public filesOnDisk() {
             var t = 0;
             for (var s = 0; s < this.sectorSize; s++) {
                 for (var b = 0; b < this.blockSize; b++) {
@@ -423,101 +424,102 @@ var TSOS;
                     var fn = metadata.slice(4, metadata.length);
                     var stringFilename = this.convertToString(fn);
                     if (metaindex == "1") {
-                        _StdOut.putText(newKey + ": " + stringFilename);
+                        _StdOut.putText(newKey+": "+stringFilename);
                         _Console.advanceLine();
                     }
                 }
             }
-        };
+        }
 
-        FileSystemDeviceDriver.prototype.convertToHex = function (stringName) {
-            var str = "";
-            for (var i = 0; i < stringName.length; i++) {
+        public convertToHex(stringName:string):string {
+            var str:string = "";
+            for(var i=0; i<stringName.length; i++) {
                 str += stringName.charCodeAt(i).toString(16);
             }
             return str;
-        };
+        }
 
-        FileSystemDeviceDriver.prototype.convertToString = function (hexValue) {
-            var hex = "";
-            for (var i = 0; i < hexValue.length; i++) {
+        public convertToString(hexValue:string):string {
+            var hex:string = "";
+            for(var i=0; i<hexValue.length; i++) {
                 var a = hexValue.charAt(i);
-                var b = hexValue.charAt(i + 1);
-                hex += String.fromCharCode(parseInt((a + b), 16)).toString();
+                var b = hexValue.charAt(i+1);
+                hex += String.fromCharCode(parseInt((a+b),16)).toString();
                 i++;
             }
             return hex;
-        };
+        }
 
         /**
-        * Rolls the process out of memory
-        * @param program
-        * @param contents
-        */
-        FileSystemDeviceDriver.prototype.rollOut = function (program, contents) {
-            var newFile = "processfile" + program.getPID();
+         * Rolls the process out of memory
+         * @param program
+         * @param contents
+         */
+        public rollOut(program,contents){
+            var newFile = "processfile"+program.getPID();
             this.create(newFile);
-            this.write(newFile, contents);
-        };
+            this.write(newFile,contents);
+        }
 
         // Chaining occurs
-        FileSystemDeviceDriver.prototype.getNextAddress = function (filename) {
+        public getNextAddress(filename){
             var key;
             var t = 0;
             var allZero = this.addAllZeros(this.metaDataSize);
-            for (var s = 0; s < this.sectorSize; s++) {
+            for(var s = 0; s<this.sectorSize;s++) {
                 for (var b = 0; b < this.blockSize; b++) {
-                    key = this.createKey(t, s, b);
-                    var metaData = sessionStorage.getItem(key);
-                    var notAvail = metaData.slice(0, 1);
-                    var addr = metaData.slice(1, 4);
-                    var hexData = metaData.slice(4, metaData.length);
-                    if ((filename == hexData) && (notAvail == "1")) {
-                        sessionStorage.setItem(key, allZero);
+                    key = this.createKey(t,s,b);
+                    var metaData:string = sessionStorage.getItem(key);
+                    var notAvail = metaData.slice(0,1);
+                    var addr = metaData.slice(1,4);
+                    var hexData:string = metaData.slice(4,metaData.length);
+                    if((filename == hexData) && (notAvail == "1")){
+                        sessionStorage.setItem(key,allZero);
                         return addr;
                     }
                 }
             }
             return "-1";
-        };
+        }
 
-        FileSystemDeviceDriver.prototype.loadFromDisk = function (processOnDisk, newBase) {
+        public loadFromDisk(processOnDisk, newBase){
             var zeroData = this.addAllZeros(this.metaDataSize);
-            var filename = "processfile" + processOnDisk.getPID();
+            var filename = "processfile"+processOnDisk.getPID();
             var fileHex = this.convertToHex(filename.toString());
-            var padFile = this.addZeros(fileHex, this.dataSize);
+            var padFile = this.addZeros(fileHex,this.dataSize);
             var dataIndex = this.getNextAddress(padFile);
             var data = this.getProgramContents(dataIndex);
 
-            sessionStorage.setItem(dataIndex, zeroData);
+            sessionStorage.setItem(dataIndex,zeroData);
             processOnDisk.setProcessBase(newBase);
-            processOnDisk.setProcessLimit((newBase + 255));
-            TSOS.Shell.updateRes();
-            memoryMngr.loadWithoutSpaces(data.toString(), processOnDisk.getProcessBase());
+            processOnDisk.setProcessLimit((newBase+255));
+            Shell.updateRes();
+            memoryMngr.loadWithoutSpaces(data.toString(),processOnDisk.getProcessBase());
             this.updateFileSystem();
             memoryMngr.updateMemory();
-        };
+        }
 
-        FileSystemDeviceDriver.prototype.getProgramContents = function (index) {
+        public getProgramContents(index){
             var value = "";
             var key;
-            var data;
+            var data :string;
             var nextKey;
             var zeroData = this.addAllZeros(this.metaDataSize);
-            var toLeave = false;
+            var toLeave:boolean = false;
             var dataData;
             var changeString;
-            for (var t = index.charAt(0); t < this.trackSize; t++) {
-                for (var s = index.charAt(1); s < this.sectorSize; s++) {
-                    for (var b = index.charAt(2); b < this.blockSize; b++) {
+            for (var t:number = index.charAt(0); t < this.trackSize; t++) {
+                for (var s:number = index.charAt(1); s < this.sectorSize; s++) {
+                    for (var b:number = index.charAt(2); b < this.blockSize; b++) {
+
                         key = this.createNewKey(index);
                         data = sessionStorage.getItem(key);
                         nextKey = data.slice(1, 4);
-                        dataData = data.slice(4, data.length);
+                        dataData = data.slice(4,data.length);
                         if (nextKey == "---") {
                             changeString = this.convertToString(dataData);
                             value += changeString;
-                            sessionStorage.setItem(key, zeroData); //replace with zeros
+                            sessionStorage.setItem(key, zeroData);//replace with zeros
                             this.updateFileSystem();
                             toLeave = true;
                             break;
@@ -529,67 +531,68 @@ var TSOS;
                         }
                         index = nextKey;
                     }
-                    if (toLeave) {
+                    if(toLeave){
                         break;
                     }
                 }
-                if (toLeave) {
+                if(toLeave){
                     break;
                 }
             }
-            if (toLeave) {
+            if(toLeave){
                 return value;
             }
-        };
+        }
 
-        FileSystemDeviceDriver.prototype.rollIn = function (currentp, nextp) {
-            var currentContents;
-            var allData;
+        public rollIn(currentp, nextp){
+            var currentContents : string;
+            var allData:string;
             var allZero = this.addAllZeros(this.metaDataSize);
-            var fileOnDisk = "processfile" + currentp.getPID();
+            var fileOnDisk = "processfile"+currentp.getPID();
             var contentsInHex = this.convertToHex(fileOnDisk.toString());
-            var paddedContents = this.addZeros(contentsInHex, this.dataSize);
+            var paddedContents = this.addZeros(contentsInHex,this.dataSize);
             var index = this.addZeroContents(paddedContents);
-            allData = this.getProgramContents(index);
-            sessionStorage.setItem(index, allZero); // Going from disk to memory, so delete the file in disk
+                allData = this.getProgramContents(index);
+            sessionStorage.setItem(index,allZero);              // Going from disk to memory, so delete the file in disk
             currentp.setProcessBase(nextp.getProcessBase());
             currentp.setProcessLimit(nextp.getProcessLimit());
             currentp.setState(1);
             currentp.setLocation("memory");
-            TSOS.Shell.updateRes();
-            if (nextp.getState() == "terminated") {
+            Shell.updateRes();
+            if(nextp.getState() == "terminated"){
                 nextp.setLocation("black-hole");
-            } else {
-                fileOnDisk = "processfile" + nextp.getPID();
+            }
+            else {
+                fileOnDisk = "processfile"+nextp.getPID();
                 currentContents = memory.getWholeBlock(nextp.getProcessBase());
-                nextp.setState(2); //waiting
+                nextp.setState(2);//waiting
                 nextp.setLocation("disk");
                 nextp.setProcessBase(-1);
                 nextp.setProcessLimit(-1);
                 this.create(fileOnDisk);
-                this.write(fileOnDisk, currentContents);
+                this.write(fileOnDisk,currentContents);
             }
-            TSOS.Shell.updateRes();
+            Shell.updateRes();
             memoryMngr.loadWithoutSpaces(allData.toString(), currentp.getProcessBase());
             this.updateFileSystem();
-        };
+        }
 
-        FileSystemDeviceDriver.prototype.getAllContents = function (ind) {
+        public getAllContents(ind){
             var key;
             var data1;
             var nextKey;
             var contentsInHex;
-            var str = "";
-            var data = "";
-            var toLeave = false;
+            var str:string = "";
+            var data:string = "";
+            var toLeave:boolean = false;
             var allZeros = this.addAllZeros(this.metaDataSize);
-            for (var t = ind.charAt(0); t < this.trackSize; t++) {
-                for (var s = ind.charAt(1); s < this.sectorSize; s++) {
-                    for (var b = ind.charAt(2); b < this.blockSize; b++) {
+            for (var t:number = ind.charAt(0); t < this.trackSize; t++) {
+                for (var s:number = ind.charAt(1); s < this.sectorSize; s++) {
+                    for (var b:number = ind.charAt(2); b < this.blockSize; b++) {
                         key = this.createNewKey(ind);
                         data = sessionStorage.getItem(key);
                         nextKey = data.slice(1, 4);
-                        data1 = data.slice(4, data.length);
+                        data1 = data.slice(4,data.length);
                         if (nextKey == "---") {
                             contentsInHex = this.convertToString(data1);
                             str += contentsInHex;
@@ -606,65 +609,63 @@ var TSOS;
                         key = nextKey;
                         ind = nextKey;
                     }
-                    if (toLeave) {
+                    if(toLeave){
                         break;
                     }
                 }
-                if (toLeave) {
+                if(toLeave){
                     break;
                 }
             }
-            if (toLeave) {
+            if(toLeave){
                 return str;
             }
-        };
+        }
 
         /**
-        * Used for deleting files, and changing everything to 0.
-        * @param filename
-        * @returns {string}
-        */
-        FileSystemDeviceDriver.prototype.addZeroContents = function (filename) {
+         * Used for deleting files, and changing everything to 0.
+         * @param filename
+         * @returns {string}
+         */
+        public addZeroContents(filename:string){
             var track = 0;
             var key;
             var allZero = this.addAllZeros(this.metaDataSize);
-            for (var sect = 0; sect < this.sectorSize; sect++) {
+            for(var sect = 0; sect<this.sectorSize;sect++) {
                 for (var block = 0; block < this.blockSize; block++) {
-                    key = this.createKey(track, sect, block);
-                    var metadata1 = sessionStorage.getItem(key);
-                    var ifInUse = metadata1.slice(0, 1);
-                    var meta = metadata1.slice(1, 4);
-                    var dataInHex = metadata1.slice(4, metadata1.length);
-                    if ((filename == dataInHex) && (ifInUse == "1")) {
-                        sessionStorage.setItem(key, allZero);
+                    key = this.createKey(track,sect,block);
+                    var metadata1:string = sessionStorage.getItem(key);
+                    var ifInUse = metadata1.slice(0,1);
+                    var meta = metadata1.slice(1,4);
+                    var dataInHex:string = metadata1.slice(4,metadata1.length);
+                    if((filename == dataInHex) && (ifInUse == "1")){
+                        sessionStorage.setItem(key,allZero);
                         return meta;
                     }
                 }
             }
             return "-1";
-        };
+        }
 
-        FileSystemDeviceDriver.prototype.addZeros = function (name, length) {
+        public addZeros(name:string, length:number) {
             var str = "";
-            if (name.length < length) {
+            if(name.length < length) {
                 var len = name.length;
-                for (var i = len; i < length; i++) {
-                    str += "0";
+                for(var i=len; i<length; i++) {
+                    str +=   "0";
                 }
             }
-            name += str;
-            return name;
-        };
+            name +=str;
+            return name ;
+        }
 
-        FileSystemDeviceDriver.prototype.addAllZeros = function (length) {
+        public addAllZeros(length:number) {
             var str = "";
 
-            for (var i = 0; i < length; i++) {
+            for(var i =0; i<length;i++){
                 str += "0";
             }
             return str;
-        };
-        return FileSystemDeviceDriver;
-    })(TSOS.DeviceDriver);
-    TSOS.FileSystemDeviceDriver = FileSystemDeviceDriver;
-})(TSOS || (TSOS = {}));
+        }
+   }
+}
