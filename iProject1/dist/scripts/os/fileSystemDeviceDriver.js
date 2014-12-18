@@ -64,7 +64,6 @@ var TSOS;
 
         FileSystemDeviceDriver.prototype.createFileSystem = function () {
             var fileSystemTable = "<table>";
-
             for (var t = 0; t < this.trackSize; t++) {
                 for (var s = 0; s < this.sectorSize; s++) {
                     for (var b = 0; b < this.blockSize; b++) {
